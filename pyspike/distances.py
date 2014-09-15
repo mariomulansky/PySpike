@@ -9,16 +9,6 @@ import numpy as np
 
 from pyspike import PieceWiseConstFunc
 
-def spike_train_from_string(s, sep=' '):
-    """ Converts a string of times into a SpikeTrain object.
-    Params:
-    - s: the string with (ordered) spike times
-    - sep: The separator between the time numbers.
-    Returns:
-    - array of spike times
-    """
-    return np.fromstring(s, sep=sep)
-
 def isi_distance(spikes1, spikes2, T_end, T_start=0.0):
     """ Computes the instantaneous isi-distance S_isi (t) of the two given spike
     trains. 
