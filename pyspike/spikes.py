@@ -18,7 +18,7 @@ def spike_train_from_string(s, sep=' '):
     return np.fromstring(s, sep=sep)
 
 
-def merge_spike_trains( spike_trains ):
+def merge_spike_trains(spike_trains):
     """ Merges a number of spike trains into a single spike train.
     Params:
     - spike_trains: list of arrays of spike times
@@ -28,15 +28,19 @@ def merge_spike_trains( spike_trains ):
     # get the lengths of the spike trains
     lens = np.array([len(st) for st in spike_trains])
     merged_spikes = np.empty(np.sum(lens))
-    index = 0
-    indices = np.zeros_like(lens)
-    vals = [spike_trains[i][indices[i]] for i in xrange(len(indices))]
-    while len(indices) > 0:
-        i = np.argmin(vals)
-        merged_spikes[index] = vals[i]
-        index += 1
-        indices[i] += 1
-        if indices[i] >= lens[i]:
-            indices = np.delete(indices, i)
-        vals = [spike_trains[i][indices[i]] for i in xrange(len(indices))]
+    index = 0                            # the index for merged_spikes
+    indices = np.zeros_like(lens)        # indices of the spike trains
+    index_list = np.arange(len(indices)) # indices of indices of spike trains
+                                         # that have not yet reached the end
+    # list of the possible events in the spike trains
+    vals = [spike_trains[i][indices[i]] for i in index_list]
+    while len(index_list) > 0:
+        i = np.argmin(vals)              # the next spike is the minimum
+        merged_spikes[index] = vals[i]   # put it to the merged spike train
+        i = index_list[i]
+        index += 1                       # next index of merged spike train
+        indices[i] += 1                  # next index for the chosen spike train
+        if indices[i] >= lens[i]:        # remove spike train index if ended
+            index_list = index_list[index_list != i]
+        vals = [spike_trains[i][indices[i]] for i in index_list]
     return merged_spikes

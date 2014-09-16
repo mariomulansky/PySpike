@@ -1,6 +1,6 @@
 """ distances.py
 
-Module containing several function to compute spike distances
+Module containing several functions to compute spike distances
 
 Copyright 2014, Mario Mulansky <mario.mulansky@gmx.net>
 """
