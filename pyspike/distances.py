@@ -36,7 +36,6 @@ def isi_distance(spikes1, spikes2, T_end, T_start=0.0):
     # compute the isi-distance
     spike_events = np.empty(len(nu1)+len(nu2))
     spike_events[0] = T_start
-    spike_events[-1] = T_end
     # the values have one entry less - the number of intervals between events
     isi_values = np.empty(len(spike_events)-1)
     # add the distance of the first events
@@ -48,22 +47,32 @@ def isi_distance(spikes1, spikes2, T_end, T_start=0.0):
     index = 1
     while True:
         # check which spike is next - from s1 or s2
-        if s1[index1+1] <= s2[index2+1]:
+        if s1[index1+1] < s2[index2+1]:
             index1 += 1
             # break condition relies on existence of spikes at T_end
             if index1 >= len(nu1):
                 break
             spike_events[index] = s1[index1]
-        else:
+        elif s1[index1+1] > s2[index2+1]:
             index2 += 1
             if index2 >= len(nu2):
                 break
             spike_events[index] = s2[index2]
+        else: # s1[index1+1] == s2[index2+1]
+            index1 += 1
+            index2 += 1
+            if (index1 >= len(nu1)) or (index2 >= len(nu2)):
+                break
+            spike_events[index] = s1[index1]
         # compute the corresponding isi-distance
         isi_values[index] = (nu1[index1]-nu2[index2]) / \
                             max(nu1[index1], nu2[index2])
         index += 1
-    return PieceWiseConstFunc(spike_events, isi_values)
+    # the last event is the interval end
+    spike_events[index] = T_end
+    # use only the data added above 
+    # could be less than original length due to equal spike times
+    return PieceWiseConstFunc(spike_events[:index+1], isi_values[:index])
 
 
 def get_min_dist(spike_time, spike_train, start_index=0):
@@ -119,7 +128,7 @@ def spike_distance(spikes1, spikes2, T_end, T_start=0.0):
     isi1 = t1[1]-t1[0]
     isi2 = t2[1]-t2[0]
     while True:
-        print(index, index1, index2)
+        # print(index, index1, index2)
         if t1[index1+1] < t2[index2+1]:
             index1 += 1
             # break condition relies on existence of spikes at T_end
@@ -133,7 +142,6 @@ def spike_distance(spikes1, spikes2, T_end, T_start=0.0):
             y_ends[index-1] = (s1*isi2 + s2*isi1) / ((isi1+isi2)**2/2)
             # now the next interval start value
             dt_f1 = get_min_dist(t1[index1+1], t2, index2)
-            s1 = dt_f1
             isi1 = t1[index1+1]-t1[index1]
             # s2 is the same as above, thus we can compute y2 immediately
             y_starts[index] = (s1*isi2 + s2*isi1) / ((isi1+isi2)**2/2)
@@ -149,7 +157,7 @@ def spike_distance(spikes1, spikes2, T_end, T_start=0.0):
             y_ends[index-1] = (s1*isi2 + s2*isi1) / ((isi1+isi2)**2/2)
             # now the next interval start value
             dt_f2 = get_min_dist(t2[index2+1], t1, index1)
-            s2 = dt_f2
+            #s2 = dt_f2
             isi2 = t2[index2+1]-t2[index2]
             # s2 is the same as above, thus we can compute y2 immediately
             y_starts[index] = (s1*isi2 + s2*isi1) / ((isi1+isi2)**2/2)
