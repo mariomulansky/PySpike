@@ -61,6 +61,25 @@ def test_spike():
     assert_array_almost_equal(f.y1, expected_y1, decimal=14)
     assert_array_almost_equal(f.y2, expected_y2, decimal=14)
 
+    # check with some equal spike times
+    t1 = np.array([0.2,0.4,0.6])
+    t2 = np.array([0.1,0.4,0.5,0.6])
+
+    expected_times = [0.0,0.1,0.2,0.4,0.5,0.6,1.0]
+    s1 = np.array([0.0, 0.1*0.1/0.2, 0.1, 0.0, 0.0, 0.0, 0.0])
+    s2 = np.array([0.0, 0.1, 0.1*0.2/0.3, 0.0, 0.1, 0.0, 0.0])
+    isi1 = np.array([0.2, 0.2, 0.2, 0.2, 0.2, 0.4])
+    isi2 = np.array([0.1, 0.3, 0.3, 0.1, 0.1, 0.4])
+    expected_y1 = (s1[:-1]*isi2+s2[:-1]*isi1) / (0.5*(isi1+isi2)**2)
+    expected_y2 = (s1[1:]*isi2+s2[1:]*isi1) / (0.5*(isi1+isi2)**2)
+    
+    f = spk.spike_distance(t1, t2, 1.0)
+
+    assert_equal(f.x, expected_times)
+    assert_array_almost_equal(f.y1, expected_y1, decimal=14)
+    assert_array_almost_equal(f.y2, expected_y2, decimal=14)
+
+
 if __name__ == "main":
     test_isi()
     test_spike()

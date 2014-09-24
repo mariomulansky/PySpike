@@ -128,7 +128,7 @@ def spike_distance(spikes1, spikes2, T_end, T_start=0.0):
     isi1 = t1[1]-t1[0]
     isi2 = t2[1]-t2[0]
     while True:
-        # print(index, index1, index2)
+        print(index, index1, index2)
         if t1[index1+1] < t2[index2+1]:
             index1 += 1
             # break condition relies on existence of spikes at T_end
@@ -145,7 +145,7 @@ def spike_distance(spikes1, spikes2, T_end, T_start=0.0):
             isi1 = t1[index1+1]-t1[index1]
             # s2 is the same as above, thus we can compute y2 immediately
             y_starts[index] = (s1*isi2 + s2*isi1) / ((isi1+isi2)**2/2)
-        else:
+        elif t1[index1+1] > t2[index2+1]:
             index2 += 1
             if index2+1 >= len(t2):
                 break
@@ -161,6 +161,28 @@ def spike_distance(spikes1, spikes2, T_end, T_start=0.0):
             isi2 = t2[index2+1]-t2[index2]
             # s2 is the same as above, thus we can compute y2 immediately
             y_starts[index] = (s1*isi2 + s2*isi1) / ((isi1+isi2)**2/2)
+        else: # t1[index1+1] == t2[index2+1] - generate only one event
+            index1 += 1
+            index2 += 1
+            if (index1+1 >= len(t1)) or (index2+1 >= len(t2)):
+                break
+            assert( dt_f2 == 0.0 )
+            assert( dt_f1 == 0.0 )
+            spike_events[index] = t1[index1]
+            y_ends[index-1] = 0.0
+            y_starts[index] = 0.0
+            dt_p1 = 0.0
+            dt_p2 = 0.0
+            dt_f1 = get_min_dist(t1[index1+1], t2, index2)
+            dt_f2 = get_min_dist(t2[index2+1], t1, index1)
+            isi1 = t1[index1+1]-t1[index1]
+            isi2 = t2[index2+1]-t2[index2]
         index += 1
-
-    return PieceWiseLinFunc(spike_events, y_starts, y_ends)
+    # the last event is the interval end
+    spike_events[index] = T_end
+    # the ending value of the last interval is 0
+    y_ends[index-1] = 0.0
+    # use only the data added above 
+    # could be less than original length due to equal spike times
+    return PieceWiseLinFunc(spike_events[:index+1], 
+                            y_starts[:index], y_ends[:index])
