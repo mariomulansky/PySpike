@@ -57,6 +57,39 @@ class PieceWiseConstFunc:
         return np.sum((self.x[1:]-self.x[:-1]) * np.abs(self.y)) / \
             (self.x[-1]-self.x[0])
 
+    def add(self, f):
+        """ Adds another PieceWiseConst function to this function. 
+        Note: only functions defined on the same interval can be summed.
+        Params:
+        - f: PieceWiseConst function to be added.
+        """
+        assert self.x[0] == f.x[0], "The functions have different intervals"
+        assert self.x[-1] == f.x[-1], "The functions have different intervals"
+        x_new = np.empty(len(self.x) + len(f.x))
+        y_new = np.empty_like(x_new)
+        x_new[0] = self.x[0]
+        y_new[0] = self.y[0] + f.y[0]
+        index1 = 1
+        index2 = 1
+        index = 1
+        while (index1+1 < len(self.x)) and (index2+1 < len(f.x)):
+            if self.x[index1+1] < f.x[index2+1]:
+                x_new[index] = self.x[index1]
+                index1 += 1
+            elif self.x[index1+1] > f.x[index2+1]:
+                x_new[index] = f.x[index2+1]
+                index2 += 1
+            else: # self.x[index1+1] == f.x[index2+1]:
+                x_new[index] = self.x[index1]
+                index1 += 1
+                index2 += 1
+            index += 1
+            y_new[index] = self.y[index1] + f.y[index2]
+        # both indices should have reached the maximum simultaneously
+        assert (index1+1 == len(self.x)) and (index2+1 == len(f.x))
+        # only use the data that was actually filled
+        self.x = x_new[:index+1]
+        self.y = y_new[:index+1]
 
 class PieceWiseLinFunc:
     """ A class representing a piece-wise linear function. """
@@ -87,3 +120,4 @@ class PieceWiseLinFunc:
         y_plot[0::2] = self.y1
         y_plot[1::2] = self.y2
         return x_plot, y_plot
+
