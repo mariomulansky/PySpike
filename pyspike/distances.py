@@ -9,25 +9,45 @@ import numpy as np
 
 from pyspike import PieceWiseConstFunc, PieceWiseLinFunc
 
-def isi_distance(spikes1, spikes2, T_end, T_start=0.0):
-    """ Computes the instantaneous isi-distance S_isi (t) of the two given 
-    spike trains. 
+def add_auxiliary_spikes( spike_train, T_end , T_start=0.0):
+    """ Adds spikes at the beginning (T_start) and end (T_end) of the 
+    observation interval.
     Args:
-    - spikes1, spikes2: ordered arrays of spike times.
-    - T_end: end time of the observation interval.
-    - T_start: begin of the observation interval (default=0.0).
+    - spike_train: ordered array of spike times
+    - T_end: end time of the observation interval
+    - T_start: start time of the observation interval (default 0.0)
+    Returns:
+    - spike train with additional spikes at T_start and T_end.
+    """
+    assert spike_train[0] >= T_start, \
+           "Spike train has events before the given start time"
+    assert spike_train[-1] <= T_end, \
+           "Spike train has events after the given end time"
+    if spike_train[0] != T_start:
+        spike_train = np.insert(spike_train, 0, T_start)
+    if spike_train[-1] != T_end:
+        spike_train = np.append(spike_train, T_end)
+    return spike_train
+
+def isi_distance(spikes1, spikes2):
+    """ Computes the instantaneous isi-distance S_isi (t) of the two given 
+    spike trains. The spike trains are expected to have auxiliary spikes at the
+    beginning and end of the interval. Use the function add_auxiliary_spikes to
+    add those spikes to the spike train.
+    Args:
+    - spikes1, spikes2: ordered arrays of spike times with auxiliary spikes.
     Returns:
     - PieceWiseConstFunc describing the isi-distance.
     """
-    # add spikes at the beginning and end of the interval
-    s1 = np.empty(len(spikes1)+2)
-    s1[0] = T_start
-    s1[-1] = T_end
-    s1[1:-1] = spikes1
-    s2 = np.empty(len(spikes2)+2)
-    s2[0] = T_start
-    s2[-1] = T_end
-    s2[1:-1] = spikes2
+    # check for auxiliary spikes - first and last spikes should be identical
+    assert spikes1[0]==spikes2[0], \
+        "Given spike trains seems not to have auxiliary spikes!"
+    assert spikes1[-1]==spikes2[-1], \
+        "Given spike trains seems not to have auxiliary spikes!"
+
+    # shorter names
+    s1 = spikes1
+    s2 = spikes2
 
     # compute the interspike interval
     nu1 = s1[1:]-s1[:-1]
@@ -35,7 +55,7 @@ def isi_distance(spikes1, spikes2, T_end, T_start=0.0):
     
     # compute the isi-distance
     spike_events = np.empty(len(nu1)+len(nu2))
-    spike_events[0] = T_start
+    spike_events[0] = s1[0]
     # the values have one entry less - the number of intervals between events
     isi_values = np.empty(len(spike_events)-1)
     # add the distance of the first events
@@ -69,7 +89,7 @@ def isi_distance(spikes1, spikes2, T_end, T_start=0.0):
                             max(nu1[index1], nu2[index2])
         index += 1
     # the last event is the interval end
-    spike_events[index] = T_end
+    spike_events[index] = s1[-1]
     # use only the data added above 
     # could be less than original length due to equal spike times
     return PieceWiseConstFunc(spike_events[:index+1], isi_values[:index])
@@ -77,7 +97,7 @@ def isi_distance(spikes1, spikes2, T_end, T_start=0.0):
 
 def get_min_dist(spike_time, spike_train, start_index=0):
     """ Returns the minimal distance |spike_time - spike_train[i]| 
-    with i>=start_index
+    with i>=start_index.
     """
     d = abs(spike_time - spike_train[start_index])
     start_index += 1
@@ -91,31 +111,28 @@ def get_min_dist(spike_time, spike_train, start_index=0):
     return d
 
 
-def spike_distance(spikes1, spikes2, T_end, T_start=0.0):
+def spike_distance(spikes1, spikes2):
     """ Computes the instantaneous spike-distance S_spike (t) of the two given
-    spike trains.
+    spike trains. The spike trains are expected to have auxiliary spikes at the
+    beginning and end of the interval. Use the function add_auxiliary_spikes to
+    add those spikes to the spike train.
     Args:
-    - spikes1, spikes2: ordered arrays of spike times.
-    - T_end: end time of the observation interval.
-    - T_start: begin of the observation interval (default=0.0).
+    - spikes1, spikes2: ordered arrays of spike times with auxiliary spikes.
     Returns:
     - PieceWiseLinFunc describing the spike-distance.
     """
-    # add spikes at the beginning and end of the interval
-    t1 = np.empty(len(spikes1)+2)
-    t1[0] = T_start
-    t1[-1] = T_end
-    t1[1:-1] = spikes1
-    t2 = np.empty(len(spikes2)+2)
-    t2[0] = T_start
-    t2[-1] = T_end
-    t2[1:-1] = spikes2
+    # check for auxiliary spikes - first and last spikes should be identical
+    assert spikes1[0]==spikes2[0], \
+        "Given spike trains seems not to have auxiliary spikes!"
+    assert spikes1[-1]==spikes2[-1], \
+        "Given spike trains seems not to have auxiliary spikes!"
+    # shorter variables
+    t1 = spikes1
+    t2 = spikes2
 
     spike_events = np.empty(len(t1)+len(t2)-2)
-    spike_events[0] = T_start
-    spike_events[-1] = T_end
+    spike_events[0] = t1[0]
     y_starts = np.empty(len(spike_events)-1)
-    y_starts[0] = 0.0
     y_ends = np.empty(len(spike_events)-1)
 
     index1 = 0
@@ -125,10 +142,13 @@ def spike_distance(spikes1, spikes2, T_end, T_start=0.0):
     dt_f1 = get_min_dist(t1[1], t2, 0)
     dt_p2 = 0.0
     dt_f2 = get_min_dist(t2[1], t1, 0)
-    isi1 = t1[1]-t1[0]
-    isi2 = t2[1]-t2[0]
+    isi1 = max(t1[1]-t1[0], t1[2]-t1[1])
+    isi2 = max(t2[1]-t2[0], t2[2]-t2[1])
+    s1 = dt_f1*(t1[1]-t1[0])/isi1
+    s2 = dt_f2*(t2[1]-t2[0])/isi2
+    y_starts[0] = (s1*isi2 + s2*isi1) / ((isi1+isi2)**2/2)
     while True:
-        print(index, index1, index2)
+        # print(index, index1, index2)
         if t1[index1+1] < t2[index2+1]:
             index1 += 1
             # break condition relies on existence of spikes at T_end
@@ -166,8 +186,8 @@ def spike_distance(spikes1, spikes2, T_end, T_start=0.0):
             index2 += 1
             if (index1+1 >= len(t1)) or (index2+1 >= len(t2)):
                 break
-            assert( dt_f2 == 0.0 )
-            assert( dt_f1 == 0.0 )
+            assert dt_f2 == 0.0
+            assert dt_f1 == 0.0
             spike_events[index] = t1[index1]
             y_ends[index-1] = 0.0
             y_starts[index] = 0.0
@@ -179,9 +199,13 @@ def spike_distance(spikes1, spikes2, T_end, T_start=0.0):
             isi2 = t2[index2+1]-t2[index2]
         index += 1
     # the last event is the interval end
-    spike_events[index] = T_end
-    # the ending value of the last interval is 0
-    y_ends[index-1] = 0.0
+    spike_events[index] = t1[-1]
+    # the ending value of the last interval
+    isi1 = max(t1[-1]-t1[-2], t1[-2]-t1[-3])
+    isi2 = max(t2[-1]-t2[-2], t2[-2]-t2[-3])
+    s1 = dt_p1*(t1[-1]-t1[-2])/isi1
+    s2 = dt_p2*(t2[-1]-t2[-2])/isi2
+    y_ends[index-1] = (s1*isi2 + s2*isi1) / ((isi1+isi2)**2/2)
     # use only the data added above 
     # could be less than original length due to equal spike times
     return PieceWiseLinFunc(spike_events[:index+1], 
