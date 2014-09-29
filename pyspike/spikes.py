@@ -7,6 +7,9 @@ Copyright 2014, Mario Mulansky <mario.mulansky@gmx.net>
 
 import numpy as np
 
+############################################################
+# spike_train_from_string
+############################################################
 def spike_train_from_string(s, sep=' '):
     """ Converts a string of times into an array of spike times.
     Params:
@@ -18,6 +21,9 @@ def spike_train_from_string(s, sep=' '):
     return np.fromstring(s, sep=sep)
 
 
+############################################################
+# merge_spike_trains
+############################################################
 def merge_spike_trains(spike_trains):
     """ Merges a number of spike trains into a single spike train.
     Params:

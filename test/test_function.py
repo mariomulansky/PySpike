@@ -29,6 +29,13 @@ def test_pwc():
     assert_almost_equal(f.abs_avrg(), (1.0+0.5+0.5*1.5+1.5*0.75)/4.0,
                         decimal=16)
 
+
+def test_pwc_add():
+    # some random data
+    x = [0.0, 1.0, 2.0, 2.5, 4.0]
+    y = [1.0, -0.5, 1.5, 0.75]
+    f = spk.PieceWiseConstFunc(x, y)
+
     f1 = copy(f)
     x = [0.0, 0.75, 2.0, 2.5, 2.7, 4.0]
     y = [0.5, 1.0, -0.25, 0.0, 1.5]
@@ -48,6 +55,17 @@ def test_pwc():
     assert_array_almost_equal(f1.x, f2.x, decimal=16)
     assert_array_almost_equal(f1.y, 2*f2.y, decimal=16)
 
+def test_pwc_mul():
+    x = [0.0, 1.0, 2.0, 2.5, 4.0]
+    y = [1.0, -0.5, 1.5, 0.75]
+    f = spk.PieceWiseConstFunc(x, y)
+    
+    f.mul_scalar(1.5)
+    assert_array_almost_equal(f.x, x, decimal=16)
+    assert_array_almost_equal(f.y, 1.5*np.array(y), decimal=16)
+    f.mul_scalar(1.0/5.0)
+    assert_array_almost_equal(f.y, 1.5/5.0*np.array(y), decimal=16)
+
 
 def test_pwl():
     x = [0.0, 1.0, 2.0, 2.5, 4.0]
@@ -66,6 +84,13 @@ def test_pwl():
     
     abs_avrg_expected = (1.25 + 0.45 + 0.75 + 1.5*0.5) / 4.0
     assert_almost_equal(f.abs_avrg(), abs_avrg_expected, decimal=16)
+
+
+def test_pwl_add():
+    x = [0.0, 1.0, 2.0, 2.5, 4.0]
+    y1 = [1.0, -0.5, 1.5, 0.75]
+    y2 = [1.5, -0.4, 1.5, 0.25]
+    f = spk.PieceWiseLinFunc(x, y1, y2)
 
     f1 = copy(f)
     x = [0.0, 0.75, 2.0, 2.5, 2.7, 4.0]
@@ -93,6 +118,20 @@ def test_pwl():
     assert_array_almost_equal(f1.y1, 2*f2.y1, decimal=16)
     assert_array_almost_equal(f1.y2, 2*f2.y2, decimal=16)
 
+
+def test_pwc_mul():
+    x = [0.0, 1.0, 2.0, 2.5, 4.0]
+    y1 = [1.0, -0.5, 1.5, 0.75]
+    y2 = [1.5, -0.4, 1.5, 0.25]
+    f = spk.PieceWiseLinFunc(x, y1, y2)
+    
+    f.mul_scalar(1.5)
+    assert_array_almost_equal(f.x, x, decimal=16)
+    assert_array_almost_equal(f.y1, 1.5*np.array(y1), decimal=16)
+    assert_array_almost_equal(f.y2, 1.5*np.array(y2), decimal=16)
+    f.mul_scalar(1.0/5.0)
+    assert_array_almost_equal(f.y1, 1.5/5.0*np.array(y1), decimal=16)
+    assert_array_almost_equal(f.y2, 1.5/5.0*np.array(y2), decimal=16)
 
 if __name__ == "__main__":
     test_pwc()

@@ -109,6 +109,13 @@ class PieceWiseConstFunc:
         self.x = x_new[:index+2]
         self.y = y_new[:index+1]
 
+    def mul_scalar(self, fac):
+        """ Multiplies the function with a scalar value
+        Params:
+        - fac: Value to multiply
+        """
+        self.y *= fac
+
 
 ##############################################################
 # PieceWiseLinFunc
@@ -236,3 +243,11 @@ class PieceWiseLinFunc:
         self.x = x_new[:index+2]
         self.y1 = y1_new[:index+1]
         self.y2 = y2_new[:index+1]
+
+    def mul_scalar(self, fac):
+        """ Multiplies the function with a scalar value
+        Params:
+        - fac: Value to multiply
+        """
+        self.y1 *= fac
+        self.y2 *= fac

@@ -9,6 +9,10 @@ import numpy as np
 
 from pyspike import PieceWiseConstFunc, PieceWiseLinFunc
 
+
+############################################################
+# add_auxiliary_spikes
+############################################################
 def add_auxiliary_spikes( spike_train, T_end , T_start=0.0):
     """ Adds spikes at the beginning (T_start) and end (T_end) of the 
     observation interval.
@@ -29,6 +33,10 @@ def add_auxiliary_spikes( spike_train, T_end , T_start=0.0):
         spike_train = np.append(spike_train, T_end)
     return spike_train
 
+
+############################################################
+# isi_distance
+############################################################
 def isi_distance(spikes1, spikes2):
     """ Computes the instantaneous isi-distance S_isi (t) of the two given 
     spike trains. The spike trains are expected to have auxiliary spikes at the
@@ -95,6 +103,9 @@ def isi_distance(spikes1, spikes2):
     return PieceWiseConstFunc(spike_events[:index+1], isi_values[:index])
 
 
+############################################################
+# get_min_dist
+############################################################
 def get_min_dist(spike_time, spike_train, start_index=0):
     """ Returns the minimal distance |spike_time - spike_train[i]| 
     with i>=start_index.
@@ -111,6 +122,9 @@ def get_min_dist(spike_time, spike_train, start_index=0):
     return d
 
 
+############################################################
+# spike_distance
+############################################################
 def spike_distance(spikes1, spikes2):
     """ Computes the instantaneous spike-distance S_spike (t) of the two given
     spike trains. The spike trains are expected to have auxiliary spikes at the
