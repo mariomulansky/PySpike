@@ -53,10 +53,21 @@ def isi_distance(spikes1, spikes2):
     assert spikes1[-1]==spikes2[-1], \
         "Given spike trains seems not to have auxiliary spikes!"
 
-    # shorter names
-    s1 = spikes1
-    s2 = spikes2
+    # compile and load cython implementation
+    import pyximport
+    pyximport.install(setup_args={'include_dirs': [np.get_include()]})
+    from cython_distance import isi_distance_cython
 
+    times, values = isi_distance_cython(spikes1, spikes2)
+    return PieceWiseConstFunc(times, values)
+
+
+############################################################
+# isi_distance_python
+############################################################
+def isi_distance_python(s1, s2):
+    """ Plain Python implementation of the isi distance.
+    """
     # compute the interspike interval
     nu1 = s1[1:]-s1[:-1]
     nu2 = s2[1:]-s2[:-1]
