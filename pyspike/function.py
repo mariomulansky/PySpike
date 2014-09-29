@@ -10,6 +10,7 @@ from __future__ import print_function
 
 import numpy as np
 
+
 ##############################################################
 # PieceWiseConstFunc
 ##############################################################
@@ -18,13 +19,26 @@ class PieceWiseConstFunc:
     
     def __init__(self, x, y):
         """ Constructs the piece-wise const function.
-        Params:
+        Args:
         - x: array of length N+1 defining the edges of the intervals of the pwc
         function.
         - y: array of length N defining the function values at the intervals.
         """
         self.x = np.array(x)
         self.y = np.array(y)
+
+    def almost_equal(self, other, decimal=14):
+        """ Checks if the function is equal to another function up to `decimal`
+        precision.
+        Args:
+        - other: another PieceWiseConstFunc object
+        Returns:
+        True if the two functions are equal up to `decimal` decimals, 
+        False otherwise
+        """
+        eps = 10.0**(-decimal)
+        return np.allclose(self.x, other.x, atol=eps, rtol=0.0) and \
+            np.allclose(self.y, other.y, atol=eps, rtol=0.0)
 
     def get_plottable_data(self):
         """ Returns two arrays containing x- and y-coordinates for immeditate
@@ -63,7 +77,7 @@ class PieceWiseConstFunc:
     def add(self, f):
         """ Adds another PieceWiseConst function to this function. 
         Note: only functions defined on the same interval can be summed.
-        Params:
+        Args:
         - f: PieceWiseConst function to be added.
         """
         assert self.x[0] == f.x[0], "The functions have different intervals"
@@ -111,7 +125,7 @@ class PieceWiseConstFunc:
 
     def mul_scalar(self, fac):
         """ Multiplies the function with a scalar value
-        Params:
+        Args:
         - fac: Value to multiply
         """
         self.y *= fac
@@ -125,7 +139,7 @@ class PieceWiseLinFunc:
     
     def __init__(self, x, y1, y2):
         """ Constructs the piece-wise linear function.
-        Params:
+        Args:
         - x: array of length N+1 defining the edges of the intervals of the pwc
         function.
         - y1: array of length N defining the function values at the left of the 
@@ -136,6 +150,20 @@ class PieceWiseLinFunc:
         self.x = np.array(x)
         self.y1 = np.array(y1)
         self.y2 = np.array(y2)
+
+    def almost_equal(self, other, decimal=14):
+        """ Checks if the function is equal to another function up to `decimal`
+        precision.
+        Args:
+        - other: another PieceWiseLinFunc object
+        Returns:
+        True if the two functions are equal up to `decimal` decimals, 
+        False otherwise
+        """
+        eps = 10.0**(-decimal)
+        return np.allclose(self.x, other.x, atol=eps, rtol=0.0) and \
+            np.allclose(self.y1, other.y1, atol=eps, rtol=0.0) and \
+            np.allclose(self.y2, other.y2, atol=eps, rtol=0.0)
 
     def get_plottable_data(self):
         """ Returns two arrays containing x- and y-coordinates for immeditate
@@ -171,7 +199,7 @@ class PieceWiseLinFunc:
     def add(self, f):
         """ Adds another PieceWiseLin function to this function. 
         Note: only functions defined on the same interval can be summed.
-        Params:
+        Args:
         - f: PieceWiseLin function to be added.
         """
         assert self.x[0] == f.x[0], "The functions have different intervals"
@@ -246,7 +274,7 @@ class PieceWiseLinFunc:
 
     def mul_scalar(self, fac):
         """ Multiplies the function with a scalar value
-        Params:
+        Args:
         - fac: Value to multiply
         """
         self.y1 *= fac
