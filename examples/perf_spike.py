@@ -17,7 +17,7 @@ def measure_perf(func, loops=10):
         times[i] = time.clock() - start
     return np.min(times)
 
-print("# approximate number of spikes\texecution time [ms]")
+print("# approximate number of spikes\tcython time [ms]\tpython time [ms]")
 
 # max times
 Ns = np.arange(10000, 50001, 10000)
@@ -34,6 +34,9 @@ for N in Ns:
     # only up to T
     t2 = spk.add_auxiliary_spikes(t2[t2<N], N)
 
-    t = measure_perf(partial(spk.spike_distance, t1, t2))
+    t_cython = measure_perf(partial(spk.spike_distance, t1, t2))
+
+    t_python = measure_perf(partial(spk.distances.spike_distance_python, 
+                                    t1, t2))
     
-    print("%d\t%.1f" % (N, t*1000))
+    print("%d\t%.3f\t%.1f" % (N, t_cython*1000, t_python*1000))
