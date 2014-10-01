@@ -22,6 +22,7 @@ def add_auxiliary_spikes( spike_train, T_end , T_start=0.0):
     - T_start: start time of the observation interval (default 0.0)
     Returns:
     - spike train with additional spikes at T_start and T_end.
+
     """
     assert spike_train[0] >= T_start, \
            "Spike train has events before the given start time"
@@ -53,9 +54,7 @@ def isi_distance(spikes1, spikes2):
     assert spikes1[-1]==spikes2[-1], \
         "Given spike trains seems not to have auxiliary spikes!"
 
-    # compile and load cython implementation
-    import pyximport
-    pyximport.install(setup_args={'include_dirs': [np.get_include()]})
+    # cython implementation
     from cython_distance import isi_distance_cython
 
     times, values = isi_distance_cython(spikes1, spikes2)
@@ -81,9 +80,7 @@ def spike_distance(spikes1, spikes2):
     assert spikes1[-1]==spikes2[-1], \
         "Given spike trains seems not to have auxiliary spikes!"
 
-    # compile and load cython implementation
-    import pyximport
-    pyximport.install(setup_args={'include_dirs': [np.get_include()]})
+    # cython implementation
     from cython_distance import spike_distance_cython
 
     times, y_starts, y_ends = spike_distance_cython(spikes1, spikes2)
@@ -95,8 +92,8 @@ def spike_distance(spikes1, spikes2):
 # multi_distance
 ############################################################
 def multi_distance(spike_trains, pair_distance_func, indices=None):
-    """ Internal implementation detail, use isi_distance_multi or 
-    spike_distance_multi.
+    """ Internal implementation detail, don't call this function directly,
+    use isi_distance_multi or spike_distance_multi instead.
 
     Computes the multi-variate distance for a set of spike-trains using the
     pair_dist_func to compute pair-wise distances. That is it computes the 

@@ -1,3 +1,7 @@
 Python Codes for Measuring Spike Synchrony
 
+before using the module you should compile the cython backend via:
+
+python setup.py build_ext --inplace
+
 Mario Mulansky (2014)
