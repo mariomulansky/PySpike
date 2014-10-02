@@ -206,10 +206,36 @@ def spike_distance_multi(spike_trains, indices=None):
     where the sum goes over all pairs <i,j>
     Args:
     - spike_trains: list of spike trains
-    - indices: list of indices defining which spike trains to use, 
+    - indices: list of indices defining which spike-trains to use, 
     if None all given spike trains are used (default=None)
     Returns:
     - A PieceWiseLinFunc representing the averaged spike distance S
     """
     return multi_distance(spike_trains, spike_distance, indices)
 
+
+def isi_distance_matrix(spike_trains, indices=None):
+    """ Computes the average isi-distance of all pairs of spike-trains.
+    Args:
+    - spike_trains: list of spike trains
+    - indices: list of indices defining which spike-trains to use
+    if None all given spike-trains are used (default=None)
+    Return:
+    - a 2D array of size len(indices)*len(indices) containing the average 
+    pair-wise isi-distance
+    """
+    if indices==None:
+        indices = np.arange(len(spike_trains))
+    indices = np.array(indices)
+    # check validity of indices
+    assert (indices < len(spike_trains)).all() and (indices >= 0).all(), \
+            "Invalid index list."
+    # generate a list of possible index pairs
+    pairs = [(i,j) for i in indices for j in indices[i+1:]]
+    
+    distance_matrix = np.zeros((len(indices), len(indices)))
+    for i,j in pairs:
+        d = isi_distance(spike_trains[i], spike_trains[j]).abs_avrg()
+        distance_matrix[i,j] = d
+        distance_matrix[j,i] = d
+    return distance_matrix
