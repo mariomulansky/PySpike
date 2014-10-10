@@ -14,6 +14,7 @@ To use PySpike you need Python installed with the following additional packages:
 - scipy
 - matplotlib
 - cython
+- nosetests (for running the tests)
 
 In particular, make sure that [cython](http://www.cython.org) is configured properly and able to locate a C compiler.
 
@@ -22,6 +23,11 @@ To install PySpike, simply download the source, i.e. via git, and run the setup.
     git clone ...
     cd PySpike
     python setup.py build_ext --inplace
+
+The you can run the tests using the `nosetests` test framework:
+
+    cd test
+    nosetests
 
 ## Loading spike trains
 
