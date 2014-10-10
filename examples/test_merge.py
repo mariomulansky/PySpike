@@ -6,11 +6,8 @@ import matplotlib.pyplot as plt
 
 import pyspike as spk
 
-# first load the data
-spike_trains = []
-spike_file = open("SPIKY_testdata.txt", 'r')
-for line in spike_file:
-    spike_trains.append(spk.spike_train_from_string(line))
+# first load the data, ending time = 4000
+spike_trains = spk.load_spike_trains_from_txt("SPIKY_testdata.txt", 4000)
 
 spikes = spk.merge_spike_trains([spike_trains[0], spike_trains[1]])
 

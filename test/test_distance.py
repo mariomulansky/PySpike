@@ -23,8 +23,8 @@ def test_isi():
     expected_isi = [-0.1/0.3, -0.1/0.3, 0.05/0.2, 0.05/0.2, -0.15/0.35, 
                     -0.25/0.35, -0.05/0.35, 0.2/0.3, 0.25/0.3, 0.25/0.3]
     
-    t1 = spk.add_auxiliary_spikes(t1, (0.0,1.0))
-    t2 = spk.add_auxiliary_spikes(t2, (0.0,1.0))
+    t1 = spk.add_auxiliary_spikes(t1, 1.0)
+    t2 = spk.add_auxiliary_spikes(t2, 1.0)
     f = spk.isi_distance(t1, t2)
 
     # print("ISI: ", f.y)
@@ -39,8 +39,8 @@ def test_isi():
     expected_times = [0.0,0.1,0.2,0.4,0.5,0.6,1.0]
     expected_isi = [0.1/0.2, -0.1/0.3, -0.1/0.3, 0.1/0.2, 0.1/0.2, -0.0/0.5]
 
-    t1 = spk.add_auxiliary_spikes(t1, (0.0,1.0))
-    t2 = spk.add_auxiliary_spikes(t2, (0.0,1.0))
+    t1 = spk.add_auxiliary_spikes(t1, 1.0)
+    t2 = spk.add_auxiliary_spikes(t2, 1.0)
     f = spk.isi_distance(t1, t2)
 
     assert_equal(f.x, expected_times)
@@ -64,8 +64,8 @@ def test_spike():
     expected_y1 = (s1[:-1]*isi2+s2[:-1]*isi1) / (0.5*(isi1+isi2)**2)
     expected_y2 = (s1[1:]*isi2+s2[1:]*isi1) / (0.5*(isi1+isi2)**2)
 
-    t1 = spk.add_auxiliary_spikes(t1, (0.0,1.0))
-    t2 = spk.add_auxiliary_spikes(t2, (0.0,1.0))
+    t1 = spk.add_auxiliary_spikes(t1, 1.0)
+    t2 = spk.add_auxiliary_spikes(t2, 1.0)
     f = spk.spike_distance(t1, t2)
 
     assert_equal(f.x, expected_times)
@@ -84,8 +84,8 @@ def test_spike():
     expected_y1 = (s1[:-1]*isi2+s2[:-1]*isi1) / (0.5*(isi1+isi2)**2)
     expected_y2 = (s1[1:]*isi2+s2[1:]*isi1) / (0.5*(isi1+isi2)**2)
     
-    t1 = spk.add_auxiliary_spikes(t1, (0.0,1.0))
-    t2 = spk.add_auxiliary_spikes(t2, (0.0,1.0))
+    t1 = spk.add_auxiliary_spikes(t1, 1.0)
+    t2 = spk.add_auxiliary_spikes(t2, 1.0)
     f = spk.spike_distance(t1, t2)
 
     assert_equal(f.x, expected_times)

@@ -5,12 +5,8 @@ import matplotlib.pyplot as plt
 
 import pyspike as spk
 
-# first load the data
-spike_trains = []
-spike_file = open("SPIKY_testdata.txt", 'r')
-for line in spike_file:
-    spike_trains.append(spk.add_auxiliary_spikes(
-        spk.spike_train_from_string(line), 4000))
+# first load the data, interval ending time = 4000, start=0 (default)
+spike_trains = spk.load_spike_trains_from_txt("SPIKY_testdata.txt", 4000)
 
 print(len(spike_trains))
 
