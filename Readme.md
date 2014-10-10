@@ -24,7 +24,7 @@ To install PySpike, simply download the source, i.e. via git, and run the setup.
     cd PySpike
     python setup.py build_ext --inplace
 
-The you can run the tests using the `nosetests` test framework:
+Then you can run the tests using the `nosetests` test framework:
 
     cd test
     nosetests
