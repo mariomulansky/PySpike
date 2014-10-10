@@ -11,6 +11,9 @@ Note: using cython memoryviews (e.g. double[:]) instead of ndarray objects
 improves the performance of spike_distance by a factor of 10!
 
 Copyright 2014, Mario Mulansky <mario.mulansky@gmx.net>
+
+Distributed under the MIT License (MIT)
+
 """
 
 """

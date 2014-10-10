@@ -3,6 +3,8 @@
 Module containing several function to load and transform spike trains
 
 Copyright 2014, Mario Mulansky <mario.mulansky@gmx.net>
+
+Distributed under the MIT License (MIT)
 """
 
 import numpy as np

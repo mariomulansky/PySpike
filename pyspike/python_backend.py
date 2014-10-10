@@ -3,7 +3,9 @@
 Collection of python functions that can be used instead of the cython 
 implementation.
 
-Copyright 2014, Mario Mulanksy <mario.mulansky@gmx.net>
+Copyright 2014, Mario Mulansky <mario.mulansky@gmx.net>
+
+Distributed under the MIT License (MIT)
 
 """
 

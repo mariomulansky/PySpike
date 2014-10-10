@@ -1,3 +1,9 @@
+"""
+Copyright 2014, Mario Mulansky <mario.mulansky@gmx.net>
+
+Distributed under the MIT License (MIT)
+"""
+
 __all__ = ["function", "distances", "spikes"]
 
 from function import PieceWiseConstFunc, PieceWiseLinFunc

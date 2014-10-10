@@ -1,3 +1,14 @@
+""" isi_matrix.py
+
+Simple example showing how to compute the isi distance matrix of a set of spike
+trains.
+
+Copyright 2014, Mario Mulansky <mario.mulansky@gmx.net>
+
+Distributed under the MIT License (MIT)
+"""
+
+
 from __future__ import print_function
 
 import numpy as np
