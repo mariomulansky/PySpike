@@ -13,14 +13,6 @@ from numpy.testing import assert_equal, assert_array_almost_equal
 import pyspike as spk
 
 
-def test_auxiliary_spikes():
-    t = np.array([0.2, 0.4, 0.6, 0.7])
-    t_aux = spk.add_auxiliary_spikes(t, T_end=1.0, T_start=0.1)
-    assert_equal(t_aux, [0.1, 0.2, 0.4, 0.6, 0.7, 1.0])
-    t_aux = spk.add_auxiliary_spikes(t_aux, 1.0)
-    assert_equal(t_aux, [0.0, 0.1, 0.2, 0.4, 0.6, 0.7, 1.0])
-
-
 def test_isi():
     # generate two spike trains:
     t1 = np.array([0.2, 0.4, 0.6, 0.7])
@@ -31,8 +23,8 @@ def test_isi():
     expected_isi = [-0.1/0.3, -0.1/0.3, 0.05/0.2, 0.05/0.2, -0.15/0.35, 
                     -0.25/0.35, -0.05/0.35, 0.2/0.3, 0.25/0.3, 0.25/0.3]
     
-    t1 = spk.add_auxiliary_spikes(t1, 1.0)
-    t2 = spk.add_auxiliary_spikes(t2, 1.0)
+    t1 = spk.add_auxiliary_spikes(t1, (0.0,1.0))
+    t2 = spk.add_auxiliary_spikes(t2, (0.0,1.0))
     f = spk.isi_distance(t1, t2)
 
     # print("ISI: ", f.y)
@@ -47,8 +39,8 @@ def test_isi():
     expected_times = [0.0,0.1,0.2,0.4,0.5,0.6,1.0]
     expected_isi = [0.1/0.2, -0.1/0.3, -0.1/0.3, 0.1/0.2, 0.1/0.2, -0.0/0.5]
 
-    t1 = spk.add_auxiliary_spikes(t1, 1.0)
-    t2 = spk.add_auxiliary_spikes(t2, 1.0)
+    t1 = spk.add_auxiliary_spikes(t1, (0.0,1.0))
+    t2 = spk.add_auxiliary_spikes(t2, (0.0,1.0))
     f = spk.isi_distance(t1, t2)
 
     assert_equal(f.x, expected_times)
@@ -72,8 +64,8 @@ def test_spike():
     expected_y1 = (s1[:-1]*isi2+s2[:-1]*isi1) / (0.5*(isi1+isi2)**2)
     expected_y2 = (s1[1:]*isi2+s2[1:]*isi1) / (0.5*(isi1+isi2)**2)
 
-    t1 = spk.add_auxiliary_spikes(t1, 1.0)
-    t2 = spk.add_auxiliary_spikes(t2, 1.0)
+    t1 = spk.add_auxiliary_spikes(t1, (0.0,1.0))
+    t2 = spk.add_auxiliary_spikes(t2, (0.0,1.0))
     f = spk.spike_distance(t1, t2)
 
     assert_equal(f.x, expected_times)
@@ -92,8 +84,8 @@ def test_spike():
     expected_y1 = (s1[:-1]*isi2+s2[:-1]*isi1) / (0.5*(isi1+isi2)**2)
     expected_y2 = (s1[1:]*isi2+s2[1:]*isi1) / (0.5*(isi1+isi2)**2)
     
-    t1 = spk.add_auxiliary_spikes(t1, 1.0)
-    t2 = spk.add_auxiliary_spikes(t2, 1.0)
+    t1 = spk.add_auxiliary_spikes(t1, (0.0,1.0))
+    t2 = spk.add_auxiliary_spikes(t2, (0.0,1.0))
     f = spk.spike_distance(t1, t2)
 
     assert_equal(f.x, expected_times)

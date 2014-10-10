@@ -7,17 +7,14 @@ import matplotlib.pyplot as plt
 
 import pyspike as spk
 
-# first load the data
-spike_trains = []
-spike_file = open("SPIKY_testdata.txt", 'r')
-for line in spike_file:
-    spike_trains.append(spk.spike_train_from_string(line))
+spike_trains = spk.load_spike_trains_from_txt("SPIKY_testdata.txt", 
+                                              time_interval=(0,4000))
 
 # plot the spike time
 for (i,spikes) in enumerate(spike_trains):
     plt.plot(spikes, i*np.ones_like(spikes), 'o')
 
-f = spk.isi_distance(spike_trains[0], spike_trains[1], 4000)
+f = spk.isi_distance(spike_trains[0], spike_trains[1])
 x, y = f.get_plottable_data()
 
 plt.figure()
@@ -27,7 +24,7 @@ print("Average: %.8f" % f.avrg())
 print("Absolute average: %.8f" % f.abs_avrg())
 
 
-f = spk.spike_distance(spike_trains[0], spike_trains[1], 4000)
+f = spk.spike_distance(spike_trains[0], spike_trains[1])
 x, y = f.get_plottable_data()
 print(x)
 print(y)

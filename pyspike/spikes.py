@@ -7,12 +7,46 @@ Copyright 2014, Mario Mulansky <mario.mulansky@gmx.net>
 
 import numpy as np
 
+
+############################################################
+# add_auxiliary_spikes
+############################################################
+def add_auxiliary_spikes(spike_train, time_interval):
+    """ Adds spikes at the beginning and end of the given time interval.
+    Args:
+    - spike_train: ordered array of spike times
+    - time_interval: A pair (T_start, T_end) of values representing the start
+    and end time of the spike train measurement or a single value representing
+    the end time, the T_start is then assuemd as 0. Auxiliary spikes will be
+    added to the spike train at the beginning and end of this interval.
+    Returns:
+    - spike train with additional spikes at T_start and T_end.
+
+    """
+    try:
+        T_start = time_interval[0]
+        T_end = time_interval[1]
+    except:
+        T_start = 0
+        T_end = time_interval
+    
+    assert spike_train[0] >= T_start, \
+           "Spike train has events before the given start time"
+    assert spike_train[-1] <= T_end, \
+           "Spike train has events after the given end time"
+    if spike_train[0] != T_start:
+        spike_train = np.insert(spike_train, 0, T_start)
+    if spike_train[-1] != T_end:
+        spike_train = np.append(spike_train, T_end)
+    return spike_train
+
+
 ############################################################
 # spike_train_from_string
 ############################################################
 def spike_train_from_string(s, sep=' '):
     """ Converts a string of times into an array of spike times.
-    Params:
+    Args:
     - s: the string with (ordered) spike times
     - sep: The separator between the time numbers.
     Returns:
@@ -22,11 +56,45 @@ def spike_train_from_string(s, sep=' '):
 
 
 ############################################################
+# load_spike_trains_txt
+############################################################
+def load_spike_trains_from_txt(file_name, time_interval=None, 
+                               separator=' ', comment='#'):
+    """ Loads a number of spike trains from a text file. Each line of the text 
+    file should contain one spike train as a sequence of spike times separated 
+    by `separator`. Empty lines as well as lines starting with `comment` are 
+    neglected. The `time_interval` represents the start and the end of the spike
+    trains and it is used to add auxiliary spikes at the beginning and end of 
+    each spike train. However, if `time_interval == None`, no auxiliary spikes
+    are added, but note that the Spike and ISI distance both require auxiliary 
+    spikes.
+    Args:
+    - file_name: The name of the text file.
+    - time_interval: A pair (T_start, T_end) of values representing the start
+    and end time of the spike train measurement or a single value representing
+    the end time, the T_start is then assuemd as 0. Auxiliary spikes will be
+    added to the spike train at the beginning and end of this interval.
+    - separator: The character used to seprate the values in the text file.
+    - comment: Lines starting with this character are ignored.
+    """
+    spike_trains = []
+    spike_file = open(file_name, 'r')
+    for line in spike_file:
+        if len(line) > 1 and not line.startswith(comment): 
+            # use only the lines with actual data and not commented
+            spike_train = spike_train_from_string(line)
+            if not time_interval == None: # add auxiliary spikes if times given
+                spike_train = add_auxiliary_spikes(spike_train, time_interval)
+            spike_trains.append(spike_train)
+    return spike_trains
+
+
+############################################################
 # merge_spike_trains
 ############################################################
 def merge_spike_trains(spike_trains):
     """ Merges a number of spike trains into a single spike train.
-    Params:
+    Args:
     - spike_trains: list of arrays of spike times
     Returns:
     - array with the merged spike times

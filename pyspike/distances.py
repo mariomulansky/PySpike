@@ -12,31 +12,6 @@ from pyspike import PieceWiseConstFunc, PieceWiseLinFunc
 
 
 ############################################################
-# add_auxiliary_spikes
-############################################################
-def add_auxiliary_spikes( spike_train, T_end , T_start=0.0):
-    """ Adds spikes at the beginning (T_start) and end (T_end) of the 
-    observation interval.
-    Args:
-    - spike_train: ordered array of spike times
-    - T_end: end time of the observation interval
-    - T_start: start time of the observation interval (default 0.0)
-    Returns:
-    - spike train with additional spikes at T_start and T_end.
-
-    """
-    assert spike_train[0] >= T_start, \
-           "Spike train has events before the given start time"
-    assert spike_train[-1] <= T_end, \
-           "Spike train has events after the given end time"
-    if spike_train[0] != T_start:
-        spike_train = np.insert(spike_train, 0, T_start)
-    if spike_train[-1] != T_end:
-        spike_train = np.append(spike_train, T_end)
-    return spike_train
-
-
-############################################################
 # isi_distance
 ############################################################
 def isi_distance(spikes1, spikes2):
