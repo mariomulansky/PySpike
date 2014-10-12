@@ -46,22 +46,26 @@ def add_auxiliary_spikes(spike_train, time_interval):
 ############################################################
 # spike_train_from_string
 ############################################################
-def spike_train_from_string(s, sep=' '):
+def spike_train_from_string(s, sep=' ', sort=True):
     """ Converts a string of times into an array of spike times.
     Args:
     - s: the string with (ordered) spike times
-    - sep: The separator between the time numbers.
+    - sep: The separator between the time numbers, default=' '.
+    - sort: If True, the spike times are order via `np.sort`, default=True.
     Returns:
     - array of spike times
     """
-    return np.fromstring(s, sep=sep)
+    if sort:
+        return np.sort(np.fromstring(s, sep=sep))
+    else:
+        return np.fromstring(s, sep=sep)
 
 
 ############################################################
 # load_spike_trains_txt
 ############################################################
 def load_spike_trains_from_txt(file_name, time_interval=None, 
-                               separator=' ', comment='#'):
+                               separator=' ', comment='#', sort=True):
     """ Loads a number of spike trains from a text file. Each line of the text 
     file should contain one spike train as a sequence of spike times separated 
     by `separator`. Empty lines as well as lines starting with `comment` are 
@@ -78,13 +82,14 @@ def load_spike_trains_from_txt(file_name, time_interval=None,
     added to the spike train at the beginning and end of this interval.
     - separator: The character used to seprate the values in the text file.
     - comment: Lines starting with this character are ignored.
+    - sort: If true, the spike times are order via `np.sort`, default=True.
     """
     spike_trains = []
     spike_file = open(file_name, 'r')
     for line in spike_file:
         if len(line) > 1 and not line.startswith(comment): 
             # use only the lines with actual data and not commented
-            spike_train = spike_train_from_string(line)
+            spike_train = spike_train_from_string(line, separator, sort)
             if not time_interval == None: # add auxiliary spikes if times given
                 spike_train = add_auxiliary_spikes(spike_train, time_interval)
             spike_trains.append(spike_train)

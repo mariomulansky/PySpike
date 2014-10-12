@@ -23,7 +23,7 @@ def test_auxiliary_spikes():
 
 
 def test_load_from_txt():
-    spike_trains = spk.load_spike_trains_from_txt("SPIKY_testdata.txt", 
+    spike_trains = spk.load_spike_trains_from_txt("PySpike_testdata.txt", 
                                               time_interval=(0,4000))
     assert len(spike_trains) == 40
 
@@ -39,7 +39,7 @@ def test_load_from_txt():
         assert spike_train[-1] == 4000
 
     # load without adding auxiliary spikes
-    spike_trains2 = spk.load_spike_trains_from_txt("SPIKY_testdata.txt", 
+    spike_trains2 = spk.load_spike_trains_from_txt("PySpike_testdata.txt", 
                                                   time_interval=None)
     assert len(spike_trains2) == 40
     # check auxiliary spikes
@@ -59,12 +59,12 @@ def check_merged_spikes( merged_spikes, spike_trains ):
         # change to something impossible so we dont find this event again
         all_spikes[i] = -1.0
         indices[i] = True
-    assert( indices.all() )
+    assert indices.all()
 
 
 def test_merge_spike_trains():
     # first load the data
-    spike_trains = spk.load_spike_trains_from_txt("SPIKY_testdata.txt", 
+    spike_trains = spk.load_spike_trains_from_txt("PySpike_testdata.txt", 
                                                   time_interval=(0,4000))
     
     spikes = spk.merge_spike_trains([spike_trains[0], spike_trains[1]])
