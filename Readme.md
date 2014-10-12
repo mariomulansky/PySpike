@@ -1,8 +1,8 @@
 # PySpike
 
-PySpike is a Python library for numerical analysis of spike train similarity. 
+PySpike is a Python library for the numerical analysis of spike train similarity. 
 Its core functionality is the implementation of the bivariate [ISI and SPIKE distance](http://www.scholarpedia.org/article/Measures_of_spike_train_synchrony). 
-Additionally, it provides functions to compute multi-variate SPIKE and ISI distances, averaging and general spike train processing.
+Additionally, it provides functions to compute multi-variate SPIKE and ISI distances, as well as averaging and general spike train processing.
 All computation intensive parts are implemented in C via [cython](http://www.cython.org) to reach a competitive performance (factor 100-200 over plain Python).
 
 All source codes are published under the liberal [MIT License](http://opensource.org/licenses/MIT).
@@ -42,6 +42,8 @@ The following code creates such a spike train with some arbitrary spike times:
 
     spike_train = np.array([0.1, 0.3, 0.45, 0.6, 0.9])
 
+### Loading from text files
+
 Typically, spike train data is loaded into PySpike from data files.
 The most straight-forward data files are text files where each line represents one spike train given as an sequence of spike times.
 An exemplary file with several spike trains is [PySpike_testdata.txt](https://github.com/mariomulansky/PySpike/blob/master/examples/PySpike_testdata.txt).
@@ -53,9 +55,9 @@ To quickly obtain spike trains from such files, PySpike provides the function `l
     spike_trains = spk.load_spike_trains_from_txt("SPIKY_testdata.txt", 
                                                   time_interval=(0,4000))
 
-This function expects the name of the datafile as first parameter, and additionally the time intervall of the spike train measurement can be provided as a pair of start- and end-time values.
+This function expects the name of the data file as first parameter, and additionally the time intervall of the spike train measurement can be provided as a pair of start- and end-time values.
 If the time interval is provided (`time_interval is not None`), auxiliary spikes at the start- and end-time of the interval are added to the spike trains.
-Furthermore, the spike trains are ordered via `np.sort`.
+Furthermore, the spike trains are ordered via `np.sort` (disable this feature by providing `sort=False` as a parameter to the load function).
 As result, `load_spike_trains_from_txt` returns a *list of arrays* containing the spike trains in the text file.
 
 
