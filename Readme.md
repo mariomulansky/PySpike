@@ -2,7 +2,8 @@
 
 PySpike is a Python library for numerical analysis of spike train similarity. 
 Its core functionality is the implementation of the bivariate [ISI and SPIKE distance](http://www.scholarpedia.org/article/Measures_of_spike_train_synchrony). 
-Additionally, it allows to compute multi-variate spike train distances, averaging and general spike train processing.
+Additionally, it provides functions to compute multi-variate SPIKE and ISI distances, averaging and general spike train processing.
+All computation intensive parts are implemented in C via [cython](http://www.cython.org) to reach a competitive performance (factor 100-200 over plain Python).
 
 All source codes are published under the liberal [MIT License](http://opensource.org/licenses/MIT).
 
@@ -18,7 +19,7 @@ To use PySpike you need Python installed with the following additional packages:
 
 In particular, make sure that [cython](http://www.cython.org) is configured properly and able to locate a C compiler.
 
-To install PySpike, simply download the source, i.e. via git clone, and run the setup.py script:
+To install PySpike, simply download the source, e.g. from Github, and run the `setup.py` script:
 
     git clone https://github.com/mariomulansky/PySpike.git
     cd PySpike
@@ -29,7 +30,7 @@ Then you can run the tests using the `nosetests` test framework:
     cd test
     nosetests
 
-Finally, you should make the installation folder known to Python to be able to import pyspike in your own projects.
+Finally, you should make PySpike's installation folder known to Python to be able to import pyspike in your own projects.
 Therefore, add your `/path/to/PySpike` to the `$PYTHONPATH` environment variable.
 
 ## Spike trains
@@ -64,7 +65,7 @@ As result, `load_spike_trains_from_txt` returns a *list of arrays* containing th
 **Important note:**
 
 >Spike trains are expected to be *ordered sequences*! 
->For performance reasons, the PySpike distance function do not check if the spike trains provided are indeed ordered.
+>For performance reasons, the PySpike distance functions do not check if the spike trains provided are indeed ordered.
 >Make sure that all your spike trains are ordered.
 >If in doubt, use `spike_train = np.sort(spike_train)` to obtain a correctly ordered spike train.
 
