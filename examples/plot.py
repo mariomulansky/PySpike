@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 
 import pyspike as spk
 
-spike_trains = spk.load_spike_trains_from_txt("SPIKY_testdata.txt", 
+spike_trains = spk.load_spike_trains_from_txt("PySpike_testdata.txt", 
                                               time_interval=(0,4000))
 
 # plot the spike time
