@@ -5,7 +5,7 @@ Its core functionality is the implementation of the bivariate [ISI and SPIKE dis
 Additionally, it provides functions to compute multi-variate SPIKE and ISI distances, as well as averaging and general spike train processing.
 All computation intensive parts are implemented in C via [cython](http://www.cython.org) to reach a competitive performance (factor 100-200 over plain Python).
 
-All source codes are published under the liberal [MIT License](http://opensource.org/licenses/MIT).
+All source codes are published under the [BSD License](http://opensource.org/licenses/BSD-2-Clause).
 
 ## Requirements and Installation
 
