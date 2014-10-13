@@ -31,11 +31,11 @@ def add_auxiliary_spikes(spike_train, time_interval):
     except:
         T_start = 0
         T_end = time_interval
-    
+
     assert spike_train[0] >= T_start, \
-           "Spike train has events before the given start time"
+        "Spike train has events before the given start time"
     assert spike_train[-1] <= T_end, \
-           "Spike train has events after the given end time"
+        "Spike train has events after the given end time"
     if spike_train[0] != T_start:
         spike_train = np.insert(spike_train, 0, T_start)
     if spike_train[-1] != T_end:
@@ -64,16 +64,16 @@ def spike_train_from_string(s, sep=' ', sort=True):
 ############################################################
 # load_spike_trains_txt
 ############################################################
-def load_spike_trains_from_txt(file_name, time_interval=None, 
+def load_spike_trains_from_txt(file_name, time_interval=None,
                                separator=' ', comment='#', sort=True):
-    """ Loads a number of spike trains from a text file. Each line of the text 
-    file should contain one spike train as a sequence of spike times separated 
-    by `separator`. Empty lines as well as lines starting with `comment` are 
-    neglected. The `time_interval` represents the start and the end of the spike
-    trains and it is used to add auxiliary spikes at the beginning and end of 
-    each spike train. However, if `time_interval == None`, no auxiliary spikes
-    are added, but note that the Spike and ISI distance both require auxiliary 
-    spikes.
+    """ Loads a number of spike trains from a text file. Each line of the text
+    file should contain one spike train as a sequence of spike times separated
+    by `separator`. Empty lines as well as lines starting with `comment` are
+    neglected. The `time_interval` represents the start and the end of the
+    spike trains and it is used to add auxiliary spikes at the beginning and
+    end of each spike train. However, if `time_interval == None`, no auxiliary
+    spikes are added, but note that the Spike and ISI distance both require
+    auxiliary spikes.
     Args:
     - file_name: The name of the text file.
     - time_interval: A pair (T_start, T_end) of values representing the start
@@ -87,10 +87,10 @@ def load_spike_trains_from_txt(file_name, time_interval=None,
     spike_trains = []
     spike_file = open(file_name, 'r')
     for line in spike_file:
-        if len(line) > 1 and not line.startswith(comment): 
+        if len(line) > 1 and not line.startswith(comment):
             # use only the lines with actual data and not commented
             spike_train = spike_train_from_string(line, separator, sort)
-            if not time_interval == None: # add auxiliary spikes if times given
+            if time_interval is not None:  # add auxil. spikes if times given
                 spike_train = add_auxiliary_spikes(spike_train, time_interval)
             spike_trains.append(spike_train)
     return spike_trains
@@ -109,19 +109,19 @@ def merge_spike_trains(spike_trains):
     # get the lengths of the spike trains
     lens = np.array([len(st) for st in spike_trains])
     merged_spikes = np.empty(np.sum(lens))
-    index = 0                            # the index for merged_spikes
-    indices = np.zeros_like(lens)        # indices of the spike trains
-    index_list = np.arange(len(indices)) # indices of indices of spike trains
-                                         # that have not yet reached the end
+    index = 0                             # the index for merged_spikes
+    indices = np.zeros_like(lens)         # indices of the spike trains
+    index_list = np.arange(len(indices))  # indices of indices of spike trains
+                                          # that have not yet reached the end
     # list of the possible events in the spike trains
     vals = [spike_trains[i][indices[i]] for i in index_list]
     while len(index_list) > 0:
-        i = np.argmin(vals)              # the next spike is the minimum
-        merged_spikes[index] = vals[i]   # put it to the merged spike train
+        i = np.argmin(vals)             # the next spike is the minimum
+        merged_spikes[index] = vals[i]  # put it to the merged spike train
         i = index_list[i]
-        index += 1                       # next index of merged spike train
-        indices[i] += 1                  # next index for the chosen spike train
-        if indices[i] >= lens[i]:        # remove spike train index if ended
+        index += 1                      # next index of merged spike train
+        indices[i] += 1                 # next index for the chosen spike train
+        if indices[i] >= lens[i]:       # remove spike train index if ended
             index_list = index_list[index_list != i]
-        vals = [spike_trains[i][indices[i]] for i in index_list]
+        vals = [spike_trains[n][indices[n]] for n in index_list]
     return merged_spikes

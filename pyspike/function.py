@@ -1,7 +1,7 @@
 """ function.py
 
-Module containing classes representing piece-wise constant and piece-wise linear
-functions.
+Module containing classes representing piece-wise constant and piece-wise
+linear functions.
 
 Copyright 2014, Mario Mulansky <mario.mulansky@gmx.net>
 
@@ -35,7 +35,7 @@ class PieceWiseConstFunc:
         Args:
         - other: another PieceWiseConstFunc object
         Returns:
-        True if the two functions are equal up to `decimal` decimals, 
+        True if the two functions are equal up to `decimal` decimals,
         False otherwise
         """
         eps = 10.0**(-decimal)
@@ -61,23 +61,23 @@ class PieceWiseConstFunc:
         """ Computes the average of the piece-wise const function:
         a = 1/T int f(x) dx where T is the length of the interval.
         Returns:
-        - the average a. 
+        - the average a.
         """
         return np.sum((self.x[1:]-self.x[:-1]) * self.y) / \
             (self.x[-1]-self.x[0])
 
     def abs_avrg(self):
-        """ Computes the average of the abs value of the piece-wise const 
+        """ Computes the average of the abs value of the piece-wise const
         function:
         a = 1/T int |f(x)| dx where T is the length of the interval.
         Returns:
-        - the average a. 
+        - the average a.
         """
         return np.sum((self.x[1:]-self.x[:-1]) * np.abs(self.y)) / \
             (self.x[-1]-self.x[0])
 
     def add(self, f):
-        """ Adds another PieceWiseConst function to this function. 
+        """ Adds another PieceWiseConst function to this function.
         Note: only functions defined on the same interval can be summed.
         Args:
         - f: PieceWiseConst function to be added.
@@ -87,12 +87,12 @@ class PieceWiseConstFunc:
         
         # python implementation
         # from python_backend import add_piece_wise_const_python
-        # self.x, self.y = add_piece_wise_const_python(self.x, self.y, f.x, f.y)
+        # self.x, self.y = add_piece_wise_const_python(self.x, self.y,
+        #                                              f.x, f.y)
 
         # cython version
         from cython_add import add_piece_wise_const_cython
         self.x, self.y = add_piece_wise_const_cython(self.x, self.y, f.x, f.y)
-
 
     def mul_scalar(self, fac):
         """ Multiplies the function with a scalar value
@@ -113,10 +113,10 @@ class PieceWiseLinFunc:
         Args:
         - x: array of length N+1 defining the edges of the intervals of the pwc
         function.
-        - y1: array of length N defining the function values at the left of the 
+        - y1: array of length N defining the function values at the left of the
         intervals.
-        - y2: array of length N defining the function values at the right of the 
-        intervals.
+        - y2: array of length N defining the function values at the right of
+        the intervals.
         """
         self.x = np.array(x)
         self.y1 = np.array(y1)
@@ -128,7 +128,7 @@ class PieceWiseLinFunc:
         Args:
         - other: another PieceWiseLinFunc object
         Returns:
-        True if the two functions are equal up to `decimal` decimals, 
+        True if the two functions are equal up to `decimal` decimals,
         False otherwise
         """
         eps = 10.0**(-decimal)
@@ -153,7 +153,7 @@ class PieceWiseLinFunc:
         """ Computes the average of the piece-wise linear function:
         a = 1/T int f(x) dx where T is the length of the interval.
         Returns:
-        - the average a. 
+        - the average a.
         """
         return np.sum((self.x[1:]-self.x[:-1]) * 0.5*(self.y1+self.y2)) / \
             (self.x[-1]-self.x[0])
@@ -162,13 +162,13 @@ class PieceWiseLinFunc:
         """ Computes the absolute average of the piece-wise linear function:
         a = 1/T int |f(x)| dx where T is the length of the interval.
         Returns:
-        - the average a. 
+        - the average a.
         """
         return np.sum((self.x[1:]-self.x[:-1]) * 0.5 *
                       (np.abs(self.y1)+np.abs(self.y2)))/(self.x[-1]-self.x[0])
 
     def add(self, f):
-        """ Adds another PieceWiseLin function to this function. 
+        """ Adds another PieceWiseLin function to this function.
         Note: only functions defined on the same interval can be summed.
         Args:
         - f: PieceWiseLin function to be added.
@@ -178,14 +178,13 @@ class PieceWiseLinFunc:
 
         # python implementation
         # from python_backend import add_piece_wise_lin_python
-        # self.x, self.y1, self.y2 = add_piece_wise_lin_python( 
+        # self.x, self.y1, self.y2 = add_piece_wise_lin_python(
         #     self.x, self.y1, self.y2, f.x, f.y1, f.y2)
 
         # cython version
         from cython_add import add_piece_wise_lin_cython
         self.x, self.y1, self.y2 = add_piece_wise_lin_cython(
             self.x, self.y1, self.y2, f.x, f.y1, f.y2)
-
 
     def mul_scalar(self, fac):
         """ Multiplies the function with a scalar value

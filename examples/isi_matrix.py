@@ -11,7 +11,6 @@ Distributed under the MIT License (MIT)
 
 from __future__ import print_function
 
-import numpy as np
 import matplotlib.pyplot as plt
 
 import pyspike as spk
@@ -25,4 +24,3 @@ m = spk.isi_distance_matrix(spike_trains)
 
 plt.imshow(m, interpolation='none')
 plt.show()
-

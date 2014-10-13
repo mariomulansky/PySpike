@@ -15,11 +15,11 @@ import matplotlib.pyplot as plt
 
 import pyspike as spk
 
-spike_trains = spk.load_spike_trains_from_txt("PySpike_testdata.txt", 
-                                              time_interval=(0,4000))
+spike_trains = spk.load_spike_trains_from_txt("PySpike_testdata.txt",
+                                              time_interval=(0, 4000))
 
 # plot the spike time
-for (i,spikes) in enumerate(spike_trains):
+for (i, spikes) in enumerate(spike_trains):
     plt.plot(spikes, i*np.ones_like(spikes), 'o')
 
 f = spk.isi_distance(spike_trains[0], spike_trains[1])
