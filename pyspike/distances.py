@@ -4,7 +4,7 @@ Module containing several functions to compute spike distances
 
 Copyright 2014, Mario Mulansky <mario.mulansky@gmx.net>
 
-Distributed under the MIT License (MIT)
+Distributed under the BSD License
 """
 
 import numpy as np

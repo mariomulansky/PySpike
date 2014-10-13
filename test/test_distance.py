@@ -4,7 +4,7 @@ Tests the isi- and spike-distance computation
 
 Copyright 2014, Mario Mulansky <mario.mulansky@gmx.net>
 
-Distributed under the MIT License (MIT)
+Distributed under the BSD License
 
 """
 
