@@ -1,11 +1,15 @@
 # PySpike
 
 PySpike is a Python library for the numerical analysis of spike train similarity. 
-Its core functionality is the implementation of the bivariate [ISI and SPIKE distance](http://www.scholarpedia.org/article/Measures_of_spike_train_synchrony). 
+Its core functionality is the implementation of the bivariate [ISI](http://www.scholarpedia.org/article/Measures_of_spike_train_synchrony#ISI-distance) [1] and [SPIKE](http://www.scholarpedia.org/article/SPIKE-distance) [2] distance. 
 Additionally, it provides functions to compute multi-variate SPIKE and ISI distances, as well as averaging and general spike train processing.
 All computation intensive parts are implemented in C via [cython](http://www.cython.org) to reach a competitive performance (factor 100-200 over plain Python).
 
 All source codes are published under the [BSD License](http://opensource.org/licenses/BSD-2-Clause).
+
+>[1] Kreuz T, Haas JS, Morelli A, Abarbanel HDI, Politi A, *Measuring spike train synchrony.* J Neurosci Methods 165, 151 (2007)
+
+>[2] Kreuz T, Chicharro D, Houghton C, Andrzejak RG, Mormann F, *Monitoring spike train synchrony.* J Neurophysiol 109, 1457 (2013)
 
 ## Requirements and Installation
 
