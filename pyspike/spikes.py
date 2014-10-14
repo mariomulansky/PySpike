@@ -20,7 +20,8 @@ def add_auxiliary_spikes(spike_train, time_interval):
     - time_interval: A pair (T_start, T_end) of values representing the start
     and end time of the spike train measurement or a single value representing
     the end time, the T_start is then assuemd as 0. Auxiliary spikes will be
-    added to the spike train at the beginning and end of this interval.
+    added to the spike train at the beginning and end of this interval, if they
+    are not yet present.
     Returns:
     - spike train with additional spikes at T_start and T_end.
 

@@ -64,6 +64,12 @@ If the time interval is provided (`time_interval is not None`), auxiliary spikes
 Furthermore, the spike trains are ordered via `np.sort` (disable this feature by providing `sort=False` as a parameter to the load function).
 As result, `load_spike_trains_from_txt` returns a *list of arrays* containing the spike trains in the text file.
 
+If you load spike trains yourself, i.e. from data files with different structure, you can use the helper function `add_auxiliary_spikes` to add the auxiliary spikes at the beginning and end of the observation interval.
+Both the ISI and the SPIKE distance computation require the presence of auxiliary spikes, so make sure you have those in your spike trains:
+
+    spike_train = spk.add_auxiliary_spikes(spike_train, (T_start, T_end))
+    # you provide only a single value, it is interpreted as T_end, while T_start=0
+    spike_train = spk.add_auxiliary_spikes(spike_train, T_end)
 
 ## Computing bi-variate distances
 
@@ -74,9 +80,30 @@ As result, `load_spike_trains_from_txt` returns a *list of arrays* containing th
 >For performance reasons, the PySpike distance functions do not check if the spike trains provided are indeed ordered.
 >Make sure that all your spike trains are ordered.
 >If in doubt, use `spike_train = np.sort(spike_train)` to obtain a correctly ordered spike train.
+>
+>Furthermore, the spike trains should have auxiliary spikes at the beginning and end of the observation interval.
+>You can ensure this by providing the `time_interval` in the `load_spike_trains_from_txt` function, or calling `add_auxiliary_spikes` for your spike trains.
+>The spike trains must have *the same* observation interval!
 
 ----------------------
 
+### ISI-distance
+
+The following code loads some exemplary spike trains, computes the dissimilarity profile ISI-distance of the first two spike trains, and plots it with matplotlib:
+
+    import matplotlib.pyplot as plt
+    import pyspike as spk
+    
+    spike_trains = spk.load_spike_trains_from_txt("PySpike_testdata.txt",
+                                                  time_interval=(0, 4000))
+    isi_profile = spk.isi_distance(spike_trains[0], spike_trains[1])
+    x, y = isi_profile.get_plottable_data()
+    plt.plot(x, np.abs(y), '--k')
+    print("ISI distance: %.8f" % isi_profil.abs_avrg())
+    plt.show()
+
+The ISI-profile is a piece-wise constant function, there the function `isi_distance` returns an instance of the `PieceWiseConstFunc` class.
+As above, this class allows you to obtain arrays that can be used to plot the function with `plt.plt`, but also to compute the absolute average, which amounts to the final scalar ISI-distance.
 
 ## Computing multi-variate distances
 
