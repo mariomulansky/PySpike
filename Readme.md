@@ -89,7 +89,7 @@ Both the ISI and the SPIKE distance computation require the presence of auxiliar
 
 ### ISI-distance
 
-The following code loads some exemplary spike trains, computes the dissimilarity profile ISI-distance of the first two spike trains, and plots it with matplotlib:
+The following code loads some exemplary spike trains, computes the dissimilarity profile of the ISI-distance of the first two spike trains, and plots it with matplotlib:
 
     import matplotlib.pyplot as plt
     import pyspike as spk
