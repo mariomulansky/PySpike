@@ -98,12 +98,20 @@ The following code loads some exemplary spike trains, computes the dissimilarity
                                                   time_interval=(0, 4000))
     isi_profile = spk.isi_distance(spike_trains[0], spike_trains[1])
     x, y = isi_profile.get_plottable_data()
-    plt.plot(x, np.abs(y), '--k')
-    print("ISI distance: %.8f" % isi_profil.abs_avrg())
+    plt.plot(x, y, '--k')
+    print("ISI distance: %.8f" % isi_profil.avrg())
     plt.show()
 
 The ISI-profile is a piece-wise constant function, there the function `isi_distance` returns an instance of the `PieceWiseConstFunc` class.
 As above, this class allows you to obtain arrays that can be used to plot the function with `plt.plt`, but also to compute the absolute average, which amounts to the final scalar ISI-distance.
+
+Furthermore, `PieceWiseConstFunc` provides an `add` function that can be used to add piece-wise constant function, and a `mul_scalar` function that rescales the function by a scalar.
+This can be used to obtain an average profile:
+
+    isi_profile1.add(isi_profile2)
+    isi_profile1.mul_scalar(0.5)
+    x, y = isi_profile1.get_plottable_data()
+    plt.plot(x, y, label="Average ISI profile")
 
 ## Computing multi-variate distances
 
