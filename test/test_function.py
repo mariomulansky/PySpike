@@ -28,8 +28,6 @@ def test_pwc():
     assert_array_almost_equal(yp, yp_expected, decimal=16)
 
     assert_almost_equal(f.avrg(), (1.0-0.5+0.5*1.5+1.5*0.75)/4.0, decimal=16)
-    assert_almost_equal(f.abs_avrg(), (1.0+0.5+0.5*1.5+1.5*0.75)/4.0,
-                        decimal=16)
 
 
 def test_pwc_add():

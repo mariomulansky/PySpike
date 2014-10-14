@@ -18,7 +18,7 @@ import numpy as np
 ##############################################################
 class PieceWiseConstFunc:
     """ A class representing a piece-wise constant function. """
-    
+
     def __init__(self, x, y):
         """ Constructs the piece-wise const function.
         Args:
@@ -66,16 +66,6 @@ class PieceWiseConstFunc:
         return np.sum((self.x[1:]-self.x[:-1]) * self.y) / \
             (self.x[-1]-self.x[0])
 
-    def abs_avrg(self):
-        """ Computes the average of the abs value of the piece-wise const
-        function:
-        a = 1/T int |f(x)| dx where T is the length of the interval.
-        Returns:
-        - the average a.
-        """
-        return np.sum((self.x[1:]-self.x[:-1]) * np.abs(self.y)) / \
-            (self.x[-1]-self.x[0])
-
     def add(self, f):
         """ Adds another PieceWiseConst function to this function.
         Note: only functions defined on the same interval can be summed.
@@ -84,7 +74,7 @@ class PieceWiseConstFunc:
         """
         assert self.x[0] == f.x[0], "The functions have different intervals"
         assert self.x[-1] == f.x[-1], "The functions have different intervals"
-        
+
         # python implementation
         # from python_backend import add_piece_wise_const_python
         # self.x, self.y = add_piece_wise_const_python(self.x, self.y,
@@ -107,7 +97,7 @@ class PieceWiseConstFunc:
 ##############################################################
 class PieceWiseLinFunc:
     """ A class representing a piece-wise linear function. """
-    
+
     def __init__(self, x, y1, y2):
         """ Constructs the piece-wise linear function.
         Args:

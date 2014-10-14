@@ -213,7 +213,7 @@ def isi_distance_matrix(spike_trains, indices=None):
     
     distance_matrix = np.zeros((len(indices), len(indices)))
     for i, j in pairs:
-        d = isi_distance(spike_trains[i], spike_trains[j]).abs_avrg()
+        d = isi_distance(spike_trains[i], spike_trains[j]).avrg()
         distance_matrix[i, j] = d
         distance_matrix[j, i] = d
     return distance_matrix

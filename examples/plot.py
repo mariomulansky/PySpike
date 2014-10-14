@@ -29,8 +29,6 @@ plt.figure()
 plt.plot(x, np.abs(y), '--k')
 
 print("Average: %.8f" % f.avrg())
-print("Absolute average: %.8f" % f.abs_avrg())
-
 
 f = spk.spike_distance(spike_trains[0], spike_trains[1])
 x, y = f.get_plottable_data()

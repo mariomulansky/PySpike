@@ -23,8 +23,8 @@ def test_isi():
 
     # pen&paper calculation of the isi distance
     expected_times = [0.0, 0.2, 0.3, 0.4, 0.45, 0.6, 0.7, 0.8, 0.9, 0.95, 1.0]
-    expected_isi = [-0.1/0.3, -0.1/0.3, 0.05/0.2, 0.05/0.2, -0.15/0.35,
-                    -0.25/0.35, -0.05/0.35, 0.2/0.3, 0.25/0.3, 0.25/0.3]
+    expected_isi = [0.1/0.3, 0.1/0.3, 0.05/0.2, 0.05/0.2, 0.15/0.35,
+                    0.25/0.35, 0.05/0.35, 0.2/0.3, 0.25/0.3, 0.25/0.3]
     
     t1 = spk.add_auxiliary_spikes(t1, 1.0)
     t2 = spk.add_auxiliary_spikes(t2, 1.0)
@@ -40,7 +40,7 @@ def test_isi():
     t2 = np.array([0.1, 0.4, 0.5, 0.6])
 
     expected_times = [0.0, 0.1, 0.2, 0.4, 0.5, 0.6, 1.0]
-    expected_isi = [0.1/0.2, -0.1/0.3, -0.1/0.3, 0.1/0.2, 0.1/0.2, -0.0/0.5]
+    expected_isi = [0.1/0.2, 0.1/0.3, 0.1/0.3, 0.1/0.2, 0.1/0.2, 0.0/0.5]
 
     t1 = spk.add_auxiliary_spikes(t1, 1.0)
     t2 = spk.add_auxiliary_spikes(t2, 1.0)

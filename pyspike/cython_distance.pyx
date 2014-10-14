@@ -60,7 +60,7 @@ def isi_distance_cython(double[:] s1,
     isi_values = np.empty(N1+N2-1)
 
     with nogil: # release the interpreter to allow multithreading
-        isi_values[0] = (nu1-nu2)/fmax(nu1,nu2)
+        isi_values[0] = fabs(nu1-nu2)/fmax(nu1, nu2)
         index1 = 0
         index2 = 0
         index = 1
@@ -88,7 +88,7 @@ def isi_distance_cython(double[:] s1,
                 nu1 = s1[index1+1]-s1[index1]
                 nu2 = s2[index2+1]-s2[index2]            
             # compute the corresponding isi-distance
-            isi_values[index] = (nu1 - nu2) / fmax(nu1, nu2)
+            isi_values[index] = fabs(nu1 - nu2) / fmax(nu1, nu2)
             index += 1
         # the last event is the interval end
         spike_events[index] = s1[N1]
