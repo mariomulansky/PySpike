@@ -105,13 +105,18 @@ The following code loads some exemplary spike trains, computes the dissimilarity
 The ISI-profile is a piece-wise constant function, there the function `isi_distance` returns an instance of the `PieceWiseConstFunc` class.
 As above, this class allows you to obtain arrays that can be used to plot the function with `plt.plt`, but also to compute the absolute average, which amounts to the final scalar ISI-distance.
 
-Furthermore, `PieceWiseConstFunc` provides an `add` function that can be used to add piece-wise constant function, and a `mul_scalar` function that rescales the function by a scalar.
-This can be used to obtain an average profile:
+Furthermore, PySpike provides the `average_profile` function that can be used to compute the average profile of a list of given `PieceWiseConstFunc` instances.
 
-    isi_profile1.add(isi_profile2)
-    isi_profile1.mul_scalar(0.5)
-    x, y = isi_profile1.get_plottable_data()
-    plt.plot(x, y, label="Average ISI profile")
+    avrg_profile = spk.average_profile([spike_train1, spike_train2])
+    x, y = avrg_profile.get_plottable_data()
+    plt.plot(x, y, label="Average profile")
+
+Note the difference between the `average_profile` function, which returns a `PieceWiseConstFunc` (or `PieceWiseLinFunc`, see below), and the `avrg` member function above, that computes the integral over the time profile.
+So to obtain overall average ISI-distance of a list of ISI profiles you can first compute the average profile using `average_profile` and the use 
+
+    avrg_isi = avrg_profile.avrg()
+
+to obtain the final, scalar average ISI distance of the whole set (see also "Computing multi-variate distance" below).
 
 ## Computing multi-variate distances
 
