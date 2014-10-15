@@ -17,10 +17,11 @@ from pyspike import PieceWiseConstFunc, PieceWiseLinFunc
 # isi_distance
 ############################################################
 def isi_distance(spikes1, spikes2):
-    """ Computes the instantaneous isi-distance S_isi (t) of the two given
-    spike trains. The spike trains are expected to have auxiliary spikes at the
-    beginning and end of the interval. Use the function add_auxiliary_spikes to
-    add those spikes to the spike train.
+    """ Computes the isi-distance profile S_isi(t) of the two given spike
+    trains. Retruns the profile as a PieceWiseConstFunc object. The S_isi
+    values are defined in the interval [0,1).  The spike trains are expected
+    to have auxiliary spikes at the beginning and end of the interval. Use the
+    function add_auxiliary_spikes to add those spikes to the spike train.
     Args:
     - spikes1, spikes2: ordered arrays of spike times with auxiliary spikes.
     Returns:
@@ -43,10 +44,11 @@ def isi_distance(spikes1, spikes2):
 # spike_distance
 ############################################################
 def spike_distance(spikes1, spikes2):
-    """ Computes the instantaneous spike-distance S_spike (t) of the two given
-    spike trains. The spike trains are expected to have auxiliary spikes at the
-    beginning and end of the interval. Use the function add_auxiliary_spikes to
-    add those spikes to the spike train.
+    """ Computes the spike-distance profile S_spike(t) of the two given spike
+    trains. Returns the profile as a PieceWiseLinFunc object. The S_spike
+    values are defined in the interval [0,1). The spike trains are expected to
+    have auxiliary spikes at the beginning and end of the interval. Use the
+    function add_auxiliary_spikes to add those spikes to the spike train.
     Args:
     - spikes1, spikes2: ordered arrays of spike times with auxiliary spikes.
     Returns:
