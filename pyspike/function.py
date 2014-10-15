@@ -26,8 +26,16 @@ class PieceWiseConstFunc:
         function.
         - y: array of length N defining the function values at the intervals.
         """
+        # convert parameters to arrays, also ensures copying
         self.x = np.array(x)
         self.y = np.array(y)
+
+    def copy(self):
+        """ Returns a copy of itself
+        Returns:
+        - PieceWiseConstFunc copy
+        """
+        return PieceWiseConstFunc(self.x, self.y)
 
     def almost_equal(self, other, decimal=14):
         """ Checks if the function is equal to another function up to `decimal`
@@ -108,9 +116,17 @@ class PieceWiseLinFunc:
         - y2: array of length N defining the function values at the right of
         the intervals.
         """
+        # convert to array, which also ensures copying
         self.x = np.array(x)
         self.y1 = np.array(y1)
         self.y2 = np.array(y2)
+
+    def copy(self):
+        """ Returns a copy of itself
+        Returns:
+        - PieceWiseLinFunc copy
+        """
+        return PieceWiseLinFunc(self.x, self.y1, self.y2)
 
     def almost_equal(self, other, decimal=14):
         """ Checks if the function is equal to another function up to `decimal`
@@ -183,3 +199,22 @@ class PieceWiseLinFunc:
         """
         self.y1 *= fac
         self.y2 *= fac
+
+
+def average_profile(profiles):
+    """ Computes the average profile from the given ISI- or SPIKE-profiles.
+    Args:
+    - profiles: list of PieceWiseConstFunc or PieceWiseLinFunc representing
+    ISI- or SPIKE-profiles to be averaged
+    Returns:
+    - avrg_profile: PieceWiseConstFunc or PieceWiseLinFunc containing the
+    average profile.
+    """
+    assert len(profiles) > 1
+
+    avrg_profile = profiles[0].copy()
+    for i in xrange(1, len(profiles)):
+        avrg_profile.add(profiles[i])
+    avrg_profile.mul_scalar(1.0/len(profiles))  # normalize
+
+    return avrg_profile

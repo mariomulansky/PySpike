@@ -68,6 +68,23 @@ def test_pwc_mul():
     assert_array_almost_equal(f.y, 1.5/5.0*np.array(y), decimal=16)
 
 
+def test_pwc_avrg():
+    # some random data
+    x = [0.0, 1.0, 2.0, 2.5, 4.0]
+    y = [1.0, -0.5, 1.5, 0.75]
+    f1 = spk.PieceWiseConstFunc(x, y)
+
+    x = [0.0, 0.75, 2.0, 2.5, 2.7, 4.0]
+    y = [0.5, 1.0, -0.25, 0.0, 1.5]
+    f2 = spk.PieceWiseConstFunc(x, y)
+
+    f_avrg = spk.average_profile([f1, f2])
+    x_expected = [0.0, 0.75, 1.0, 2.0, 2.5, 2.7, 4.0]
+    y_expected = [0.75, 1.0, 0.25, 0.625, 0.375, 1.125]
+    assert_array_almost_equal(f_avrg.x, x_expected, decimal=16)
+    assert_array_almost_equal(f_avrg.y, y_expected, decimal=16)
+
+
 def test_pwl():
     x = [0.0, 1.0, 2.0, 2.5, 4.0]
     y1 = [1.0, -0.5, 1.5, 0.75]
@@ -133,6 +150,31 @@ def test_pwl_mul():
     f.mul_scalar(1.0/5.0)
     assert_array_almost_equal(f.y1, 1.5/5.0*np.array(y1), decimal=16)
     assert_array_almost_equal(f.y2, 1.5/5.0*np.array(y2), decimal=16)
+
+
+def test_pwl_avrg():
+    x = [0.0, 1.0, 2.0, 2.5, 4.0]
+    y1 = [1.0, -0.5, 1.5, 0.75]
+    y2 = [1.5, -0.4, 1.5, 0.25]
+    f1 = spk.PieceWiseLinFunc(x, y1, y2)
+
+    x = [0.0, 0.75, 2.0, 2.5, 2.7, 4.0]
+    y1 = [0.5, 1.0, -0.25, 0.0, 1.5]
+    y2 = [0.8, 0.2, -1.0, 0.0, 2.0]
+    f2 = spk.PieceWiseLinFunc(x, y1, y2)
+
+    x_expected = [0.0, 0.75, 1.0, 2.0, 2.5, 2.7, 4.0]
+    y1_expected = np.array([1.5, 1.0+1.0+0.5*0.75, -0.5+1.0-0.8*0.25/1.25,
+                            1.5-0.25, 0.75, 1.5+0.75-0.5*0.2/1.5]) / 2
+    y2_expected = np.array([0.8+1.0+0.5*0.75, 1.5+1.0-0.8*0.25/1.25, -0.4+0.2,
+                            1.5-1.0, 0.75-0.5*0.2/1.5, 2.25]) / 2
+
+    f_avrg = spk.average_profile([f1, f2])
+
+    assert_array_almost_equal(f_avrg.x, x_expected, decimal=16)
+    assert_array_almost_equal(f_avrg.y1, y1_expected, decimal=16)
+    assert_array_almost_equal(f_avrg.y2, y2_expected, decimal=16)
+
 
 if __name__ == "__main__":
     test_pwc()
