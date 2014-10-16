@@ -15,15 +15,16 @@ import numpy as np
 ############################################################
 def add_auxiliary_spikes(spike_train, time_interval):
     """ Adds spikes at the beginning and end of the given time interval.
-    Args:
-    - spike_train: ordered array of spike times
-    - time_interval: A pair (T_start, T_end) of values representing the start
-    and end time of the spike train measurement or a single value representing
-    the end time, the T_start is then assuemd as 0. Auxiliary spikes will be
-    added to the spike train at the beginning and end of this interval, if they
-    are not yet present.
-    Returns:
-    - spike train with additional spikes at T_start and T_end.
+
+    :param spike_train: ordered array of spike times
+    :param time_interval: A pair (T_start, T_end) of values representing the
+                          start and end time of the spike train measurement or
+                          a single value representing the end time, the T_start
+                          is then assuemd as 0. Auxiliary spikes will be added
+                          to the spike train at the beginning and end of this
+                          interval, if they are not yet present.
+    :type time_interval: pair of doubles or double
+    :returns: spike train with additional spikes at T_start and T_end.
 
     """
     try:
@@ -49,12 +50,11 @@ def add_auxiliary_spikes(spike_train, time_interval):
 ############################################################
 def spike_train_from_string(s, sep=' ', sort=True):
     """ Converts a string of times into an array of spike times.
-    Args:
-    - s: the string with (ordered) spike times
-    - sep: The separator between the time numbers, default=' '.
-    - sort: If True, the spike times are order via `np.sort`, default=True.
-    Returns:
-    - array of spike times
+
+    :param s: the string with (ordered) spike times
+    :param sep: The separator between the time numbers, default=' '.
+    :param sort: If True, the spike times are order via `np.sort`, default=True
+    :returns: array of spike times
     """
     if sort:
         return np.sort(np.fromstring(s, sep=sep))
@@ -75,15 +75,18 @@ def load_spike_trains_from_txt(file_name, time_interval=None,
     end of each spike train. However, if `time_interval == None`, no auxiliary
     spikes are added, but note that the Spike and ISI distance both require
     auxiliary spikes.
-    Args:
-    - file_name: The name of the text file.
-    - time_interval: A pair (T_start, T_end) of values representing the start
-    and end time of the spike train measurement or a single value representing
-    the end time, the T_start is then assuemd as 0. Auxiliary spikes will be
-    added to the spike train at the beginning and end of this interval.
-    - separator: The character used to seprate the values in the text file.
-    - comment: Lines starting with this character are ignored.
-    - sort: If true, the spike times are order via `np.sort`, default=True.
+
+    :param file_name: The name of the text file.
+    :param time_interval: A pair (T_start, T_end) of values representing the
+                          start and end time of the spike train measurement
+                          or a single value representing the end time, the
+                          T_start is then assuemd as 0. Auxiliary spikes will
+                          be added to the spike train at the beginning and end
+                          of this interval.
+    :param separator: The character used to seprate the values in the text file
+    :param comment: Lines starting with this character are ignored.
+    :param sort: If true, the spike times are order via `np.sort`, default=True
+    :returns: list of spike trains
     """
     spike_trains = []
     spike_file = open(file_name, 'r')
@@ -102,10 +105,9 @@ def load_spike_trains_from_txt(file_name, time_interval=None,
 ############################################################
 def merge_spike_trains(spike_trains):
     """ Merges a number of spike trains into a single spike train.
-    Args:
-    - spike_trains: list of arrays of spike times
-    Returns:
-    - array with the merged spike times
+
+    :param spike_trains: list of arrays of spike times
+    :returns: spike train with the merged spike times
     """
     # get the lengths of the spike trains
     lens = np.array([len(st) for st in spike_trains])

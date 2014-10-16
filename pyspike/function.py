@@ -16,15 +16,16 @@ import numpy as np
 ##############################################################
 # PieceWiseConstFunc
 ##############################################################
-class PieceWiseConstFunc:
+class PieceWiseConstFunc(object):
     """ A class representing a piece-wise constant function. """
 
     def __init__(self, x, y):
         """ Constructs the piece-wise const function.
-        Args:
-        - x: array of length N+1 defining the edges of the intervals of the pwc
-        function.
-        - y: array of length N defining the function values at the intervals.
+
+        :param x: array of length N+1 defining the edges of the intervals of
+                  the pwc function.
+        :param y: array of length N defining the function values at the
+                  intervals.
         """
         # convert parameters to arrays, also ensures copying
         self.x = np.array(x)
@@ -32,19 +33,19 @@ class PieceWiseConstFunc:
 
     def copy(self):
         """ Returns a copy of itself
-        Returns:
-        - PieceWiseConstFunc copy
+
+        :rtype: :class:`PieceWiseConstFunc`
         """
         return PieceWiseConstFunc(self.x, self.y)
 
     def almost_equal(self, other, decimal=14):
         """ Checks if the function is equal to another function up to `decimal`
         precision.
-        Args:
-        - other: another PieceWiseConstFunc object
-        Returns:
-        True if the two functions are equal up to `decimal` decimals,
-        False otherwise
+
+        :param: other: another :class:`PieceWiseConstFunc`
+        :returns: True if the two functions are equal up to `decimal` decimals,
+                  False otherwise
+        :rtype: bool
         """
         eps = 10.0**(-decimal)
         return np.allclose(self.x, other.x, atol=eps, rtol=0.0) and \
@@ -53,6 +54,14 @@ class PieceWiseConstFunc:
     def get_plottable_data(self):
         """ Returns two arrays containing x- and y-coordinates for immeditate
         plotting of the piece-wise function.
+
+        :returns: (x_plot, y_plot) containing plottable data
+        :rtype: pair of np.array
+
+        Example::
+
+            x, y = f.get_plottable_data()
+            plt.plot(x, y, '-o', label="Piece-wise const function")
         """
 
         x_plot = np.empty(2*len(self.x)-2)
@@ -67,9 +76,10 @@ class PieceWiseConstFunc:
 
     def avrg(self):
         """ Computes the average of the piece-wise const function:
-        a = 1/T int f(x) dx where T is the length of the interval.
-        Returns:
-        - the average a.
+        :math:`a = 1/T int_0^T f(x) dx` where T is the length of the interval.
+
+        :returns: the average a.
+        :rtype: double
         """
         return np.sum((self.x[1:]-self.x[:-1]) * self.y) / \
             (self.x[-1]-self.x[0])
@@ -77,8 +87,9 @@ class PieceWiseConstFunc:
     def add(self, f):
         """ Adds another PieceWiseConst function to this function.
         Note: only functions defined on the same interval can be summed.
-        Args:
-        - f: PieceWiseConst function to be added.
+
+        :param f: :class:`PieceWiseConstFunc` function to be added.
+        :rtype: None
         """
         assert self.x[0] == f.x[0], "The functions have different intervals"
         assert self.x[-1] == f.x[-1], "The functions have different intervals"
@@ -99,8 +110,10 @@ that PySpike is installed by running\n 'python setup.py build_ext --inplace'! \
 
     def mul_scalar(self, fac):
         """ Multiplies the function with a scalar value
-        Args:
-        - fac: Value to multiply
+
+        :param fac: Value to multiply
+        :type fac: double
+        :rtype: None
         """
         self.y *= fac
 
@@ -113,13 +126,13 @@ class PieceWiseLinFunc:
 
     def __init__(self, x, y1, y2):
         """ Constructs the piece-wise linear function.
-        Args:
-        - x: array of length N+1 defining the edges of the intervals of the pwc
-        function.
-        - y1: array of length N defining the function values at the left of the
-        intervals.
-        - y2: array of length N defining the function values at the right of
-        the intervals.
+
+        :param x: array of length N+1 defining the edges of the intervals of
+                  the pwc function.
+        :param y1: array of length N defining the function values at the left
+                  of the intervals.
+        :param y2: array of length N defining the function values at the right
+                  of the intervals.
         """
         # convert to array, which also ensures copying
         self.x = np.array(x)
@@ -128,19 +141,19 @@ class PieceWiseLinFunc:
 
     def copy(self):
         """ Returns a copy of itself
-        Returns:
-        - PieceWiseLinFunc copy
+
+        :rtype: :class`PieceWiseLinFunc`
         """
         return PieceWiseLinFunc(self.x, self.y1, self.y2)
 
     def almost_equal(self, other, decimal=14):
         """ Checks if the function is equal to another function up to `decimal`
         precision.
-        Args:
-        - other: another PieceWiseLinFunc object
-        Returns:
-        True if the two functions are equal up to `decimal` decimals,
-        False otherwise
+
+        :param: other: another :class:`PieceWiseLinFunc`
+        :returns: True if the two functions are equal up to `decimal` decimals,
+                  False otherwise
+        :rtype: bool
         """
         eps = 10.0**(-decimal)
         return np.allclose(self.x, other.x, atol=eps, rtol=0.0) and \
@@ -150,6 +163,14 @@ class PieceWiseLinFunc:
     def get_plottable_data(self):
         """ Returns two arrays containing x- and y-coordinates for immeditate
         plotting of the piece-wise function.
+
+        :returns: (x_plot, y_plot) containing plottable data
+        :rtype: pair of np.array
+
+        Example::
+
+            x, y = f.get_plottable_data()
+            plt.plot(x, y, '-o', label="Piece-wise const function")
         """
         x_plot = np.empty(2*len(self.x)-2)
         x_plot[0] = self.x[0]
@@ -162,27 +183,20 @@ class PieceWiseLinFunc:
 
     def avrg(self):
         """ Computes the average of the piece-wise linear function:
-        a = 1/T int f(x) dx where T is the length of the interval.
-        Returns:
-        - the average a.
+        :math:`a = 1/T int_0^T f(x) dx` where T is the length of the interval.
+
+        :returns: the average a.
+        :rtype: double
         """
         return np.sum((self.x[1:]-self.x[:-1]) * 0.5*(self.y1+self.y2)) / \
             (self.x[-1]-self.x[0])
 
-    def abs_avrg(self):
-        """ Computes the absolute average of the piece-wise linear function:
-        a = 1/T int |f(x)| dx where T is the length of the interval.
-        Returns:
-        - the average a.
-        """
-        return np.sum((self.x[1:]-self.x[:-1]) * 0.5 *
-                      (np.abs(self.y1)+np.abs(self.y2)))/(self.x[-1]-self.x[0])
-
     def add(self, f):
         """ Adds another PieceWiseLin function to this function.
         Note: only functions defined on the same interval can be summed.
-        Args:
-        - f: PieceWiseLin function to be added.
+
+        :param f: :class:`PieceWiseLinFunc` function to be added.
+        :rtype: None
         """
         assert self.x[0] == f.x[0], "The functions have different intervals"
         assert self.x[-1] == f.x[-1], "The functions have different intervals"
@@ -209,8 +223,10 @@ that PySpike is installed by running\n 'python setup.py build_ext --inplace'! \
 
     def mul_scalar(self, fac):
         """ Multiplies the function with a scalar value
-        Args:
-        - fac: Value to multiply
+
+        :param fac: Value to multiply
+        :type fac: double
+        :rtype: None
         """
         self.y1 *= fac
         self.y2 *= fac
@@ -218,12 +234,12 @@ that PySpike is installed by running\n 'python setup.py build_ext --inplace'! \
 
 def average_profile(profiles):
     """ Computes the average profile from the given ISI- or SPIKE-profiles.
-    Args:
-    - profiles: list of PieceWiseConstFunc or PieceWiseLinFunc representing
-    ISI- or SPIKE-profiles to be averaged
-    Returns:
-    - avrg_profile: PieceWiseConstFunc or PieceWiseLinFunc containing the
-    average profile.
+
+    :param profiles: list of :class:`PieceWiseConstFunc` or
+                     :class:`PieceWiseLinFunc` representing ISI- or
+                     SPIKE-profiles to be averaged.
+    :returns: the averages profile :math:`<S_{isi}>` or :math:`<S_{spike}>`.
+    :rtype: :class:`PieceWiseConstFunc` or :class:`PieceWiseLinFunc`
     """
     assert len(profiles) > 1
 
