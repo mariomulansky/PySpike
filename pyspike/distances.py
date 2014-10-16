@@ -14,9 +14,9 @@ from pyspike import PieceWiseConstFunc, PieceWiseLinFunc
 
 
 ############################################################
-# isi_distance
+# isi_profile
 ############################################################
-def isi_distance(spikes1, spikes2):
+def isi_profile(spikes1, spikes2):
     """ Computes the isi-distance profile S_isi(t) of the two given spike
     trains. Retruns the profile as a PieceWiseConstFunc object. The S_isi
     values are defined positive S_isi(t)>=0.  The spike trains are expected
@@ -41,9 +41,24 @@ def isi_distance(spikes1, spikes2):
 
 
 ############################################################
-# spike_distance
+# isi_distance
 ############################################################
-def spike_distance(spikes1, spikes2):
+def isi_distance(spikes1, spikes2):
+    """ Computes the isi-distance I of the given spike trains. The
+    isi-distance is the integral over the isi distance profile S_isi(t):
+     I = \int_^T S_isi(t) dt.
+    Args:
+    - spikes1, spikes2: ordered arrays of spike times with auxiliary spikes.
+    Returns:
+    - double value: The isi-distance I.
+    """
+    return isi_profile(spikes1, spikes2).avrg()
+
+
+############################################################
+# spike_profile
+############################################################
+def spike_profile(spikes1, spikes2):
     """ Computes the spike-distance profile S_spike(t) of the two given spike
     trains. Returns the profile as a PieceWiseLinFunc object. The S_spike
     values are defined positive S_spike(t)>=0. The spike trains are expected to
@@ -69,11 +84,26 @@ def spike_distance(spikes1, spikes2):
 
 
 ############################################################
-# multi_distance
+# spike_distance
 ############################################################
-def multi_distance(spike_trains, pair_distance_func, indices=None):
+def spike_distance(spikes1, spikes2):
+    """ Computes the spike-distance S of the given spike trains. The
+    spike-distance is the integral over the isi distance profile S_spike(t):
+     S = \int_^T S_spike(t) dt.
+    Args:
+    - spikes1, spikes2: ordered arrays of spike times with auxiliary spikes.
+    Returns:
+    - double value: The spike-distance S.
+    """
+    return spike_profile(spikes1, spikes2).avrg()
+
+
+############################################################
+# multi_profile
+############################################################
+def multi_profile(spike_trains, pair_distance_func, indices=None):
     """ Internal implementation detail, don't call this function directly,
-    use isi_distance_multi or spike_distance_multi instead.
+    use isi_profile_multi or spike_profile_multi instead.
 
     Computes the multi-variate distance for a set of spike-trains using the
     pair_dist_func to compute pair-wise distances. That is it computes the
@@ -159,41 +189,80 @@ def multi_distance_par(spike_trains, pair_distance_func, indices=None):
 
 
 ############################################################
-# isi_distance_multi
+# isi_profile_multi
 ############################################################
-def isi_distance_multi(spike_trains, indices=None):
-    """ computes the multi-variate isi-distance for a set of spike-trains. That
-    is the average isi-distance of all pairs of spike-trains:
-    S(t) = 2/((N(N-1)) sum_{<i,j>} S_{i,j},
+def isi_profile_multi(spike_trains, indices=None):
+    """ computes the multi-variate isi distance profile for a set of spike
+    trains. That is the average isi-distance of all pairs of spike-trains:
+    S_isi(t) = 2/((N(N-1)) sum_{<i,j>} S_{isi}^{i,j},
     where the sum goes over all pairs <i,j>
     Args:
     - spike_trains: list of spike trains
     - indices: list of indices defining which spike trains to use,
     if None all given spike trains are used (default=None)
     Returns:
-    - A PieceWiseConstFunc representing the averaged isi distance S
+    - A PieceWiseConstFunc representing the averaged isi distance S_isi(t)
     """
-    return multi_distance(spike_trains, isi_distance, indices)
+    return multi_profile(spike_trains, isi_profile, indices)
 
 
 ############################################################
-# spike_distance_multi
+# isi_distance_multi
 ############################################################
-def spike_distance_multi(spike_trains, indices=None):
-    """ computes the multi-variate spike-distance for a set of spike-trains.
-    That is the average spike-distance of all pairs of spike-trains:
-    S(t) = 2/((N(N-1)) sum_{<i,j>} S_{i, j},
+def isi_distance_multi(spike_trains, indices=None):
+    """ computes the multi-variate isi-distance for a set of spike-trains.
+    That is the time average of the multi-variate spike profile:
+    S_isi = \int_0^T 2/((N(N-1)) sum_{<i,j>} S_{isi}^{i,j},
+    where the sum goes over all pairs <i,j>
+    Args:
+    - spike_trains: list of spike trains
+    - indices: list of indices defining which spike trains to use,
+    if None all given spike trains are used (default=None)
+    Returns:
+    - A double value representing the averaged isi distance S_isi
+    """
+    return isi_profile_multi(spike_trains, indices).avrg()
+
+
+############################################################
+# spike_profile_multi
+############################################################
+def spike_profile_multi(spike_trains, indices=None):
+    """ Computes the multi-variate spike distance profile for a set of spike
+    trains. That is the average spike-distance of all pairs of spike-trains:
+    S_spike(t) = 2/((N(N-1)) sum_{<i,j>} S_{spike}^{i, j},
     where the sum goes over all pairs <i,j>
     Args:
     - spike_trains: list of spike trains
     - indices: list of indices defining which spike-trains to use,
     if None all given spike trains are used (default=None)
     Returns:
-    - A PieceWiseLinFunc representing the averaged spike distance S
+    - A PieceWiseLinFunc representing the averaged spike distance S(t)
     """
-    return multi_distance(spike_trains, spike_distance, indices)
+    return multi_profile(spike_trains, spike_profile, indices)
 
 
+############################################################
+# spike_distance_multi
+############################################################
+def spike_distance_multi(spike_trains, indices=None):
+    """ Computes the multi-variate spike distance for a set of spike trains.
+    That is the time average of the multi-variate spike profile:
+    S_{spike} = \int_0^T 2/((N(N-1)) sum_{<i,j>} S_{spike}^{i, j} dt
+    where the sum goes over all pairs <i,j>
+    Args:
+    - spike_trains: list of spike trains
+    - indices: list of indices defining which spike-trains to use,
+    if None all given spike trains are used (default=None)
+    Returns:
+    - A double value representing the averaged spike distance S
+    """
+    return spike_profile_multi(spike_trains, indices).avrg()
+
+
+############################################################
+# isi_distance_matrix
+############################################################
 def isi_distance_matrix(spike_trains, indices=None):
     """ Computes the average isi-distance of all pairs of spike-trains.
     Args:
@@ -212,7 +281,7 @@ def isi_distance_matrix(spike_trains, indices=None):
         "Invalid index list."
     # generate a list of possible index pairs
     pairs = [(i, j) for i in indices for j in indices[i+1:]]
-    
+
     distance_matrix = np.zeros((len(indices), len(indices)))
     for i, j in pairs:
         d = isi_distance(spike_trains[i], spike_trains[j]).avrg()
