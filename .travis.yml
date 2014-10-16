@@ -4,7 +4,7 @@ python:
  - "2.7"
 
 install:
- - sudo apt-get install -qq cython
+ - sudo apt-get install cython
 
 script:
  - python setup.py build_ext --inplace
