@@ -100,9 +100,6 @@ def test_pwl():
     avrg_expected = (1.25 - 0.45 + 0.75 + 1.5*0.5) / 4.0
     assert_almost_equal(f.avrg(), avrg_expected, decimal=16)
 
-    abs_avrg_expected = (1.25 + 0.45 + 0.75 + 1.5*0.5) / 4.0
-    assert_almost_equal(f.abs_avrg(), abs_avrg_expected, decimal=16)
-
 
 def test_pwl_add():
     x = [0.0, 1.0, 2.0, 2.5, 4.0]
