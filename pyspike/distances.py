@@ -33,10 +33,17 @@ def isi_profile(spikes1, spikes2):
     assert spikes1[-1] == spikes2[-1], \
         "Given spike trains seems not to have auxiliary spikes!"
 
-    # cython implementation
-    from cython_distance import isi_distance_cython
+    # load cython implementation
+    try:
+        from cython_distance import isi_distance_cython as isi_distance_impl
+    except ImportError:
+        print("Warning: isi_distance_cython not found. Make sure that PySpike \
+is installed by running\n 'python setup.py build_ext --inplace'!\n \
+Falling back to slow python backend.")
+        # use python backend
+        from python_backend import isi_distance_python as isi_distance_impl
 
-    times, values = isi_distance_cython(spikes1, spikes2)
+    times, values = isi_distance_impl(spikes1, spikes2)
     return PieceWiseConstFunc(times, values)
 
 
@@ -76,10 +83,17 @@ def spike_profile(spikes1, spikes2):
         "Given spike trains seems not to have auxiliary spikes!"
 
     # cython implementation
-    from cython_distance import spike_distance_cython
+    try:
+        from cython_distance import spike_distance_cython \
+            as spike_distance_impl
+    except ImportError:
+        print("Warning: spike_distance_cython not found. Make sure that \
+PySpike is installed by running\n 'python setup.py build_ext --inplace'!\n \
+Falling back to slow python backend.")
+        # use python backend
+        from python_backend import spike_distance_python as spike_distance_impl
 
-    times, y_starts, y_ends = spike_distance_cython(spikes1, spikes2)
-
+    times, y_starts, y_ends = spike_distance_impl(spikes1, spikes2)
     return PieceWiseLinFunc(times, y_starts, y_ends)
 
 

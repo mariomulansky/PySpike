@@ -83,14 +83,19 @@ class PieceWiseConstFunc:
         assert self.x[0] == f.x[0], "The functions have different intervals"
         assert self.x[-1] == f.x[-1], "The functions have different intervals"
 
-        # python implementation
-        # from python_backend import add_piece_wise_const_python
-        # self.x, self.y = add_piece_wise_const_python(self.x, self.y,
-        #                                              f.x, f.y)
-
         # cython version
-        from cython_add import add_piece_wise_const_cython
-        self.x, self.y = add_piece_wise_const_cython(self.x, self.y, f.x, f.y)
+        try:
+            from cython_add import add_piece_wise_const_cython as \
+                add_piece_wise_const_impl
+        except ImportError:
+            print("Warning: add_piece_wise_const_cython not found. Make sure \
+that PySpike is installed by running\n 'python setup.py build_ext --inplace'! \
+\n Falling back to slow python backend.")
+            # use python backend
+            from python_backend import add_piece_wise_const_python as \
+                add_piece_wise_const_impl
+
+        self.x, self.y = add_piece_wise_const_impl(self.x, self.y, f.x, f.y)
 
     def mul_scalar(self, fac):
         """ Multiplies the function with a scalar value
@@ -188,8 +193,18 @@ class PieceWiseLinFunc:
         #     self.x, self.y1, self.y2, f.x, f.y1, f.y2)
 
         # cython version
-        from cython_add import add_piece_wise_lin_cython
-        self.x, self.y1, self.y2 = add_piece_wise_lin_cython(
+        try:
+            from cython_add import add_piece_wise_lin_cython as \
+                add_piece_wise_lin_impl
+        except ImportError:
+            print("Warning: add_piece_wise_lin_cython not found. Make sure \
+that PySpike is installed by running\n 'python setup.py build_ext --inplace'! \
+\n Falling back to slow python backend.")
+            # use python backend
+            from python_backend import add_piece_wise_lin_python as \
+                add_piece_wise_lin_impl
+
+        self.x, self.y1, self.y2 = add_piece_wise_lin_impl(
             self.x, self.y1, self.y2, f.x, f.y1, f.y2)
 
     def mul_scalar(self, fac):

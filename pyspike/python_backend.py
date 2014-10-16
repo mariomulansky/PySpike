@@ -11,8 +11,6 @@ Distributed under the BSD License
 
 import numpy as np
 
-from pyspike import PieceWiseConstFunc, PieceWiseLinFunc
-
 
 ############################################################
 # isi_distance_python
@@ -32,7 +30,7 @@ def isi_distance_python(s1, s2):
     # add the distance of the first events
     # isi_values[0] = nu1[0]/nu2[0] - 1.0 if nu1[0] <= nu2[0] \
     #                 else 1.0 - nu2[0]/nu1[0]
-    isi_values[0] = (nu1[0] - nu2[0]) / max(nu1[0], nu2[0])
+    isi_values[0] = abs(nu1[0] - nu2[0]) / max(nu1[0], nu2[0])
     index1 = 0
     index2 = 0
     index = 1
@@ -56,14 +54,14 @@ def isi_distance_python(s1, s2):
                 break
             spike_events[index] = s1[index1]
         # compute the corresponding isi-distance
-        isi_values[index] = (nu1[index1] - nu2[index2]) / \
+        isi_values[index] = abs(nu1[index1] - nu2[index2]) / \
             max(nu1[index1], nu2[index2])
         index += 1
     # the last event is the interval end
     spike_events[index] = s1[-1]
     # use only the data added above
     # could be less than original length due to equal spike times
-    return PieceWiseConstFunc(spike_events[:index + 1], isi_values[:index])
+    return spike_events[:index + 1], isi_values[:index]
 
 
 ############################################################
@@ -187,8 +185,7 @@ def spike_distance_python(spikes1, spikes2):
     y_ends[index-1] = (s1*isi2 + s2*isi1) / ((isi1+isi2)**2/2)
     # use only the data added above
     # could be less than original length due to equal spike times
-    return PieceWiseLinFunc(spike_events[:index+1],
-                            y_starts[:index], y_ends[:index])
+    return spike_events[:index+1], y_starts[:index], y_ends[:index]
 
 
 ############################################################
