@@ -33,7 +33,6 @@ To install PySpike, simply download the source, e.g. from Github, and run the `s
 
 Then you can run the tests using the `nosetests` test framework:
 
-    cd test
     nosetests
 
 Finally, you should make PySpike's installation folder known to Python to be able to import pyspike in your own projects.
@@ -70,7 +69,7 @@ If you load spike trains yourself, i.e. from data files with different structure
 Both the ISI and the SPIKE distance computation require the presence of auxiliary spikes, so make sure you have those in your spike trains:
 
     spike_train = spk.add_auxiliary_spikes(spike_train, (T_start, T_end))
-    # you provide only a single value, it is interpreted as T_end, while T_start=0
+    # if you provide only a single value, it is interpreted as T_end, while T_start=0
     spike_train = spk.add_auxiliary_spikes(spike_train, T_end)
 
 ## Computing bi-variate distances
@@ -98,14 +97,17 @@ The following code loads some exemplary spike trains, computes the dissimilarity
     
     spike_trains = spk.load_spike_trains_from_txt("PySpike_testdata.txt",
                                                   time_interval=(0, 4000))
-    isi_profile = spk.isi_distance(spike_trains[0], spike_trains[1])
+    isi_profile = spk.isi_profile(spike_trains[0], spike_trains[1])
     x, y = isi_profile.get_plottable_data()
     plt.plot(x, y, '--k')
     print("ISI distance: %.8f" % isi_profil.avrg())
     plt.show()
 
-The ISI-profile is a piece-wise constant function, there the function `isi_distance` returns an instance of the `PieceWiseConstFunc` class.
-As above, this class allows you to obtain arrays that can be used to plot the function with `plt.plt`, but also to compute the absolute average, which amounts to the final scalar ISI-distance.
+The ISI-profile is a piece-wise constant function, there the function `isi_profile` returns an instance of the `PieceWiseConstFunc` class.
+As shown above, this class allows you to obtain arrays that can be used to plot the function with `plt.plt`, but also to compute the absolute average, which amounts to the final scalar ISI-distance.
+If you are only interested in the scalar ISI-distance and not the profile, you can simly use:
+
+     isi_dist = spk.isi_distance(spike_trains[0], spike_trains[1])
 
 Furthermore, PySpike provides the `average_profile` function that can be used to compute the average profile of a list of given `PieceWiseConstFunc` instances.
 
