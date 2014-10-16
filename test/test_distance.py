@@ -138,6 +138,22 @@ def test_multi_spike():
     check_multi_distance(spk.spike_distance, spk.spike_distance_multi)
 
 
+def test_regression_spiky():
+    spike_trains = spk.load_spike_trains_from_txt("PySpike_testdata.txt",
+                                                  (0.0, 4000.0))
+    isi_profile = spk.isi_distance_multi(spike_trains)
+    isi_dist = isi_profile.avrg()
+    print(isi_dist)
+    # get the full precision from SPIKY
+    # assert_equal(isi_dist, 0.1832)
+
+    spike_profile = spk.spike_distance_multi(spike_trains)
+    spike_dist = spike_profile.avrg()
+    print(spike_dist)
+    # get the full precision from SPIKY
+    # assert_equal(spike_dist, 0.2445)
+
+
 if __name__ == "__main__":
     test_isi()
     test_spike()
