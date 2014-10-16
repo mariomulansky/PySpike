@@ -66,6 +66,7 @@ def test_merge_spike_trains():
     # first load the data
     spike_trains = spk.load_spike_trains_from_txt("test/PySpike_testdata.txt",
                                                   time_interval=(0, 4000))
+
     spikes = spk.merge_spike_trains([spike_trains[0], spike_trains[1]])
     # test if result is sorted
     assert((spikes == np.sort(spikes)).all())
