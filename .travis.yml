@@ -7,8 +7,8 @@ install:
  - pip install -q cython
 
 script:
- - export PYTHONPATH=$PYTHONPATH:$TRAVIS_BUILD_DIR
+# - export PYTHONPATH=$PYTHONPATH:$TRAVIS_BUILD_DIR
  - python setup.py build_ext --inplace
- - cd test
+# - cd test
  - nosetests
 
