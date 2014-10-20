@@ -81,7 +81,7 @@ As result, :code:`load_spike_trains_from_txt` returns a *list of arrays* contain
 If you load spike trains yourself, i.e. from data files with different structure, you can use the helper function :code:`add_auxiliary_spikes` to add the auxiliary spikes at the beginning and end of the observation interval.
 Both the ISI and the SPIKE distance computation require the presence of auxiliary spikes, so make sure you have those in your spike trains:
 
-..code:: python
+.. code:: python
 
     spike_train = spk.add_auxiliary_spikes(spike_train, (T_start, T_end))
     # if you provide only a single value, it is interpreted as T_end, while T_start=0
