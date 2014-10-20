@@ -26,7 +26,7 @@ To use PySpike you need Python installed with the following additional packages:
 - cython
 - nosetests (for running the tests)
 
-In particular, make sure that cython_ is configured properly and able to locate a C compiler.
+In particular, make sure that cython_ is configured properly and able to locate a C compiler, otherwise you will only be able to use the much slower plain Python implementations.
 
 To install PySpike, simply download the source, e.g. from Github, and run the :code:`setup.py` script:
 
@@ -124,7 +124,7 @@ The following code loads some exemplary spike trains, computes the dissimilarity
     plt.show()
 
 The ISI-profile is a piece-wise constant function, there the function :code:`isi_profile` returns an instance of the :code:`PieceWiseConstFunc` class.
-As shown above, this class allows you to obtain arrays that can be used to plot the function with :code":`plt.plt`, but also to compute the absolute average, which amounts to the final scalar ISI-distance.
+As shown above, this class allows you to obtain arrays that can be used to plot the function with :code":`plt.plt`, but also to compute the average, which amounts to the final scalar ISI-distance.
 If you are only interested in the scalar ISI-distance and not the profile, you can simly use:
 
 .. code:: python
@@ -135,11 +135,15 @@ Furthermore, PySpike provides the :code:`average_profile` function that can be u
 
 .. code:: python
 
-    avrg_profile = spk.average_profile([spike_train1, spike_train2])
-    x, y = avrg_profile.get_plottable_data()
-    plt.plot(x, y, label="Average profile")
+    isi_profile1 = spk.isi_profile(spike_trains[0], spike_trains[1])
+    isi_profile2 = spk.isi_profile(spike_trains[0], spike_trains[2])
+    isi_profile3 = spk.isi_profile(spike_trains[1], spike_trains[2])
 
-Note the difference between the :code:`average_profile` function, which returns a :code:`PieceWiseConstFunc` (or :code:`PieceWiseLinFunc`, see below), and the :code:`avrg` member function above, that computes the integral over the time profile.
+    avrg_profile = spk.average_profile([isi_profile1, isi_profile2, isi_profile3])
+    x, y = avrg_profile.get_plottable_data()
+    plt.plot(x, y, label="Average ISI profile")
+
+Note the difference between the :code:`average_profile` function, which returns a :code:`PieceWiseConstFunc` (or :code:`PieceWiseLinFunc`, see below), and the :code:`avrg` member function above, that computes the integral over the time profile resulting in a single value.
 So to obtain overall average ISI-distance of a list of ISI profiles you can first compute the average profile using :code:`average_profile` and the use 
 
 .. code:: python
@@ -148,12 +152,50 @@ So to obtain overall average ISI-distance of a list of ISI profiles you can firs
 
 to obtain the final, scalar average ISI distance of the whole set (see also "Computing multi-variate distance" below).
 
+
+SPIKE-distance
+..............
+
+To computation for the spike distance you use the function :code:`spike_profile` instead of :code:`isi_profile` above. 
+But the general approach is very similar:
+
+.. code:: python
+
+    import matplotlib.pyplot as plt
+    import pyspike as spk
+    
+    spike_trains = spk.load_spike_trains_from_txt("PySpike_testdata.txt",
+                                                  time_interval=(0, 4000))
+    spike_profile = spk.spike_profile(spike_trains[0], spike_trains[1])
+    x, y = spike_profile.get_plottable_data()
+    plt.plot(x, y, '--k')
+    print("SPIKE distance: %.8f" % spike_profil.avrg())
+    plt.show()
+
+This short example computes and plots the SPIKE-profile of the first two spike trains in the file :code:`PySpike_testdata.txt`.
+In contrast to the ISI-profile, a SPIKE-profile is a piece-wise *linear* function and thusly represented by a :code:`PieceWiseLinFunc` object.
+Just like the :code:`PieceWiseconstFunc` for the ISI-profile, the :code:`PieceWiseLinFunc` provides a :code:`get_plottable_data` member function that returns array that can be used directly to plot the function.
+Furthermore, the :code:`avrg` member function returns the average of the profile defined as the overall SPIKE distance.
+
+Again, you can use
+
+.. code:: python
+
+    spike_dist = spk.spike_distance(spike_trains[0], spike_trains[1])
+
+to compute the SPIKE distance directly, if you are not interested in the profile at all.
+Furthmore, you can use the :code:`average_profile` function to compute an average profile of a list of SPIKE-profiles:
+
+.. code:: python
+    
+    avrg_profile = spk.average_profile([spike_profile1, spike_profile2, 
+                                        spike_profile3])
+    x, y = avrg_profile.get_plottable_data()
+    plt.plot(x, y, label="Average SPIKE profile")
+
+
 Computing multi-variate distances
 ---------------------------------
-
-
-Plotting
---------
 
 
 Averaging

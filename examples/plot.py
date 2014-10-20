@@ -26,15 +26,17 @@ f = spk.isi_profile(spike_trains[0], spike_trains[1])
 x, y = f.get_plottable_data()
 
 plt.figure()
-plt.plot(x, np.abs(y), '--k')
+plt.plot(x, np.abs(y), '--k', label="ISI-profile")
 
-print("Average: %.8f" % f.avrg())
+print("ISI-distance: %.8f" % f.avrg())
 
 f = spk.spike_profile(spike_trains[0], spike_trains[1])
 x, y = f.get_plottable_data()
-print(x)
-print(y)
-#plt.figure()
-plt.plot(x, y, '-b')
+
+plt.plot(x, y, '-b', label="SPIKE-profile")
+
+print("SPIKE-distance: %.8f" % f.avrg())
+
+plt.legend(loc="upper left")
 
 plt.show()
