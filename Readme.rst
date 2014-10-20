@@ -90,9 +90,9 @@ Both the ISI and the SPIKE distance computation require the presence of auxiliar
 Computing bi-variate distances
 ------------------------------
 
-------------------------------
-
 **Important note:**
+
+------------------------------
 
     Spike trains are expected to be *ordered sequences*! 
     For performance reasons, the PySpike distance functions do not check if the spike trains provided are indeed ordered.
