@@ -1,4 +1,4 @@
-""" isi_matrix.py
+""" distance_matrix.py
 
 Simple example showing how to compute the isi distance matrix of a set of spike
 trains.
@@ -20,7 +20,14 @@ spike_trains = spk.load_spike_trains_from_txt("PySpike_testdata.txt", 4000)
 
 print(len(spike_trains))
 
-m = spk.isi_distance_matrix(spike_trains)
+plt.figure()
+isi_distance = spk.isi_distance_matrix(spike_trains)
+plt.imshow(isi_distance, interpolation='none')
+plt.title("ISI-distance")
 
-plt.imshow(m, interpolation='none')
+plt.figure()
+spike_distance = spk.spike_distance_matrix(spike_trains)
+plt.imshow(spike_distance, interpolation='none')
+plt.title("SPIKE-distance")
+
 plt.show()

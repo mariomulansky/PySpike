@@ -194,8 +194,43 @@ Furthmore, you can use the :code:`average_profile` function to compute an averag
     plt.plot(x, y, label="Average SPIKE profile")
 
 
-Computing multi-variate distances
+Computing multi-variate profiles and distances
 ---------------------------------
+
+To compute the multi-variate ISI- or SPIKE-profile of a set of spike trains, you can compute all bi-variate profiles separately and then use the :code:`average_profile` function above.
+However, PySpike provides convenience functions for that purpose.
+The following example computes the multivariate ISI- and SPIKE-profile for a list of spike trains:
+
+.. code:: python
+
+    spike_trains = spk.load_spike_trains_from_txt("PySpike_testdata.txt",
+                                                  time_interval=(0, 4000))
+    avrg_isi_profile = spk.isi_profile_multi(spike_trains)
+    avrg_spike_profile = spk.spike_profile_multi(spike_trains)
+
+Both functions take an optional parameter :code:`indices`, a list of indices that allows to define the spike trains that should be used for the multi-variate profile.
+As before, if you are only interested in the distance values, and not in the profile, PySpike offers the functions: :code:`isi_distance_multi` and :code:`spike_distance_multi`, that return the scalar multi-variate ISI- and SPIKE-distance.
+
+Another option to address large sets of spike trains are distance matrices.
+Each entry in the distance matrix represents a bi-variate distance of the spike trains.
+Hence, the distance matrix is symmetric and has zero values at the diagonal.
+The following example computes and plots the ISI- and SPIKE-distance matrix.
+
+.. code:: python
+
+    spike_trains = spk.load_spike_trains_from_txt("PySpike_testdata.txt", 4000)
+
+    plt.figure()
+    isi_distance = spk.isi_distance_matrix(spike_trains)
+    plt.imshow(isi_distance, interpolation='none')
+    plt.title("ISI-distance")
+    
+    plt.figure()
+    spike_distance = spk.spike_distance_matrix(spike_trains)
+    plt.imshow(spike_distance, interpolation='none')
+    plt.title("SPIKE-distance")
+
+    plt.show()
 
 
 Averaging
