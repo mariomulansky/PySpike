@@ -52,7 +52,7 @@ Falling back to slow python backend.")
 ############################################################
 # isi_distance
 ############################################################
-def isi_distance(spikes1, spikes2):
+def isi_distance(spikes1, spikes2, interval=None):
     """ Computes the isi-distance I of the given spike trains. The
     isi-distance is the integral over the isi distance profile
     :math:`S_{isi}(t)`:
@@ -61,10 +61,14 @@ def isi_distance(spikes1, spikes2):
 
     :param spikes1: ordered array of spike times with auxiliary spikes.
     :param spikes2: ordered array of spike times with auxiliary spikes.
+    :param interval: averaging interval given as a pair of floats, if None
+                     the average over the whole function is computed.
+    :type interval: Pair of floats or None.
+
     :returns: The isi-distance I.
     :rtype: double
     """
-    return isi_profile(spikes1, spikes2).avrg()
+    return isi_profile(spikes1, spikes2).avrg(interval)
 
 
 ############################################################
@@ -107,18 +111,21 @@ Falling back to slow python backend.")
 ############################################################
 # spike_distance
 ############################################################
-def spike_distance(spikes1, spikes2):
+def spike_distance(spikes1, spikes2, interval=None):
     """ Computes the spike-distance S of the given spike trains. The
     spike-distance is the integral over the isi distance profile S_spike(t):
     :math:`S = \int_^T S_spike(t) dt`.
 
     :param spikes1: ordered array of spike times with auxiliary spikes.
     :param spikes2: ordered array of spike times with auxiliary spikes.
+    :param interval: averaging interval given as a pair of floats, if None
+                     the average over the whole function is computed.
+    :type interval: Pair of floats or None.
     :returns: The spike-distance.
     :rtype: double
 
     """
-    return spike_profile(spikes1, spikes2).avrg()
+    return spike_profile(spikes1, spikes2).avrg(interval)
 
 
 ############################################################
@@ -233,7 +240,7 @@ def isi_profile_multi(spike_trains, indices=None):
 ############################################################
 # isi_distance_multi
 ############################################################
-def isi_distance_multi(spike_trains, indices=None):
+def isi_distance_multi(spike_trains, indices=None, interval=None):
     """ computes the multi-variate isi-distance for a set of spike-trains.
     That is the time average of the multi-variate spike profile:
     I = \int_0^T 2/((N(N-1)) sum_{<i,j>} S_{isi}^{i,j},
@@ -242,10 +249,13 @@ def isi_distance_multi(spike_trains, indices=None):
     :param spike_trains: list of spike trains
     :param indices: list of indices defining which spike trains to use,
                     if None all given spike trains are used (default=None)
+    :param interval: averaging interval given as a pair of floats, if None
+                     the average over the whole function is computed.
+    :type interval: Pair of floats or None.
     :returns: The time-averaged isi distance :math:`I`
     :rtype: double
     """
-    return isi_profile_multi(spike_trains, indices).avrg()
+    return isi_profile_multi(spike_trains, indices).avrg(interval)
 
 
 ############################################################
@@ -271,7 +281,7 @@ def spike_profile_multi(spike_trains, indices=None):
 ############################################################
 # spike_distance_multi
 ############################################################
-def spike_distance_multi(spike_trains, indices=None):
+def spike_distance_multi(spike_trains, indices=None, interval=None):
     """ Computes the multi-variate spike distance for a set of spike trains.
     That is the time average of the multi-variate spike profile:
     S_{spike} = \int_0^T 2/((N(N-1)) sum_{<i,j>} S_{spike}^{i, j} dt
@@ -281,16 +291,20 @@ def spike_distance_multi(spike_trains, indices=None):
     :param indices: list of indices defining which spike trains to use,
                     if None all given spike trains are used (default=None)
     :type indices: list or None
+    :param interval: averaging interval given as a pair of floats, if None
+                     the average over the whole function is computed.
+    :type interval: Pair of floats or None.
     :returns: The averaged spike distance S.
     :rtype: double
     """
-    return spike_profile_multi(spike_trains, indices).avrg()
+    return spike_profile_multi(spike_trains, indices).avrg(interval)
 
 
 ############################################################
 # generic_distance_matrix
 ############################################################
-def _generic_distance_matrix(spike_trains, dist_function, indices=None):
+def _generic_distance_matrix(spike_trains, dist_function,
+                             indices=None, interval=None):
     """ Internal implementation detail. Don't use this function directly.
     Instead use isi_distance_matrix or spike_distance_matrix.
     Computes the time averaged distance of all pairs of spike-trains.
@@ -313,7 +327,7 @@ def _generic_distance_matrix(spike_trains, dist_function, indices=None):
 
     distance_matrix = np.zeros((len(indices), len(indices)))
     for i, j in pairs:
-        d = dist_function(spike_trains[i], spike_trains[j])
+        d = dist_function(spike_trains[i], spike_trains[j], interval)
         distance_matrix[i, j] = d
         distance_matrix[j, i] = d
     return distance_matrix
@@ -322,32 +336,40 @@ def _generic_distance_matrix(spike_trains, dist_function, indices=None):
 ############################################################
 # isi_distance_matrix
 ############################################################
-def isi_distance_matrix(spike_trains, indices=None):
+def isi_distance_matrix(spike_trains, indices=None, interval=None):
     """ Computes the time averaged isi-distance of all pairs of spike-trains.
 
     :param spike_trains: list of spike trains
     :param indices: list of indices defining which spike trains to use,
                     if None all given spike trains are used (default=None)
     :type indices: list or None
+    :param interval: averaging interval given as a pair of floats, if None
+                     the average over the whole function is computed.
+    :type interval: Pair of floats or None.
     :returns: 2D array with the pair wise time average isi distances
               :math:`I_{ij}`
     :rtype: np.array
     """
-    return _generic_distance_matrix(spike_trains, isi_distance, indices)
+    return _generic_distance_matrix(spike_trains, isi_distance,
+                                    indices, interval)
 
 
 ############################################################
 # spike_distance_matrix
 ############################################################
-def spike_distance_matrix(spike_trains, indices=None):
+def spike_distance_matrix(spike_trains, indices=None, interval=None):
     """ Computes the time averaged spike-distance of all pairs of spike-trains.
 
     :param spike_trains: list of spike trains
     :param indices: list of indices defining which spike trains to use,
                     if None all given spike trains are used (default=None)
     :type indices: list or None
+    :param interval: averaging interval given as a pair of floats, if None
+                     the average over the whole function is computed.
+    :type interval: Pair of floats or None.
     :returns: 2D array with the pair wise time average spike distances
               :math:`S_{ij}`
     :rtype: np.array
     """
-    return _generic_distance_matrix(spike_trains, spike_distance, indices)
+    return _generic_distance_matrix(spike_trains, spike_distance,
+                                    indices, interval)
