@@ -42,7 +42,7 @@ class PieceWiseConstFunc(object):
         """ Checks if the function is equal to another function up to `decimal`
         precision.
 
-        :param: other: another :class:`PieceWiseConstFunc`
+        :param other: another :class:`PieceWiseConstFunc`
         :returns: True if the two functions are equal up to `decimal` decimals,
                   False otherwise
         :rtype: bool
@@ -78,8 +78,12 @@ class PieceWiseConstFunc(object):
         """ Computes the average of the piece-wise const function:
         :math:`a = 1/T int_0^T f(x) dx` where T is the length of the interval.
 
+        :param interval: averaging interval given as a pair of floats, if None
+                         the average over the whole function is computed.
+        :type interval: Pair of floats or None.
         :returns: the average a.
         :rtype: double
+
         """
         if interval is None:
             # no interval given, average over the whole spike train
@@ -160,7 +164,7 @@ class PieceWiseLinFunc:
     def copy(self):
         """ Returns a copy of itself
 
-        :rtype: :class`PieceWiseLinFunc`
+        :rtype: :class:`PieceWiseLinFunc`
         """
         return PieceWiseLinFunc(self.x, self.y1, self.y2)
 
@@ -168,7 +172,7 @@ class PieceWiseLinFunc:
         """ Checks if the function is equal to another function up to `decimal`
         precision.
 
-        :param: other: another :class:`PieceWiseLinFunc`
+        :param other: another :class:`PieceWiseLinFunc`
         :returns: True if the two functions are equal up to `decimal` decimals,
                   False otherwise
         :rtype: bool
@@ -203,8 +207,12 @@ class PieceWiseLinFunc:
         """ Computes the average of the piece-wise linear function:
         :math:`a = 1/T int_0^T f(x) dx` where T is the length of the interval.
 
+        :param interval: averaging interval given as a pair of floats, if None
+                         the average over the whole function is computed.
+        :type interval: Pair of floats or None.
         :returns: the average a.
         :rtype: double
+
         """
 
         def intermediate_value(x0, x1, y0, y1, x):

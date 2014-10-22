@@ -79,7 +79,7 @@ def spike_profile(spikes1, spikes2):
 
     :param spikes1: ordered array of spike times with auxiliary spikes.
     :param spikes2: ordered array of spike times with auxiliary spikes.
-    :returns: The spike-distance profile :math:`S_{spike}(t).
+    :returns: The spike-distance profile :math:`S_{spike}(t)`.
     :rtype: :class:`pyspike.function.PieceWiseLinFunc`
 
     """
@@ -110,7 +110,7 @@ Falling back to slow python backend.")
 def spike_distance(spikes1, spikes2):
     """ Computes the spike-distance S of the given spike trains. The
     spike-distance is the integral over the isi distance profile S_spike(t):
-     S = \int_^T S_spike(t) dt.
+    :math:`S = \int_^T S_spike(t) dt`.
 
     :param spikes1: ordered array of spike times with auxiliary spikes.
     :param spikes2: ordered array of spike times with auxiliary spikes.
@@ -131,7 +131,7 @@ def _generic_profile_multi(spike_trains, pair_distance_func, indices=None):
     Computes the multi-variate distance for a set of spike-trains using the
     pair_dist_func to compute pair-wise distances. That is it computes the
     average distance of all pairs of spike-trains:
-    S(t) = 2/((N(N-1)) sum_{<i,j>} S_{i,j},
+    :math:`S(t) = 2/((N(N-1)) sum_{<i,j>} S_{i,j}`,
     where the sum goes over all pairs <i,j>.
     Args:
     - spike_trains: list of spike trains
@@ -254,14 +254,16 @@ def isi_distance_multi(spike_trains, indices=None):
 def spike_profile_multi(spike_trains, indices=None):
     """ Computes the multi-variate spike distance profile for a set of spike
     trains. That is the average spike-distance of all pairs of spike-trains:
-    S_spike(t) = 2/((N(N-1)) sum_{<i,j>} S_{spike}^{i, j},
+    :math:`S_spike(t) = 2/((N(N-1)) sum_{<i,j>} S_{spike}^{i, j}`,
     where the sum goes over all pairs <i,j>
+
     :param spike_trains: list of spike trains
     :param indices: list of indices defining which spike trains to use,
                     if None all given spike trains are used (default=None)
     :type indices: list or None
     :returns: The averaged spike profile :math:`<S_{spike}>(t)`
     :rtype: :class:`pyspike.function.PieceWiseLinFunc`
+
     """
     return _generic_profile_multi(spike_trains, spike_profile, indices)
 
