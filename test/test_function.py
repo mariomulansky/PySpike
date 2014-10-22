@@ -31,8 +31,13 @@ def test_pwc():
 
     # interval averaging
     a = f.avrg([0.5, 3.5])
-    print(a)
     assert_almost_equal(a, (0.5-0.5+0.5*1.5+1.0*0.75)/3.0, decimal=16)
+    a = f.avrg([1.5, 3.5])
+    assert_almost_equal(a, (-0.5*0.5+0.5*1.5+1.0*0.75)/2.0, decimal=16)
+    a = f.avrg([1.0, 3.5])
+    assert_almost_equal(a, (-0.5*1.0+0.5*1.5+1.0*0.75)/2.5, decimal=16)
+    a = f.avrg([1.0, 4.0])
+    assert_almost_equal(a, (-0.5*1.0+0.5*1.5+1.5*0.75)/3.0, decimal=16)
 
 
 def test_pwc_add():
@@ -104,6 +109,18 @@ def test_pwl():
 
     avrg_expected = (1.25 - 0.45 + 0.75 + 1.5*0.5) / 4.0
     assert_almost_equal(f.avrg(), avrg_expected, decimal=16)
+
+    # interval averaging
+    a = f.avrg([0.5, 2.5])
+    assert_almost_equal(a, (1.375*0.5 - 0.45 + 0.75)/2.0, decimal=16)
+    a = f.avrg([1.5, 3.5])
+    assert_almost_equal(a, (-0.425*0.5 + 0.75 + (0.75+0.75-0.5/1.5)/2) / 2.0,
+                        decimal=16)
+    a = f.avrg([1.0, 3.5])
+    assert_almost_equal(a, (-0.45 + 0.75 + (0.75+0.75-0.5/1.5)/2) / 2.5,
+                        decimal=16)
+    a = f.avrg([1.0, 4.0])
+    assert_almost_equal(a, (-0.45 + 0.75 + 1.5*0.5) / 3.0, decimal=16)
 
 
 def test_pwl_add():
