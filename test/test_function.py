@@ -29,6 +29,11 @@ def test_pwc():
 
     assert_almost_equal(f.avrg(), (1.0-0.5+0.5*1.5+1.5*0.75)/4.0, decimal=16)
 
+    # interval averaging
+    a = f.avrg([0.5, 3.5])
+    print(a)
+    assert_almost_equal(a, (0.5-0.5+0.5*1.5+1.0*0.75)/3.0, decimal=16)
+
 
 def test_pwc_add():
     # some random data

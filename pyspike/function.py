@@ -74,15 +74,29 @@ class PieceWiseConstFunc(object):
 
         return x_plot, y_plot
 
-    def avrg(self):
+    def avrg(self, interval=None):
         """ Computes the average of the piece-wise const function:
         :math:`a = 1/T int_0^T f(x) dx` where T is the length of the interval.
 
         :returns: the average a.
         :rtype: double
         """
-        return np.sum((self.x[1:]-self.x[:-1]) * self.y) / \
-            (self.x[-1]-self.x[0])
+        if interval is None:
+            # no interval given, average over the whole spike train
+            return np.sum((self.x[1:]-self.x[:-1]) * self.y) / \
+                (self.x[-1]-self.x[0])
+        else:
+            start_ind = np.searchsorted(self.x, interval[0], side='right')
+            end_ind = np.searchsorted(self.x, interval[1], side='left')-1
+            print(start_ind, end_ind)
+            assert start_ind > 0 and end_ind < len(self.x), \
+                "Invalid averaging interval"
+            a = np.sum((self.x[start_ind+1:end_ind] -
+                        self.x[start_ind:end_ind-1]) *
+                       self.y[start_ind:end_ind])
+            a += (self.x[start_ind]-interval[0]) * self.y[start_ind]
+            a += (interval[1]-self.x[end_ind]) * self.y[end_ind]
+            return a / (interval[1]-interval[0])
 
     def add(self, f):
         """ Adds another PieceWiseConst function to this function.
@@ -181,15 +195,17 @@ class PieceWiseLinFunc:
         y_plot[1::2] = self.y2
         return x_plot, y_plot
 
-    def avrg(self):
+    def avrg(self, interval=None):
         """ Computes the average of the piece-wise linear function:
         :math:`a = 1/T int_0^T f(x) dx` where T is the length of the interval.
 
         :returns: the average a.
         :rtype: double
         """
-        return np.sum((self.x[1:]-self.x[:-1]) * 0.5*(self.y1+self.y2)) / \
-            (self.x[-1]-self.x[0])
+        if interval is None:
+            # no interval given, average over the whole spike train
+            return np.sum((self.x[1:]-self.x[:-1]) * 0.5*(self.y1+self.y2)) / \
+                (self.x[-1]-self.x[0])
 
     def add(self, f):
         """ Adds another PieceWiseLin function to this function.
