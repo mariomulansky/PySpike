@@ -1,6 +1,7 @@
 """ plot.py
 
-Simple example showing how to load and plot spike trains and their distances.
+Simple example showing how to load and plot spike trains and their distance
+profiles.
 
 Copyright 2014, Mario Mulansky <mario.mulansky@gmx.net>
 

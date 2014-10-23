@@ -87,8 +87,8 @@ Both the ISI and the SPIKE distance computation require the presence of auxiliar
     # if you provide only a single value, it is interpreted as T_end, while T_start=0
     spike_train = spk.add_auxiliary_spikes(spike_train, T_end)
 
-Computing bi-variate distances
-------------------------------
+Computing bi-variate distances profiles
+---------------------------------------
 
 **Important note:**
 
@@ -124,12 +124,25 @@ The following code loads some exemplary spike trains, computes the dissimilarity
     plt.show()
 
 The ISI-profile is a piece-wise constant function, there the function :code:`isi_profile` returns an instance of the :code:`PieceWiseConstFunc` class.
-As shown above, this class allows you to obtain arrays that can be used to plot the function with :code":`plt.plt`, but also to compute the average, which amounts to the final scalar ISI-distance.
+As shown above, this class allows you to obtain arrays that can be used to plot the function with :code:`plt.plt`, but also to compute the time average, which amounts to the final scalar ISI-distance.
+By default, the time average is computed for the whole :code:`PieceWiseConstFunc` function.
+However, it is also possible to obtain the average of some interval by providing a pair of floats defining the start and end of the interval.
+In the above example, the following code computes the ISI-distances obtained from averaging the ISI-profile over four different intervals:
+
+.. code:: python
+
+    isi1 = isi_profil.avrg(interval=(0,1000))
+    isi2 = isi_profil.avrg(interval=(1000,2000))
+    isi3 = isi_profil.avrg(interval=(2000,3000))
+    isi4 = isi_profil.avrg(interval=(3000,4000))
+
 If you are only interested in the scalar ISI-distance and not the profile, you can simly use:
 
 .. code:: python
 
-     isi_dist = spk.isi_distance(spike_trains[0], spike_trains[1])
+     isi_dist = spk.isi_distance(spike_trains[0], spike_trains[1], interval)
+
+where :code:`interval` is optional, as above, and if omitted the ISI-distance is computed for the complete spike trains.
 
 Furthermore, PySpike provides the :code:`average_profile` function that can be used to compute the average profile of a list of given :code:`PieceWiseConstFunc` instances.
 
@@ -176,14 +189,16 @@ This short example computes and plots the SPIKE-profile of the first two spike t
 In contrast to the ISI-profile, a SPIKE-profile is a piece-wise *linear* function and thusly represented by a :code:`PieceWiseLinFunc` object.
 Just like the :code:`PieceWiseconstFunc` for the ISI-profile, the :code:`PieceWiseLinFunc` provides a :code:`get_plottable_data` member function that returns array that can be used directly to plot the function.
 Furthermore, the :code:`avrg` member function returns the average of the profile defined as the overall SPIKE distance.
+As above, you can provide an interval as a pair of floats to :code:`avrg` to specify the averaging interval if required.
 
 Again, you can use
 
 .. code:: python
 
-    spike_dist = spk.spike_distance(spike_trains[0], spike_trains[1])
+    spike_dist = spk.spike_distance(spike_trains[0], spike_trains[1], interval)
 
 to compute the SPIKE distance directly, if you are not interested in the profile at all.
+:code:`interval` is optional and defines the averaging interval, if neglected the whole spike train is used.
 Furthmore, you can use the :code:`average_profile` function to compute an average profile of a list of SPIKE-profiles:
 
 .. code:: python
@@ -195,7 +210,7 @@ Furthmore, you can use the :code:`average_profile` function to compute an averag
 
 
 Computing multi-variate profiles and distances
----------------------------------
+----------------------------------------------
 
 To compute the multi-variate ISI- or SPIKE-profile of a set of spike trains, you can compute all bi-variate profiles separately and then use the :code:`average_profile` function above.
 However, PySpike provides convenience functions for that purpose.
@@ -210,11 +225,12 @@ The following example computes the multivariate ISI- and SPIKE-profile for a lis
 
 Both functions take an optional parameter :code:`indices`, a list of indices that allows to define the spike trains that should be used for the multi-variate profile.
 As before, if you are only interested in the distance values, and not in the profile, PySpike offers the functions: :code:`isi_distance_multi` and :code:`spike_distance_multi`, that return the scalar multi-variate ISI- and SPIKE-distance.
+Both distance functions also accept an :code:`interval` parameter that can be used to specify the averaging interval as a pair of floats, if neglected the complete interval is used.
 
 Another option to address large sets of spike trains are distance matrices.
 Each entry in the distance matrix represents a bi-variate distance of the spike trains.
 Hence, the distance matrix is symmetric and has zero values at the diagonal.
-The following example computes and plots the ISI- and SPIKE-distance matrix.
+The following example computes and plots the ISI- and SPIKE-distance matrix, where for the latter one only the time interval T=0..1000 is used for the averaging.
 
 .. code:: python
 
@@ -226,15 +242,17 @@ The following example computes and plots the ISI- and SPIKE-distance matrix.
     plt.title("ISI-distance")
     
     plt.figure()
-    spike_distance = spk.spike_distance_matrix(spike_trains)
+    spike_distance = spk.spike_distance_matrix(spike_trains, interval=(0,1000))
     plt.imshow(spike_distance, interpolation='none')
     plt.title("SPIKE-distance")
 
     plt.show()
 
 
-Averaging
----------
+Time Averages
+-------------
+
+
 
 
 .. _ISI: http://www.scholarpedia.org/article/Measures_of_spike_train_synchrony#ISI-distance

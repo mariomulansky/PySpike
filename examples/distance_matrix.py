@@ -26,8 +26,8 @@ plt.imshow(isi_distance, interpolation='none')
 plt.title("ISI-distance")
 
 plt.figure()
-spike_distance = spk.spike_distance_matrix(spike_trains)
+spike_distance = spk.spike_distance_matrix(spike_trains, interval=(0, 1000))
 plt.imshow(spike_distance, interpolation='none')
-plt.title("SPIKE-distance")
+plt.title("SPIKE-distance, T=0-1000")
 
 plt.show()

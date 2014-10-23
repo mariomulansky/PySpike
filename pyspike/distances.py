@@ -57,14 +57,13 @@ def isi_distance(spikes1, spikes2, interval=None):
     isi-distance is the integral over the isi distance profile
     :math:`S_{isi}(t)`:
 
-    .. math:: I = \int_0^T S_{isi}(t) dt.
+    .. math:: I = \int_{T_0}^{T_1} S_{isi}(t) dt.
 
     :param spikes1: ordered array of spike times with auxiliary spikes.
     :param spikes2: ordered array of spike times with auxiliary spikes.
-    :param interval: averaging interval given as a pair of floats, if None
-                     the average over the whole function is computed.
+    :param interval: averaging interval given as a pair of floats (T0, T1),
+                     if None the average over the whole function is computed.
     :type interval: Pair of floats or None.
-
     :returns: The isi-distance I.
     :rtype: double
     """
@@ -114,12 +113,13 @@ Falling back to slow python backend.")
 def spike_distance(spikes1, spikes2, interval=None):
     """ Computes the spike-distance S of the given spike trains. The
     spike-distance is the integral over the isi distance profile S_spike(t):
-    :math:`S = \int_^T S_spike(t) dt`.
+
+    .. math:: S = \int_{T_0}^{T_1} S_{spike}(t) dt.
 
     :param spikes1: ordered array of spike times with auxiliary spikes.
     :param spikes2: ordered array of spike times with auxiliary spikes.
-    :param interval: averaging interval given as a pair of floats, if None
-                     the average over the whole function is computed.
+    :param interval: averaging interval given as a pair of floats (T0, T1),
+                     if None the average over the whole function is computed.
     :type interval: Pair of floats or None.
     :returns: The spike-distance.
     :rtype: double
