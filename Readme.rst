@@ -131,10 +131,12 @@ In the above example, the following code computes the ISI-distances obtained fro
 
 .. code:: python
 
-    isi1 = isi_profil.avrg(interval=(0,1000))
-    isi2 = isi_profil.avrg(interval=(1000,2000))
-    isi3 = isi_profil.avrg(interval=(2000,3000))
-    isi4 = isi_profil.avrg(interval=(3000,4000))
+    isi1 = isi_profil.avrg(interval=(0, 1000))
+    isi2 = isi_profil.avrg(interval=(1000, 2000))
+    isi3 = isi_profil.avrg(interval=[(0, 1000), (2000, 3000)])
+    isi4 = isi_profil.avrg(interval=[(1000, 2000), (3000, 4000)])
+
+Note, how also multiple intervals can be supplied by giving a list of tuples.
 
 If you are only interested in the scalar ISI-distance and not the profile, you can simly use:
 
@@ -189,7 +191,7 @@ This short example computes and plots the SPIKE-profile of the first two spike t
 In contrast to the ISI-profile, a SPIKE-profile is a piece-wise *linear* function and thusly represented by a :code:`PieceWiseLinFunc` object.
 Just like the :code:`PieceWiseconstFunc` for the ISI-profile, the :code:`PieceWiseLinFunc` provides a :code:`get_plottable_data` member function that returns array that can be used directly to plot the function.
 Furthermore, the :code:`avrg` member function returns the average of the profile defined as the overall SPIKE distance.
-As above, you can provide an interval as a pair of floats to :code:`avrg` to specify the averaging interval if required.
+As above, you can provide an interval as a pair of floats as well as a sequence of such pairs to :code:`avrg` to specify the averaging interval if required.
 
 Again, you can use
 
@@ -198,7 +200,7 @@ Again, you can use
     spike_dist = spk.spike_distance(spike_trains[0], spike_trains[1], interval)
 
 to compute the SPIKE distance directly, if you are not interested in the profile at all.
-:code:`interval` is optional and defines the averaging interval, if neglected the whole spike train is used.
+:code:`interval` is optional and if neglected the whole spike train is used.
 Furthmore, you can use the :code:`average_profile` function to compute an average profile of a list of SPIKE-profiles:
 
 .. code:: python
