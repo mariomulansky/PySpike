@@ -249,11 +249,6 @@ The following example computes and plots the ISI- and SPIKE-distance matrix, whe
     plt.show()
 
 
-Time Averages
--------------
-
-
-
 
 .. _ISI: http://www.scholarpedia.org/article/Measures_of_spike_train_synchrony#ISI-distance
 .. _SPIKE: http://www.scholarpedia.org/article/SPIKE-distance
