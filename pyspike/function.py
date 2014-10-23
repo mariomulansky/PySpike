@@ -11,6 +11,7 @@ Distributed under the BSD License
 from __future__ import print_function
 
 import numpy as np
+import collections
 
 
 ##############################################################
@@ -74,21 +75,18 @@ class PieceWiseConstFunc(object):
 
         return x_plot, y_plot
 
-    def avrg(self, interval=None):
-        """ Computes the average of the piece-wise const function:
-        :math:`a = 1/T int_0^T f(x) dx` where T is the length of the interval.
+    def integral(self, interval=None):
+        """ Returns the integral over the given interval.
 
-        :param interval: averaging interval given as a pair of floats, if None
-                         the average over the whole function is computed.
+        :param interval: integration interval given as a pair of floats, if
+                         None the integral over the whole function is computed.
         :type interval: Pair of floats or None.
-        :returns: the average a.
-        :rtype: double
-
+        :returns: the integral
+        :rtype: float
         """
         if interval is None:
-            # no interval given, average over the whole spike train
-            a = np.sum((self.x[1:]-self.x[:-1]) * self.y) / \
-                (self.x[-1]-self.x[0])
+            # no interval given, integrate over the whole spike train
+            a = np.sum((self.x[1:]-self.x[:-1]) * self.y)
         else:
             # find the indices corresponding to the interval
             start_ind = np.searchsorted(self.x, interval[0], side='right')
@@ -103,7 +101,39 @@ class PieceWiseConstFunc(object):
             a += (self.x[start_ind]-interval[0]) * self.y[start_ind-1]
             # correction from last index to end
             a += (interval[1]-self.x[end_ind]) * self.y[end_ind]
-            a /= (interval[1]-interval[0])
+        return a
+
+    def avrg(self, interval=None):
+        """ Computes the average of the piece-wise const function:
+        :math:`a = 1/T int_0^T f(x) dx` where T is the length of the interval.
+
+        :param interval: averaging interval given as a pair of floats, a
+                         sequence of pairs for averaging multiple intervals, or
+                         None, if None the average over the whole function is
+                         computed.
+        :type interval: Pair, sequence of pairs, or None.
+        :returns: the average a.
+        :rtype: float
+        """
+        if interval is None:
+            # no interval given, average over the whole spike train
+            return self.integral() / (self.x[-1]-self.x[0])
+
+        # check if interval is as sequence
+        assert isinstance(interval, collections.Sequence), \
+            "Invalid value for `interval`. None, Sequence or Tuple expected."
+        # check if interval is a sequence of intervals
+        if not isinstance(interval[0], collections.Sequence):
+            # just one interval
+            a = self.integral(interval) / (interval[1]-interval[0])
+        else:
+            # several intervals
+            a = 0.0
+            int_length = 0.0
+            for ival in interval:
+                a += self.integral(ival)
+                int_length += ival[1] - ival[0]
+            a /= int_length
         return a
 
     def add(self, f):
@@ -203,16 +233,14 @@ class PieceWiseLinFunc:
         y_plot[1::2] = self.y2
         return x_plot, y_plot
 
-    def avrg(self, interval=None):
-        """ Computes the average of the piece-wise linear function:
-        :math:`a = 1/T int_0^T f(x) dx` where T is the length of the interval.
+    def integral(self, interval=None):
+        """ Returns the integral over the given interval.
 
-        :param interval: averaging interval given as a pair of floats, if None
-                         the average over the whole function is computed.
+        :param interval: integration interval given as a pair of floats, if
+                         None the integral over the whole function is computed.
         :type interval: Pair of floats or None.
-        :returns: the average a.
-        :rtype: double
-
+        :returns: the integral
+        :rtype: float
         """
 
         def intermediate_value(x0, x1, y0, y1, x):
@@ -220,9 +248,8 @@ class PieceWiseLinFunc:
             return y0 + (y1-y0)*(x-x0)/(x1-x0)
 
         if interval is None:
-            # no interval given, average over the whole spike train
-            a = np.sum((self.x[1:]-self.x[:-1]) * 0.5*(self.y1+self.y2)) / \
-                (self.x[-1]-self.x[0])
+            # no interval given, integrate over the whole spike train
+            integral = np.sum((self.x[1:]-self.x[:-1]) * 0.5*(self.y1+self.y2))
         else:
             # find the indices corresponding to the interval
             start_ind = np.searchsorted(self.x, interval[0], side='right')
@@ -230,26 +257,61 @@ class PieceWiseLinFunc:
             assert start_ind > 0 and end_ind < len(self.x), \
                 "Invalid averaging interval"
             # first the contribution from between the indices
-            a = np.sum((self.x[start_ind+1:end_ind+1] -
-                        self.x[start_ind:end_ind]) *
-                       0.5*(self.y1[start_ind:end_ind] +
-                            self.y2[start_ind:end_ind]))
+            integral = np.sum((self.x[start_ind+1:end_ind+1] -
+                               self.x[start_ind:end_ind]) *
+                              0.5*(self.y1[start_ind:end_ind] +
+                                   self.y2[start_ind:end_ind]))
             # correction from start to first index
-            a += (self.x[start_ind]-interval[0]) * 0.5 * \
-                 (self.y2[start_ind-1] +
-                  intermediate_value(self.x[start_ind-1], self.x[start_ind],
-                                     self.y1[start_ind-1],
-                                     self.y2[start_ind-1],
-                                     interval[0]
-                                     ))
+            integral += (self.x[start_ind]-interval[0]) * 0.5 * \
+                        (self.y2[start_ind-1] +
+                         intermediate_value(self.x[start_ind-1],
+                                            self.x[start_ind],
+                                            self.y1[start_ind-1],
+                                            self.y2[start_ind-1],
+                                            interval[0]
+                                            ))
             # correction from last index to end
-            a += (interval[1]-self.x[end_ind]) * 0.5 * \
-                 (self.y1[end_ind] +
-                  intermediate_value(self.x[end_ind], self.x[end_ind+1],
-                                     self.y1[end_ind], self.y2[end_ind],
-                                     interval[1]
-                                     ))
-            a /= (interval[1]-interval[0])
+            integral += (interval[1]-self.x[end_ind]) * 0.5 * \
+                        (self.y1[end_ind] +
+                         intermediate_value(self.x[end_ind], self.x[end_ind+1],
+                                            self.y1[end_ind], self.y2[end_ind],
+                                            interval[1]
+                                            ))
+        return integral
+
+    def avrg(self, interval=None):
+        """ Computes the average of the piece-wise linear function:
+        :math:`a = 1/T int_0^T f(x) dx` where T is the length of the interval.
+
+        :param interval: averaging interval given as a pair of floats, a
+                         sequence of pairs for averaging multiple intervals, or
+                         None, if None the average over the whole function is
+                         computed.
+        :type interval: Pair, sequence of pairs, or None.
+        :returns: the average a.
+        :rtype: float
+
+        """
+
+        if interval is None:
+            # no interval given, average over the whole spike train
+            return self.integral() / (self.x[-1]-self.x[0])
+
+        # check if interval is as sequence
+        assert isinstance(interval, collections.Sequence), \
+            "Invalid value for `interval`. None, Sequence or Tuple expected."
+        # check if interval is a sequence of intervals
+        if not isinstance(interval[0], collections.Sequence):
+            # just one interval
+            a = self.integral(interval) / (interval[1]-interval[0])
+        else:
+            # several intervals
+            a = 0.0
+            int_length = 0.0
+            for ival in interval:
+                a += self.integral(ival)
+                int_length += ival[1] - ival[0]
+            a /= int_length
         return a
 
     def add(self, f):
