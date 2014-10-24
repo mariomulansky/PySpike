@@ -5,15 +5,17 @@ PySpike
     :target: https://travis-ci.org/mariomulansky/PySpike
 
 PySpike is a Python library for the numerical analysis of spike train similarity. 
-Its core functionality is the implementation of the bivariate ISI_ [#]_ and SPIKE_ [#]_ distance. 
+Its core functionality is the implementation of the bivariate ISI_ and SPIKE_ distance [#]_ [#]_.
 Additionally, it provides functions to compute multivariate SPIKE and ISI distances, as well as averaging and general spike train processing.
 All computation intensive parts are implemented in C via cython_ to reach a competitive performance (factor 100-200 over plain Python).
 
+PySpike provides the same fundamental functionality as the SPIKY_ framework for Matlab, which additionally contains spike-train generators, more spike train distance measures and many visualization routines.
+
 All source codes are published under the BSD_License_.
 
-.. [#] Kreuz T, Haas JS, Morelli A, Abarbanel HDI, Politi A, *Measuring spike train synchrony.* J Neurosci Methods 165, 151 (2007)
+.. [#] Kreuz T, Haas JS, Morelli A, Abarbanel HDI, Politi A, *Measuring spike train synchrony.* J Neurosci Methods 165, 151 (2007) `[pdf] <http://wwwold.fi.isc.cnr.it/users/thomas.kreuz/images/Kreuz_JNeurosciMethods_2007_Spike-Train-Synchrony.pdf>`_
 
-.. [#] Kreuz T, Chicharro D, Houghton C, Andrzejak RG, Mormann F, *Monitoring spike train synchrony.* J Neurophysiol 109, 1457 (2013)
+.. [#] Kreuz T, Chicharro D, Houghton C, Andrzejak RG, Mormann F, *Monitoring spike train synchrony.* J Neurophysiol 109, 1457 (2013) `[pdf] <http://wwwold.fi.isc.cnr.it/users/thomas.kreuz/images/Kreuz_JNeurophysiol_2013_SPIKE-distance.pdf>`_
 
 Requirements and Installation
 -----------------------------
@@ -254,9 +256,9 @@ The following example computes and plots the ISI- and SPIKE-distance matrix, whe
 
 ===============================================================================
 
-`The work on PySpike was supported by the European Comission through the Marie
-Curie Initial Training Network 'Neural Engineering Transformative Technologies
-(NETT)' under the project number 289146.`
+*The work on PySpike was supported by the European Comission through the Marie
+Curie Initial Training Network* `Neural Engineering Transformative Technologies
+(NETT) <http://www.neural-engineering.eu/>`_ *under the project number 289146.*
 
 
 **Python/C Programming:**
@@ -270,4 +272,5 @@ Curie Initial Training Network 'Neural Engineering Transformative Technologies
 .. _ISI: http://www.scholarpedia.org/article/Measures_of_spike_train_synchrony#ISI-distance
 .. _SPIKE: http://www.scholarpedia.org/article/SPIKE-distance
 .. _cython: http://www.cython.org
+.. _SPIKY: http://wwwold.fi.isc.cnr.it/users/thomas.kreuz/Source-Code/SPIKY.html
 .. _BSD_License: http://opensource.org/licenses/BSD-2-Clause
