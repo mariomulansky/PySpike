@@ -1,0 +1,468 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pyspike.distances &mdash; PySpike 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="PySpike 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">PySpike 0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for pyspike.distances</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot; distances.py</span>
+
+<span class="sd">Module containing several functions to compute spike distances</span>
+
+<span class="sd">Copyright 2014, Mario Mulansky &lt;mario.mulansky@gmx.net&gt;</span>
+
+<span class="sd">Distributed under the BSD License</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+
+<span class="kn">from</span> <span class="nn">pyspike</span> <span class="kn">import</span> <span class="n">PieceWiseConstFunc</span><span class="p">,</span> <span class="n">PieceWiseLinFunc</span>
+
+
+<span class="c">############################################################</span>
+<span class="c"># isi_profile</span>
+<span class="c">############################################################</span>
+<div class="viewcode-block" id="isi_profile"><a class="viewcode-back" href="../../pyspike.html#pyspike.distances.isi_profile">[docs]</a><span class="k">def</span> <span class="nf">isi_profile</span><span class="p">(</span><span class="n">spikes1</span><span class="p">,</span> <span class="n">spikes2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Computes the isi-distance profile :math:`S_{isi}(t)` of the two given</span>
+<span class="sd">    spike trains. Retruns the profile as a PieceWiseConstFunc object. The S_isi</span>
+<span class="sd">    values are defined positive S_isi(t)&gt;=0.  The spike trains are expected</span>
+<span class="sd">    to have auxiliary spikes at the beginning and end of the interval. Use the</span>
+<span class="sd">    function add_auxiliary_spikes to add those spikes to the spike train.</span>
+
+<span class="sd">    :param spikes1: ordered array of spike times with auxiliary spikes.</span>
+<span class="sd">    :param spikes2: ordered array of spike times with auxiliary spikes.</span>
+<span class="sd">    :returns: The isi-distance profile :math:`S_{isi}(t)`</span>
+<span class="sd">    :rtype: :class:`pyspike.function.PieceWiseConstFunc`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># check for auxiliary spikes - first and last spikes should be identical</span>
+    <span class="k">assert</span> <span class="n">spikes1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">spikes2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> \
+        <span class="s">&quot;Given spike trains seems not to have auxiliary spikes!&quot;</span>
+    <span class="k">assert</span> <span class="n">spikes1</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">spikes2</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> \
+        <span class="s">&quot;Given spike trains seems not to have auxiliary spikes!&quot;</span>
+
+    <span class="c"># load cython implementation</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">cython_distance</span> <span class="kn">import</span> <span class="n">isi_distance_cython</span> <span class="k">as</span> <span class="n">isi_distance_impl</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;Warning: isi_distance_cython not found. Make sure that PySpike </span><span class="se">\</span>
+<span class="s">is installed by running</span><span class="se">\n</span><span class="s"> &#39;python setup.py build_ext --inplace&#39;!</span><span class="se">\n</span><span class="s"> </span><span class="se">\</span>
+<span class="s">Falling back to slow python backend.&quot;</span><span class="p">)</span>
+        <span class="c"># use python backend</span>
+        <span class="kn">from</span> <span class="nn">python_backend</span> <span class="kn">import</span> <span class="n">isi_distance_python</span> <span class="k">as</span> <span class="n">isi_distance_impl</span>
+
+    <span class="n">times</span><span class="p">,</span> <span class="n">values</span> <span class="o">=</span> <span class="n">isi_distance_impl</span><span class="p">(</span><span class="n">spikes1</span><span class="p">,</span> <span class="n">spikes2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">PieceWiseConstFunc</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+
+
+<span class="c">############################################################</span>
+<span class="c"># isi_distance</span>
+<span class="c">############################################################</span></div>
+<div class="viewcode-block" id="isi_distance"><a class="viewcode-back" href="../../pyspike.html#pyspike.distances.isi_distance">[docs]</a><span class="k">def</span> <span class="nf">isi_distance</span><span class="p">(</span><span class="n">spikes1</span><span class="p">,</span> <span class="n">spikes2</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Computes the isi-distance I of the given spike trains. The</span>
+<span class="sd">    isi-distance is the integral over the isi distance profile</span>
+<span class="sd">    :math:`S_{isi}(t)`:</span>
+
+<span class="sd">    .. math:: I = \int_{T_0}^{T_1} S_{isi}(t) dt.</span>
+
+<span class="sd">    :param spikes1: ordered array of spike times with auxiliary spikes.</span>
+<span class="sd">    :param spikes2: ordered array of spike times with auxiliary spikes.</span>
+<span class="sd">    :param interval: averaging interval given as a pair of floats (T0, T1),</span>
+<span class="sd">                     if None the average over the whole function is computed.</span>
+<span class="sd">    :type interval: Pair of floats or None.</span>
+<span class="sd">    :returns: The isi-distance I.</span>
+<span class="sd">    :rtype: double</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">isi_profile</span><span class="p">(</span><span class="n">spikes1</span><span class="p">,</span> <span class="n">spikes2</span><span class="p">)</span><span class="o">.</span><span class="n">avrg</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
+
+
+<span class="c">############################################################</span>
+<span class="c"># spike_profile</span>
+<span class="c">############################################################</span></div>
+<div class="viewcode-block" id="spike_profile"><a class="viewcode-back" href="../../pyspike.html#pyspike.distances.spike_profile">[docs]</a><span class="k">def</span> <span class="nf">spike_profile</span><span class="p">(</span><span class="n">spikes1</span><span class="p">,</span> <span class="n">spikes2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Computes the spike-distance profile S_spike(t) of the two given spike</span>
+<span class="sd">    trains. Returns the profile as a PieceWiseLinFunc object. The S_spike</span>
+<span class="sd">    values are defined positive S_spike(t)&gt;=0. The spike trains are expected to</span>
+<span class="sd">    have auxiliary spikes at the beginning and end of the interval. Use the</span>
+<span class="sd">    function add_auxiliary_spikes to add those spikes to the spike train.</span>
+
+<span class="sd">    :param spikes1: ordered array of spike times with auxiliary spikes.</span>
+<span class="sd">    :param spikes2: ordered array of spike times with auxiliary spikes.</span>
+<span class="sd">    :returns: The spike-distance profile :math:`S_{spike}(t)`.</span>
+<span class="sd">    :rtype: :class:`pyspike.function.PieceWiseLinFunc`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># check for auxiliary spikes - first and last spikes should be identical</span>
+    <span class="k">assert</span> <span class="n">spikes1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">spikes2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> \
+        <span class="s">&quot;Given spike trains seems not to have auxiliary spikes!&quot;</span>
+    <span class="k">assert</span> <span class="n">spikes1</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">spikes2</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> \
+        <span class="s">&quot;Given spike trains seems not to have auxiliary spikes!&quot;</span>
+
+    <span class="c"># cython implementation</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">cython_distance</span> <span class="kn">import</span> <span class="n">spike_distance_cython</span> \
+            <span class="k">as</span> <span class="n">spike_distance_impl</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;Warning: spike_distance_cython not found. Make sure that </span><span class="se">\</span>
+<span class="s">PySpike is installed by running</span><span class="se">\n</span><span class="s"> &#39;python setup.py build_ext --inplace&#39;!</span><span class="se">\n</span><span class="s"> </span><span class="se">\</span>
+<span class="s">Falling back to slow python backend.&quot;</span><span class="p">)</span>
+        <span class="c"># use python backend</span>
+        <span class="kn">from</span> <span class="nn">python_backend</span> <span class="kn">import</span> <span class="n">spike_distance_python</span> <span class="k">as</span> <span class="n">spike_distance_impl</span>
+
+    <span class="n">times</span><span class="p">,</span> <span class="n">y_starts</span><span class="p">,</span> <span class="n">y_ends</span> <span class="o">=</span> <span class="n">spike_distance_impl</span><span class="p">(</span><span class="n">spikes1</span><span class="p">,</span> <span class="n">spikes2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">PieceWiseLinFunc</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">y_starts</span><span class="p">,</span> <span class="n">y_ends</span><span class="p">)</span>
+
+
+<span class="c">############################################################</span>
+<span class="c"># spike_distance</span>
+<span class="c">############################################################</span></div>
+<div class="viewcode-block" id="spike_distance"><a class="viewcode-back" href="../../pyspike.html#pyspike.distances.spike_distance">[docs]</a><span class="k">def</span> <span class="nf">spike_distance</span><span class="p">(</span><span class="n">spikes1</span><span class="p">,</span> <span class="n">spikes2</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Computes the spike-distance S of the given spike trains. The</span>
+<span class="sd">    spike-distance is the integral over the isi distance profile S_spike(t):</span>
+
+<span class="sd">    .. math:: S = \int_{T_0}^{T_1} S_{spike}(t) dt.</span>
+
+<span class="sd">    :param spikes1: ordered array of spike times with auxiliary spikes.</span>
+<span class="sd">    :param spikes2: ordered array of spike times with auxiliary spikes.</span>
+<span class="sd">    :param interval: averaging interval given as a pair of floats (T0, T1),</span>
+<span class="sd">                     if None the average over the whole function is computed.</span>
+<span class="sd">    :type interval: Pair of floats or None.</span>
+<span class="sd">    :returns: The spike-distance.</span>
+<span class="sd">    :rtype: double</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">spike_profile</span><span class="p">(</span><span class="n">spikes1</span><span class="p">,</span> <span class="n">spikes2</span><span class="p">)</span><span class="o">.</span><span class="n">avrg</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
+
+
+<span class="c">############################################################</span>
+<span class="c"># _generic_profile_multi</span>
+<span class="c">############################################################</span></div>
+<span class="k">def</span> <span class="nf">_generic_profile_multi</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">pair_distance_func</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Internal implementation detail, don&#39;t call this function directly,</span>
+<span class="sd">    use isi_profile_multi or spike_profile_multi instead.</span>
+
+<span class="sd">    Computes the multi-variate distance for a set of spike-trains using the</span>
+<span class="sd">    pair_dist_func to compute pair-wise distances. That is it computes the</span>
+<span class="sd">    average distance of all pairs of spike-trains:</span>
+<span class="sd">    :math:`S(t) = 2/((N(N-1)) sum_{&lt;i,j&gt;} S_{i,j}`,</span>
+<span class="sd">    where the sum goes over all pairs &lt;i,j&gt;.</span>
+<span class="sd">    Args:</span>
+<span class="sd">    - spike_trains: list of spike trains</span>
+<span class="sd">    - pair_distance_func: function computing the distance of two spike trains</span>
+<span class="sd">    - indices: list of indices defining which spike trains to use,</span>
+<span class="sd">    if None all given spike trains are used (default=None)</span>
+<span class="sd">    Returns:</span>
+<span class="sd">    - The averaged multi-variate distance of all pairs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">indices</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">))</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+    <span class="c"># check validity of indices</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="n">indices</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="ow">and</span> <span class="p">(</span><span class="n">indices</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span> \
+        <span class="s">&quot;Invalid index list.&quot;</span>
+    <span class="c"># generate a list of possible index pairs</span>
+    <span class="n">pairs</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">:]]</span>
+    <span class="c"># start with first pair</span>
+    <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="o">=</span> <span class="n">pairs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">average_dist</span> <span class="o">=</span> <span class="n">pair_distance_func</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">spike_trains</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="ow">in</span> <span class="n">pairs</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="n">current_dist</span> <span class="o">=</span> <span class="n">pair_distance_func</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">spike_trains</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+        <span class="n">average_dist</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">current_dist</span><span class="p">)</span>       <span class="c"># add to the average</span>
+    <span class="n">average_dist</span><span class="o">.</span><span class="n">mul_scalar</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">pairs</span><span class="p">))</span>  <span class="c"># normalize</span>
+    <span class="k">return</span> <span class="n">average_dist</span>
+
+
+<span class="c">############################################################</span>
+<span class="c"># multi_distance_par</span>
+<span class="c">############################################################</span>
+<span class="k">def</span> <span class="nf">_multi_distance_par</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">pair_distance_func</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; parallel implementation of the multi-distance. Not currently used as</span>
+<span class="sd">    it does not improve the performance.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">num_threads</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">index_pairs</span><span class="p">,</span> <span class="n">average_dist</span><span class="p">):</span>
+        <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="o">=</span> <span class="n">index_pairs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c"># print(i,j)</span>
+        <span class="n">this_avrg</span> <span class="o">=</span> <span class="n">pair_distance_func</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">spike_trains</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="ow">in</span> <span class="n">index_pairs</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="c"># print(i,j)</span>
+            <span class="n">current_dist</span> <span class="o">=</span> <span class="n">pair_distance_func</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">spike_trains</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+            <span class="n">this_avrg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">current_dist</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
+            <span class="n">average_dist</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">this_avrg</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">indices</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">))</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+    <span class="c"># check validity of indices</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="n">indices</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="ow">and</span> <span class="p">(</span><span class="n">indices</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span> \
+        <span class="s">&quot;Invalid index list.&quot;</span>
+    <span class="c"># generate a list of possible index pairs</span>
+    <span class="n">pairs</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">:]]</span>
+    <span class="n">num_pairs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pairs</span><span class="p">)</span>
+
+    <span class="c"># start with first pair</span>
+    <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="o">=</span> <span class="n">pairs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">average_dist</span> <span class="o">=</span> <span class="n">pair_distance_func</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">spike_trains</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+    <span class="c"># remove the one we already computed</span>
+    <span class="n">pairs</span> <span class="o">=</span> <span class="n">pairs</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="c"># distribute the rest into num_threads pieces</span>
+    <span class="n">clustered_pairs</span> <span class="o">=</span> <span class="p">[</span><span class="n">pairs</span><span class="p">[</span><span class="n">n</span><span class="p">::</span><span class="n">num_threads</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">num_threads</span><span class="p">)]</span>
+
+    <span class="n">threads</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">pairs</span> <span class="ow">in</span> <span class="n">clustered_pairs</span><span class="p">:</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">run</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">pairs</span><span class="p">,</span>
+                                               <span class="n">average_dist</span><span class="p">))</span>
+        <span class="n">threads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">threads</span><span class="p">:</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+    <span class="n">average_dist</span><span class="o">.</span><span class="n">mul_scalar</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">num_pairs</span><span class="p">)</span>  <span class="c"># normalize</span>
+    <span class="k">return</span> <span class="n">average_dist</span>
+
+
+<span class="c">############################################################</span>
+<span class="c"># isi_profile_multi</span>
+<span class="c">############################################################</span>
+<div class="viewcode-block" id="isi_profile_multi"><a class="viewcode-back" href="../../pyspike.html#pyspike.distances.isi_profile_multi">[docs]</a><span class="k">def</span> <span class="nf">isi_profile_multi</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; computes the multi-variate isi distance profile for a set of spike</span>
+<span class="sd">    trains. That is the average isi-distance of all pairs of spike-trains:</span>
+<span class="sd">    S_isi(t) = 2/((N(N-1)) sum_{&lt;i,j&gt;} S_{isi}^{i,j},</span>
+<span class="sd">    where the sum goes over all pairs &lt;i,j&gt;</span>
+
+<span class="sd">    :param spike_trains: list of spike trains</span>
+<span class="sd">    :param indices: list of indices defining which spike trains to use,</span>
+<span class="sd">                    if None all given spike trains are used (default=None)</span>
+<span class="sd">    :type state: list or None</span>
+<span class="sd">    :returns: The averaged isi profile :math:`&lt;S_{isi}&gt;(t)`</span>
+<span class="sd">    :rtype: :class:`pyspike.function.PieceWiseConstFunc`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_generic_profile_multi</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">isi_profile</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span>
+
+
+<span class="c">############################################################</span>
+<span class="c"># isi_distance_multi</span>
+<span class="c">############################################################</span></div>
+<div class="viewcode-block" id="isi_distance_multi"><a class="viewcode-back" href="../../pyspike.html#pyspike.distances.isi_distance_multi">[docs]</a><span class="k">def</span> <span class="nf">isi_distance_multi</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; computes the multi-variate isi-distance for a set of spike-trains.</span>
+<span class="sd">    That is the time average of the multi-variate spike profile:</span>
+<span class="sd">    I = \int_0^T 2/((N(N-1)) sum_{&lt;i,j&gt;} S_{isi}^{i,j},</span>
+<span class="sd">    where the sum goes over all pairs &lt;i,j&gt;</span>
+
+<span class="sd">    :param spike_trains: list of spike trains</span>
+<span class="sd">    :param indices: list of indices defining which spike trains to use,</span>
+<span class="sd">                    if None all given spike trains are used (default=None)</span>
+<span class="sd">    :param interval: averaging interval given as a pair of floats, if None</span>
+<span class="sd">                     the average over the whole function is computed.</span>
+<span class="sd">    :type interval: Pair of floats or None.</span>
+<span class="sd">    :returns: The time-averaged isi distance :math:`I`</span>
+<span class="sd">    :rtype: double</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">isi_profile_multi</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span><span class="o">.</span><span class="n">avrg</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
+
+
+<span class="c">############################################################</span>
+<span class="c"># spike_profile_multi</span>
+<span class="c">############################################################</span></div>
+<div class="viewcode-block" id="spike_profile_multi"><a class="viewcode-back" href="../../pyspike.html#pyspike.distances.spike_profile_multi">[docs]</a><span class="k">def</span> <span class="nf">spike_profile_multi</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Computes the multi-variate spike distance profile for a set of spike</span>
+<span class="sd">    trains. That is the average spike-distance of all pairs of spike-trains:</span>
+<span class="sd">    :math:`S_spike(t) = 2/((N(N-1)) sum_{&lt;i,j&gt;} S_{spike}^{i, j}`,</span>
+<span class="sd">    where the sum goes over all pairs &lt;i,j&gt;</span>
+
+<span class="sd">    :param spike_trains: list of spike trains</span>
+<span class="sd">    :param indices: list of indices defining which spike trains to use,</span>
+<span class="sd">                    if None all given spike trains are used (default=None)</span>
+<span class="sd">    :type indices: list or None</span>
+<span class="sd">    :returns: The averaged spike profile :math:`&lt;S_{spike}&gt;(t)`</span>
+<span class="sd">    :rtype: :class:`pyspike.function.PieceWiseLinFunc`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_generic_profile_multi</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">spike_profile</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span>
+
+
+<span class="c">############################################################</span>
+<span class="c"># spike_distance_multi</span>
+<span class="c">############################################################</span></div>
+<div class="viewcode-block" id="spike_distance_multi"><a class="viewcode-back" href="../../pyspike.html#pyspike.distances.spike_distance_multi">[docs]</a><span class="k">def</span> <span class="nf">spike_distance_multi</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Computes the multi-variate spike distance for a set of spike trains.</span>
+<span class="sd">    That is the time average of the multi-variate spike profile:</span>
+<span class="sd">    S_{spike} = \int_0^T 2/((N(N-1)) sum_{&lt;i,j&gt;} S_{spike}^{i, j} dt</span>
+<span class="sd">    where the sum goes over all pairs &lt;i,j&gt;</span>
+
+<span class="sd">    :param spike_trains: list of spike trains</span>
+<span class="sd">    :param indices: list of indices defining which spike trains to use,</span>
+<span class="sd">                    if None all given spike trains are used (default=None)</span>
+<span class="sd">    :type indices: list or None</span>
+<span class="sd">    :param interval: averaging interval given as a pair of floats, if None</span>
+<span class="sd">                     the average over the whole function is computed.</span>
+<span class="sd">    :type interval: Pair of floats or None.</span>
+<span class="sd">    :returns: The averaged spike distance S.</span>
+<span class="sd">    :rtype: double</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">spike_profile_multi</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span><span class="o">.</span><span class="n">avrg</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
+
+
+<span class="c">############################################################</span>
+<span class="c"># generic_distance_matrix</span>
+<span class="c">############################################################</span></div>
+<span class="k">def</span> <span class="nf">_generic_distance_matrix</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">dist_function</span><span class="p">,</span>
+                             <span class="n">indices</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Internal implementation detail. Don&#39;t use this function directly.</span>
+<span class="sd">    Instead use isi_distance_matrix or spike_distance_matrix.</span>
+<span class="sd">    Computes the time averaged distance of all pairs of spike-trains.</span>
+<span class="sd">    Args:</span>
+<span class="sd">    - spike_trains: list of spike trains</span>
+<span class="sd">    - indices: list of indices defining which spike-trains to use</span>
+<span class="sd">    if None all given spike-trains are used (default=None)</span>
+<span class="sd">    Return:</span>
+<span class="sd">    - a 2D array of size len(indices)*len(indices) containing the average</span>
+<span class="sd">    pair-wise distance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">indices</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">))</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+    <span class="c"># check validity of indices</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="n">indices</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="ow">and</span> <span class="p">(</span><span class="n">indices</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span> \
+        <span class="s">&quot;Invalid index list.&quot;</span>
+    <span class="c"># generate a list of possible index pairs</span>
+    <span class="n">pairs</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">:]]</span>
+
+    <span class="n">distance_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)))</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">pairs</span><span class="p">:</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">dist_function</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">spike_trains</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">interval</span><span class="p">)</span>
+        <span class="n">distance_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
+        <span class="n">distance_matrix</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
+    <span class="k">return</span> <span class="n">distance_matrix</span>
+
+
+<span class="c">############################################################</span>
+<span class="c"># isi_distance_matrix</span>
+<span class="c">############################################################</span>
+<div class="viewcode-block" id="isi_distance_matrix"><a class="viewcode-back" href="../../pyspike.html#pyspike.distances.isi_distance_matrix">[docs]</a><span class="k">def</span> <span class="nf">isi_distance_matrix</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Computes the time averaged isi-distance of all pairs of spike-trains.</span>
+
+<span class="sd">    :param spike_trains: list of spike trains</span>
+<span class="sd">    :param indices: list of indices defining which spike trains to use,</span>
+<span class="sd">                    if None all given spike trains are used (default=None)</span>
+<span class="sd">    :type indices: list or None</span>
+<span class="sd">    :param interval: averaging interval given as a pair of floats, if None</span>
+<span class="sd">                     the average over the whole function is computed.</span>
+<span class="sd">    :type interval: Pair of floats or None.</span>
+<span class="sd">    :returns: 2D array with the pair wise time average isi distances</span>
+<span class="sd">              :math:`I_{ij}`</span>
+<span class="sd">    :rtype: np.array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_generic_distance_matrix</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">isi_distance</span><span class="p">,</span>
+                                    <span class="n">indices</span><span class="p">,</span> <span class="n">interval</span><span class="p">)</span>
+
+
+<span class="c">############################################################</span>
+<span class="c"># spike_distance_matrix</span>
+<span class="c">############################################################</span></div>
+<div class="viewcode-block" id="spike_distance_matrix"><a class="viewcode-back" href="../../pyspike.html#pyspike.distances.spike_distance_matrix">[docs]</a><span class="k">def</span> <span class="nf">spike_distance_matrix</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Computes the time averaged spike-distance of all pairs of spike-trains.</span>
+
+<span class="sd">    :param spike_trains: list of spike trains</span>
+<span class="sd">    :param indices: list of indices defining which spike trains to use,</span>
+<span class="sd">                    if None all given spike trains are used (default=None)</span>
+<span class="sd">    :type indices: list or None</span>
+<span class="sd">    :param interval: averaging interval given as a pair of floats, if None</span>
+<span class="sd">                     the average over the whole function is computed.</span>
+<span class="sd">    :type interval: Pair of floats or None.</span>
+<span class="sd">    :returns: 2D array with the pair wise time average spike distances</span>
+<span class="sd">              :math:`S_{ij}`</span>
+<span class="sd">    :rtype: np.array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_generic_distance_matrix</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">spike_distance</span><span class="p">,</span>
+                                    <span class="n">indices</span><span class="p">,</span> <span class="n">interval</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">PySpike 0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Mario Mulansky.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>
