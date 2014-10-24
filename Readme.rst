@@ -252,6 +252,20 @@ The following example computes and plots the ISI- and SPIKE-distance matrix, whe
     plt.show()
 
 
+===============================================================================
+
+`The work on PySpike was supported by the European Comission through the Marie
+Curie Initial Training Network 'Neural Engineering Transformative Technologies
+(NETT)' under the project number 289146.`
+
+
+**Python/C Programming:**
+ - Mario Mulansky
+
+**Scientific Methods:**
+ - Thomas Kreuz
+ - Nebojsa D. Bozanic
+
 
 .. _ISI: http://www.scholarpedia.org/article/Measures_of_spike_train_synchrony#ISI-distance
 .. _SPIKE: http://www.scholarpedia.org/article/SPIKE-distance
