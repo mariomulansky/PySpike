@@ -53,20 +53,21 @@
 <h1>PySpike<a class="headerlink" href="#pyspike" title="Permalink to this headline">¶</a></h1>
 <a class="reference external image-reference" href="https://travis-ci.org/mariomulansky/PySpike"><img alt="https://travis-ci.org/mariomulansky/PySpike.svg?branch=master" src="https://travis-ci.org/mariomulansky/PySpike.svg?branch=master" /></a>
 <p>PySpike is a Python library for the numerical analysis of spike train similarity.
-Its core functionality is the implementation of the bivariate <a class="reference external" href="http://www.scholarpedia.org/article/Measures_of_spike_train_synchrony#ISI-distance">ISI</a> <a class="footnote-reference" href="#id3" id="id1">[1]</a> and <a class="reference external" href="http://www.scholarpedia.org/article/SPIKE-distance">SPIKE</a> <a class="footnote-reference" href="#id4" id="id2">[2]</a> distance.
+Its core functionality is the implementation of the bivariate <a class="reference external" href="http://www.scholarpedia.org/article/Measures_of_spike_train_synchrony#ISI-distance">ISI</a> and <a class="reference external" href="http://www.scholarpedia.org/article/SPIKE-distance">SPIKE</a> distance <a class="footnote-reference" href="#id3" id="id1">[1]</a> <a class="footnote-reference" href="#id4" id="id2">[2]</a>.
 Additionally, it provides functions to compute multivariate SPIKE and ISI distances, as well as averaging and general spike train processing.
 All computation intensive parts are implemented in C via <a class="reference external" href="http://www.cython.org">cython</a> to reach a competitive performance (factor 100-200 over plain Python).</p>
+<p>PySpike provides the same fundamental functionality as the <a class="reference external" href="http://wwwold.fi.isc.cnr.it/users/thomas.kreuz/Source-Code/SPIKY.html">SPIKY</a> framework for Matlab, which additionally contains spike-train generators, more spike train distance measures and many visualization routines.</p>
 <p>All source codes are published under the <a class="reference external" href="http://opensource.org/licenses/BSD-2-Clause">BSD_License</a>.</p>
 <table class="docutils footnote" frame="void" id="id3" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>Kreuz T, Haas JS, Morelli A, Abarbanel HDI, Politi A, <em>Measuring spike train synchrony.</em> J Neurosci Methods 165, 151 (2007)</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>Kreuz T, Haas JS, Morelli A, Abarbanel HDI, Politi A, <em>Measuring spike train synchrony.</em> J Neurosci Methods 165, 151 (2007) <a class="reference external" href="http://wwwold.fi.isc.cnr.it/users/thomas.kreuz/images/Kreuz_JNeurosciMethods_2007_Spike-Train-Synchrony.pdf">[pdf]</a></td></tr>
 </tbody>
 </table>
 <table class="docutils footnote" frame="void" id="id4" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id2">[2]</a></td><td>Kreuz T, Chicharro D, Houghton C, Andrzejak RG, Mormann F, <em>Monitoring spike train synchrony.</em> J Neurophysiol 109, 1457 (2013)</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id2">[2]</a></td><td>Kreuz T, Chicharro D, Houghton C, Andrzejak RG, Mormann F, <em>Monitoring spike train synchrony.</em> J Neurophysiol 109, 1457 (2013) <a class="reference external" href="http://wwwold.fi.isc.cnr.it/users/thomas.kreuz/images/Kreuz_JNeurophysiol_2013_SPIKE-distance.pdf">[pdf]</a></td></tr>
 </tbody>
 </table>
 <div class="section" id="requirements-and-installation">
@@ -262,9 +263,9 @@ The following example computes and plots the ISI- and SPIKE-distance matrix, whe
 </pre></div>
 </div>
 <hr class="docutils" />
-<p><cite>The work on PySpike was supported by the European Comission through the Marie
-Curie Initial Training Network &#8216;Neural Engineering Transformative Technologies
-(NETT)&#8217; under the project number 289146.</cite></p>
+<p><em>The work on PySpike was supported by the European Comission through the Marie
+Curie Initial Training Network</em> <a class="reference external" href="http://www.neural-engineering.eu/">Neural Engineering Transformative Technologies
+(NETT)</a> <em>under the project number 289146.</em></p>
 <dl class="docutils">
 <dt><strong>Python/C Programming:</strong></dt>
 <dd><ul class="first last simple">
