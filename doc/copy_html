@@ -1,0 +1,12 @@
+#!/bin/bash
+
+git checkout gh-pages
+rc=$?
+if [[ $rc != 0 ]] ; then
+    exit $rc
+fi
+cp -r _build/html/*.html _build/html/*.js _build/html/_static ../
+echo "html files copied"
+git commit -am"website update"
+git push
+git checkout master
