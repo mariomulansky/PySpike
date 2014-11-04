@@ -20,12 +20,25 @@ All source codes are published under the BSD_License_.
 Requirements and Installation
 -----------------------------
 
-To use PySpike you need Python installed with the following additional packages:
+PySpike is available at Python Package Index and this is the easiest way to obtain the PySpike package.
+If you have `pip` installed, just run
+
+.. code:: bash
+
+   sudo pip install pyspike
+
+to install pyspike.
+PySpike requires `numpy` as minimal requirement, as well as a C compiler to generate the binaries.
+
+Install from Github sources
+...........................
+
+You can also obtain the latest PySpike developer version from the github repository.
+For that, make sure you have the following Python libraries installed:
 
 - numpy
-- scipy
-- matplotlib
 - cython
+- matplotlib (for the examples)
 - nosetests (for running the tests)
 
 In particular, make sure that cython_ is configured properly and able to locate a C compiler, otherwise PySpike will use the much slower Python implementations.
