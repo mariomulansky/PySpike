@@ -78,7 +78,7 @@ To quickly obtain spike trains from such files, PySpike provides the function :c
 This function expects the name of the data file as first parameter.
 Additionally, the time interval of the spike train measurement can be provided as a pair of start- and end-time values.
 If the time interval is provided (:code:`time_interval is not None`), auxiliary spikes at the start- and end-time of the interval are added to the spike trains.
-Furthermore, the spike trains are ordered via :code:`np.sort` (disable this feature by providing :code:`sort=False` as a parameter to the load function).
+Furthermore, the spike trains are sorted via :code:`np.sort` (disable this feature by providing :code:`is_sorted=True` as a parameter to the load function).
 As result, :code:`load_spike_trains_from_txt` returns a *list of arrays* containing the spike trains in the text file.
 
 If you load spike trains yourself, i.e. from data files with different structure, you can use the helper function :code:`add_auxiliary_spikes` to add the auxiliary spikes at the beginning and end of the observation interval.
@@ -99,7 +99,7 @@ Computing bivariate distances profiles
 
     Spike trains are expected to be *sorted*! 
     For performance reasons, the PySpike distance functions do not check if the spike trains provided are indeed sorted.
-    Make sure that all your spike trains are sorted.
+    Make sure that all your spike trains are sorted, which is ensured if you use the `load_spike_trains_from_txt` function with the parameter `is_sorted=False`.
     If in doubt, use :code:`spike_train = np.sort(spike_train)` to obtain a correctly sorted spike train.
     
     Furthermore, the spike trains should have auxiliary spikes at the beginning and end of the observation interval.

@@ -48,15 +48,16 @@ def add_auxiliary_spikes(spike_train, time_interval):
 ############################################################
 # spike_train_from_string
 ############################################################
-def spike_train_from_string(s, sep=' ', sort=True):
+def spike_train_from_string(s, sep=' ', is_sorted=False):
     """ Converts a string of times into an array of spike times.
 
     :param s: the string with (ordered) spike times
     :param sep: The separator between the time numbers, default=' '.
-    :param sort: If True, the spike times are order via `np.sort`, default=True
+    :param is_sorted: if True, the spike times are not sorted after loading,
+    if False, spike times are sorted with `np.sort`
     :returns: array of spike times
     """
-    if sort:
+    if not(is_sorted):
         return np.sort(np.fromstring(s, sep=sep))
     else:
         return np.fromstring(s, sep=sep)
