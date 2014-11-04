@@ -11,6 +11,7 @@ Distributed under the BSD License
 """
 from setuptools import setup, find_packages
 from distutils.extension import Extension
+import os.path
 import numpy
 
 try:
@@ -20,20 +21,27 @@ except ImportError:
 else:
     use_cython = True
 
+if os.path.isfile("pyspike/cython_add.c") and \
+   os.path.isfile("pyspike/cython_distance.c"):
+    use_c = True
+else:
+    use_c = False
+
 cmdclass = {}
 ext_modules = []
 
-if use_cython:
+if use_cython:  # Cython is available, compile .pyx -> .c
     ext_modules += [
         Extension("pyspike.cython_add", ["pyspike/cython_add.pyx"]),
         Extension("pyspike.cython_distance", ["pyspike/cython_distance.pyx"]),
     ]
     cmdclass.update({'build_ext': build_ext})
-else:
+elif use_c:  # c files are there, compile to binaries
     ext_modules += [
         Extension("pyspike.cython_add", ["pyspike/cython_add.c"]),
         Extension("pyspike.cython_distance", ["pyspike/cython_distance.c"]),
     ]
+# neither cython nor c files available -> automatic fall-back to python backend
 
 setup(
     name='pyspike',
@@ -41,6 +49,7 @@ setup(
     version='0.1.2',
     cmdclass=cmdclass,
     ext_modules=ext_modules,
+    include_dirs=[numpy.get_include()],
     description='A Python library for the numerical analysis of spike\
 train similarity',
     author='Mario Mulansky',
