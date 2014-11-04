@@ -777,24 +777,23 @@ of this interval.</li>
 
 <dl class="function">
 <dt id="pyspike.spikes.spike_train_from_string">
-<tt class="descclassname">pyspike.spikes.</tt><tt class="descname">spike_train_from_string</tt><big>(</big><em>s</em>, <em>sep=' '</em>, <em>sort=True</em><big>)</big><a class="reference internal" href="_modules/pyspike/spikes.html#spike_train_from_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spikes.spike_train_from_string" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">pyspike.spikes.</tt><tt class="descname">spike_train_from_string</tt><big>(</big><em>s</em>, <em>sep=' '</em>, <em>is_sorted=False</em><big>)</big><a class="reference internal" href="_modules/pyspike/spikes.html#spike_train_from_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spikes.spike_train_from_string" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts a string of times into an array of spike times.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>s</strong> &#8211; the string with (ordered) spike times</li>
 <li><strong>sep</strong> &#8211; The separator between the time numbers, default=&#8217; &#8216;.</li>
-<li><strong>sort</strong> &#8211; If True, the spike times are order via <cite>np.sort</cite>, default=True</li>
+<li><strong>is_sorted</strong> &#8211; if True, the spike times are not sorted after loading,</li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">array of spike times</p>
 </td>
 </tr>
 </tbody>
 </table>
+<p>if False, spike times are sorted with <cite>np.sort</cite>
+:returns: array of spike times</p>
 </dd></dl>
 
 </div>

@@ -72,12 +72,21 @@ All computation intensive parts are implemented in C via <a class="reference ext
 </table>
 <div class="section" id="requirements-and-installation">
 <h2>Requirements and Installation<a class="headerlink" href="#requirements-and-installation" title="Permalink to this headline">¶</a></h2>
-<p>To use PySpike you need Python installed with the following additional packages:</p>
+<p>PySpike is available at Python Package Index and this is the easiest way to obtain the PySpike package.
+If you have <cite>pip</cite> installed, just run</p>
+<div class="code bash highlight-python"><div class="highlight"><pre>sudo pip install pyspike
+</pre></div>
+</div>
+<p>to install pyspike.
+PySpike requires <cite>numpy</cite> as minimal requirement, as well as a C compiler to generate the binaries.</p>
+<div class="section" id="install-from-github-sources">
+<h3>Install from Github sources<a class="headerlink" href="#install-from-github-sources" title="Permalink to this headline">¶</a></h3>
+<p>You can also obtain the latest PySpike developer version from the github repository.
+For that, make sure you have the following Python libraries installed:</p>
 <ul class="simple">
 <li>numpy</li>
-<li>scipy</li>
-<li>matplotlib</li>
 <li>cython</li>
+<li>matplotlib (for the examples)</li>
 <li>nosetests (for running the tests)</li>
 </ul>
 <p>In particular, make sure that <a class="reference external" href="http://www.cython.org">cython</a> is configured properly and able to locate a C compiler, otherwise PySpike will use the much slower Python implementations.</p>
@@ -93,6 +102,7 @@ python setup.py build_ext --inplace
 </div>
 <p>Finally, you should make PySpike&#8217;s installation folder known to Python to be able to import pyspike in your own projects.
 Therefore, add your <tt class="code docutils literal"><span class="pre">/path/to/PySpike</span></tt> to the <tt class="code docutils literal"><span class="pre">$PYTHONPATH</span></tt> environment variable.</p>
+</div>
 </div>
 <div class="section" id="spike-trains">
 <h2>Spike trains<a class="headerlink" href="#spike-trains" title="Permalink to this headline">¶</a></h2>
@@ -119,7 +129,7 @@ To quickly obtain spike trains from such files, PySpike provides the function <t
 <p>This function expects the name of the data file as first parameter.
 Additionally, the time interval of the spike train measurement can be provided as a pair of start- and end-time values.
 If the time interval is provided (<tt class="code docutils literal"><span class="pre">time_interval</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">None</span></tt>), auxiliary spikes at the start- and end-time of the interval are added to the spike trains.
-Furthermore, the spike trains are ordered via <tt class="code docutils literal"><span class="pre">np.sort</span></tt> (disable this feature by providing <tt class="code docutils literal"><span class="pre">sort=False</span></tt> as a parameter to the load function).
+Furthermore, the spike trains are sorted via <tt class="code docutils literal"><span class="pre">np.sort</span></tt> (disable this feature by providing <tt class="code docutils literal"><span class="pre">is_sorted=True</span></tt> as a parameter to the load function).
 As result, <tt class="code docutils literal"><span class="pre">load_spike_trains_from_txt</span></tt> returns a <em>list of arrays</em> containing the spike trains in the text file.</p>
 <p>If you load spike trains yourself, i.e. from data files with different structure, you can use the helper function <tt class="code docutils literal"><span class="pre">add_auxiliary_spikes</span></tt> to add the auxiliary spikes at the beginning and end of the observation interval.
 Both the ISI and the SPIKE distance computation require the presence of auxiliary spikes, so make sure you have those in your spike trains:</p>
@@ -137,7 +147,7 @@ Both the ISI and the SPIKE distance computation require the presence of auxiliar
 <blockquote>
 <div><p>Spike trains are expected to be <em>sorted</em>!
 For performance reasons, the PySpike distance functions do not check if the spike trains provided are indeed sorted.
-Make sure that all your spike trains are sorted.
+Make sure that all your spike trains are sorted, which is ensured if you use the <cite>load_spike_trains_from_txt</cite> function with the parameter <cite>is_sorted=False</cite>.
 If in doubt, use <tt class="code docutils literal"><span class="pre">spike_train</span> <span class="pre">=</span> <span class="pre">np.sort(spike_train)</span></tt> to obtain a correctly sorted spike train.</p>
 <p>Furthermore, the spike trains should have auxiliary spikes at the beginning and end of the observation interval.
 You can ensure this by providing the <tt class="code docutils literal"><span class="pre">time_interval</span></tt> in the <tt class="code docutils literal"><span class="pre">load_spike_trains_from_txt</span></tt> function, or calling <tt class="code docutils literal"><span class="pre">add_auxiliary_spikes</span></tt> for your spike trains.
@@ -314,7 +324,10 @@ Curie Initial Training Network</em> <a class="reference external" href="http://w
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">PySpike</a><ul>
-<li><a class="reference internal" href="#requirements-and-installation">Requirements and Installation</a></li>
+<li><a class="reference internal" href="#requirements-and-installation">Requirements and Installation</a><ul>
+<li><a class="reference internal" href="#install-from-github-sources">Install from Github sources</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#spike-trains">Spike trains</a><ul>
 <li><a class="reference internal" href="#loading-from-text-files">Loading from text files</a></li>
 </ul>

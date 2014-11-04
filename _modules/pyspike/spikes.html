@@ -98,15 +98,16 @@
 <span class="c">############################################################</span>
 <span class="c"># spike_train_from_string</span>
 <span class="c">############################################################</span></div>
-<div class="viewcode-block" id="spike_train_from_string"><a class="viewcode-back" href="../../pyspike.html#pyspike.spikes.spike_train_from_string">[docs]</a><span class="k">def</span> <span class="nf">spike_train_from_string</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<div class="viewcode-block" id="spike_train_from_string"><a class="viewcode-back" href="../../pyspike.html#pyspike.spikes.spike_train_from_string">[docs]</a><span class="k">def</span> <span class="nf">spike_train_from_string</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="n">is_sorted</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Converts a string of times into an array of spike times.</span>
 
 <span class="sd">    :param s: the string with (ordered) spike times</span>
 <span class="sd">    :param sep: The separator between the time numbers, default=&#39; &#39;.</span>
-<span class="sd">    :param sort: If True, the spike times are order via `np.sort`, default=True</span>
+<span class="sd">    :param is_sorted: if True, the spike times are not sorted after loading,</span>
+<span class="sd">    if False, spike times are sorted with `np.sort`</span>
 <span class="sd">    :returns: array of spike times</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">sort</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="n">is_sorted</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">sep</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">sep</span><span class="p">)</span>
