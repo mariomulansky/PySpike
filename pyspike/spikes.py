@@ -129,3 +129,43 @@ def merge_spike_trains(spike_trains):
             index_list = index_list[index_list != i]
         vals = [spike_trains[n][indices[n]] for n in index_list]
     return merged_spikes
+
+
+############################################################
+# generate_poisson_spikes
+############################################################
+def generate_poisson_spikes(rate, time_interval, add_aux_spikes=True):
+    """ Generates a Poisson spike train with the given rate in the given time
+    interval
+
+    :param rate: The rate of the spike trains
+    :param time_interval: A pair (T_start, T_end) of values representing the
+                          start and end time of the spike train measurement or
+                          a single value representing the end time, the T_start
+                          is then assuemd as 0. Auxiliary spikes will be added
+                          to the spike train at the beginning and end of this
+                          interval, if they are not yet present.
+    :type time_interval: pair of doubles or double
+    :returns: Poisson spike train
+    """
+    try:
+        T_start = time_interval[0]
+        T_end = time_interval[1]
+    except:
+        T_start = 0
+        T_end = time_interval
+    # roughly how many spikes are required to fill the interval
+    N = max(1, int(1.2 * rate * (T_end-T_start)))
+    N_append = max(1, int(0.1 * rate * (T_end-T_start)))
+    intervals = np.random.exponential(1.0/rate, N)
+    # make sure we have enough spikes
+    while T_start + sum(intervals) < T_end:
+        print T_start + sum(intervals)
+        intervals = np.append(intervals,
+                              np.random.exponential(1.0/rate, N_append))
+    spikes = T_start + np.cumsum(intervals)
+    spikes = spikes[spikes < T_end]
+    if add_aux_spikes:
+        return add_auxiliary_spikes(spikes, time_interval)
+    else:
+        return spikes

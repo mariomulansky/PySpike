@@ -123,6 +123,15 @@ cdef inline double get_min_dist_cython(double spike_time,
 
 
 ############################################################
+# isi_avrg_cython
+############################################################
+cdef inline double isi_avrg_cython(double isi1, double isi2) nogil:
+    return 0.5*(isi1+isi2)*(isi1+isi2)
+    # alternative definition to obtain <S> ~ 0.5 for Poisson spikes
+    # return 0.5*(isi1*isi1+isi2*isi2)
+
+
+############################################################
 # spike_distance_cython
 ############################################################
 def spike_distance_cython(double[:] t1, 
@@ -155,7 +164,7 @@ def spike_distance_cython(double[:] t1,
         isi2 = max(t2[1]-t2[0], t2[2]-t2[1])
         s1 = dt_f1*(t1[1]-t1[0])/isi1
         s2 = dt_f2*(t2[1]-t2[0])/isi2
-        y_starts[0] = (s1*isi2 + s2*isi1) / ((isi1+isi2)**2/2)
+        y_starts[0] = (s1*isi2 + s2*isi1) / isi_avrg_cython(isi1, isi2)
         while True:
             # print(index, index1, index2)
             if t1[index1+1] < t2[index2+1]:
@@ -169,12 +178,12 @@ def spike_distance_cython(double[:] t1,
                 s1 = dt_p1
                 s2 = (dt_p2*(t2[index2+1]-t1[index1]) + 
                       dt_f2*(t1[index1]-t2[index2])) / isi2
-                y_ends[index-1] = (s1*isi2 + s2*isi1)/(0.5*(isi1+isi2)*(isi1+isi2))
+                y_ends[index-1] = (s1*isi2 + s2*isi1)/isi_avrg_cython(isi1, isi2)
                 # now the next interval start value
                 dt_f1 = get_min_dist_cython(t1[index1+1], t2, N2, index2)
                 isi1 = t1[index1+1]-t1[index1]
                 # s2 is the same as above, thus we can compute y2 immediately
-                y_starts[index] = (s1*isi2 + s2*isi1)/(0.5*(isi1+isi2)*(isi1+isi2))
+                y_starts[index] = (s1*isi2 + s2*isi1)/isi_avrg_cython(isi1, isi2)
             elif t1[index1+1] > t2[index2+1]:
                 index2 += 1
                 if index2+1 >= N2:
@@ -185,13 +194,13 @@ def spike_distance_cython(double[:] t1,
                 s1 = (dt_p1*(t1[index1+1]-t2[index2]) + 
                       dt_f1*(t2[index2]-t1[index1])) / isi1
                 s2 = dt_p2
-                y_ends[index-1] = (s1*isi2 + s2*isi1) / (0.5*(isi1+isi2)*(isi1+isi2))
+                y_ends[index-1] = (s1*isi2 + s2*isi1) / isi_avrg_cython(isi1, isi2)
                 # now the next interval start value
                 dt_f2 = get_min_dist_cython(t2[index2+1], t1, N1, index1)
                 #s2 = dt_f2
                 isi2 = t2[index2+1]-t2[index2]
                 # s2 is the same as above, thus we can compute y2 immediately
-                y_starts[index] = (s1*isi2 + s2*isi1)/(0.5*(isi1+isi2)*(isi1+isi2))
+                y_starts[index] = (s1*isi2 + s2*isi1)/isi_avrg_cython(isi1, isi2)
             else: # t1[index1+1] == t2[index2+1] - generate only one event
                 index1 += 1
                 index2 += 1
@@ -214,7 +223,7 @@ def spike_distance_cython(double[:] t1,
         isi2 = max(t2[N2-1]-t2[N2-2], t2[N2-2]-t2[N2-3])
         s1 = dt_p1*(t1[N1-1]-t1[N1-2])/isi1
         s2 = dt_p2*(t2[N2-1]-t2[N2-2])/isi2
-        y_ends[index-1] = (s1*isi2 + s2*isi1) / (0.5*(isi1+isi2)*(isi1+isi2))
+        y_ends[index-1] = (s1*isi2 + s2*isi1) / isi_avrg_cython(isi1, isi2)
     # end nogil
 
     # use only the data added above 
