@@ -136,6 +136,15 @@ class PieceWiseConstFunc(object):
             a /= int_length
         return a
 
+    def avrg_function_value(self):
+        """ Computes the average function value of the piece-wise const
+        function: :math:`a = 1/N sum_i f_i` where N is the number of intervals.
+
+        :returns: the average a.
+        :rtype: float
+        """
+        return sum(self.y)/(len(self.y))
+
     def add(self, f):
         """ Adds another PieceWiseConst function to this function.
         Note: only functions defined on the same interval can be summed.

@@ -9,6 +9,7 @@ Distributed under the BSD License
 
 import numpy as np
 import threading
+from functools import partial
 
 from pyspike import PieceWiseConstFunc, PieceWiseLinFunc
 
@@ -126,6 +127,42 @@ def spike_distance(spikes1, spikes2, interval=None):
 
     """
     return spike_profile(spikes1, spikes2).avrg(interval)
+
+
+############################################################
+# spike_sync_profile
+############################################################
+def spike_sync_profile(spikes1, spikes2, k=3):
+
+    assert k > 0
+
+    # cython implementation
+    try:
+        from cython_distance import cumulative_sync_cython \
+            as cumulative_sync_impl
+    except ImportError:
+#         print("Warning: spike_distance_cython not found. Make sure that \
+# PySpike is installed by running\n 'python setup.py build_ext --inplace'!\n \
+# Falling back to slow python backend.")
+        # use python backend
+        from python_backend import cumulative_sync_python \
+            as cumulative_sync_impl
+
+    st, c = cumulative_sync_impl(spikes1, spikes2)
+
+    # print c
+    # print 2*(c[-1]-c[0])/(len(spikes1)+len(spikes2)-2)
+
+    dc = np.zeros(len(c))
+    dc[k:-k] = (c[2*k:] - c[:-2*k]) / k
+    for n in xrange(1, k):
+        dc[n] = (c[2*n] - c[0]) / k
+        dc[-n-1] = (c[-1]-c[-2*n-1]) / k
+    dc[0] = dc[1]
+    dc[-1] = dc[-2]
+    # dc[-1] = (c[-1]-c[-2])/k
+    # print dc
+    return PieceWiseConstFunc(st, dc)
 
 
 ############################################################
@@ -276,6 +313,28 @@ def spike_profile_multi(spike_trains, indices=None):
 
     """
     return _generic_profile_multi(spike_trains, spike_profile, indices)
+
+
+############################################################
+# spike_profile_multi
+############################################################
+def spike_sync_profile_multi(spike_trains, indices=None, k=3):
+    """ Computes the multi-variate spike synchronization profile for a set of
+    spike trains. That is the average spike-distance of all pairs of spike
+    trains:
+    :math:`S_ss(t) = 2/((N(N-1)) sum_{<i,j>} S_{ss}^{i, j}`,
+    where the sum goes over all pairs <i,j>
+
+    :param spike_trains: list of spike trains
+    :param indices: list of indices defining which spike trains to use,
+                    if None all given spike trains are used (default=None)
+    :type indices: list or None
+    :returns: The averaged spike profile :math:`<S_{ss}>(t)`
+    :rtype: :class:`pyspike.function.PieceWiseConstFunc`
+
+    """
+    prof_func = partial(spike_sync_profile, k=k)
+    return _generic_profile_multi(spike_trains, prof_func, indices)
 
 
 ############################################################
