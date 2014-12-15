@@ -243,6 +243,60 @@ def cumulative_sync_python(spikes1, spikes2):
 
 
 ############################################################
+# coincidence_python
+############################################################
+def coincidence_python(spikes1, spikes2):
+
+    def get_tau(spikes1, spikes2, i, j):
+        return 0.5*min([spikes1[i]-spikes1[i-1], spikes1[i+1]-spikes1[i],
+                        spikes2[j]-spikes2[j-1], spikes2[j+1]-spikes2[j]])
+    N1 = len(spikes1)
+    N2 = len(spikes2)
+    i = 0
+    j = 0
+    n = 0
+    st = np.zeros(N1 + N2 - 2)
+    c = np.zeros(N1 + N2 - 3)
+    c[0] = 0
+    st[0] = 0
+    while n < N1 + N2:
+        if spikes1[i+1] < spikes2[j+1]:
+            i += 1
+            n += 1
+            tau = get_tau(spikes1, spikes2, i, j)
+            st[n] = spikes1[i]
+            if spikes1[i]-spikes2[j] > tau:
+                c[n] = 0
+            else:
+                c[n] = 1
+        elif spikes1[i+1] > spikes2[j+1]:
+            j += 1
+            n += 1
+            tau = get_tau(spikes1, spikes2, i, j)
+            st[n] = spikes2[j]
+            if spikes2[j]-spikes1[i] > tau:
+                c[n] = 0
+            else:
+                c[n] = 1
+        else:   # spikes1[i+1] = spikes2[j+1]
+            j += 1
+            i += 1
+            if i == N1-1 or j == N2-1:
+                break
+            n += 1
+            st[n] = spikes1[i]
+            c[n] = 0
+            n += 1
+            st[n] = spikes1[i]
+            c[n] = 1
+    c[0] = c[2]
+    st[0] = spikes1[0]
+    st[-1] = spikes1[-1]
+
+    return st, c
+
+
+############################################################
 # add_piece_wise_const_python
 ############################################################
 def add_piece_wise_const_python(x1, y1, x2, y2):

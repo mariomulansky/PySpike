@@ -138,30 +138,32 @@ def spike_sync_profile(spikes1, spikes2, k=3):
 
     # cython implementation
     try:
-        from cython_distance import cumulative_sync_cython \
-            as cumulative_sync_impl
+        from cython_distance import coincidence_cython \
+            as coincidence_impl
     except ImportError:
 #         print("Warning: spike_distance_cython not found. Make sure that \
 # PySpike is installed by running\n 'python setup.py build_ext --inplace'!\n \
 # Falling back to slow python backend.")
         # use python backend
-        from python_backend import cumulative_sync_python \
-            as cumulative_sync_impl
+        from python_backend import coincidence_python \
+            as coincidence_impl
 
-    st, c = cumulative_sync_impl(spikes1, spikes2)
-
-    # print c
-    # print 2*(c[-1]-c[0])/(len(spikes1)+len(spikes2)-2)
+    st, c = coincidence_impl(spikes1, spikes2)
 
     dc = np.zeros(len(c))
-    dc[k:-k] = (c[2*k:] - c[:-2*k]) / k
-    for n in xrange(1, k):
-        dc[n] = (c[2*n] - c[0]) / k
-        dc[-n-1] = (c[-1]-c[-2*n-1]) / k
-    dc[0] = dc[1]
-    dc[-1] = dc[-2]
-    # dc[-1] = (c[-1]-c[-2])/k
-    # print dc
+    for i in xrange(2*k):
+        dc[k:-k] += c[i:-2*k+i]
+
+    for n in xrange(0, k):
+        for i in xrange(n+k):
+            dc[n] += c[i]
+            dc[-n-1] += c[-i-1]
+        for i in xrange(k-n-1):
+            dc[n] += c[i]
+            dc[-n-1] += c[-i-1]
+
+    dc *= 1.0/k
+
     return PieceWiseConstFunc(st, dc)
 
 
