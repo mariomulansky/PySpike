@@ -130,6 +130,60 @@ def test_spike():
                         decimal=16)
 
 
+def test_spike_sync():
+    spikes1 = np.array([1.0, 2.0, 3.0])
+    spikes2 = np.array([2.1])
+    spikes1 = spk.add_auxiliary_spikes(spikes1, 4.0)
+    spikes2 = spk.add_auxiliary_spikes(spikes2, 4.0)
+    for k in xrange(1, 3):
+        assert_almost_equal(spk.spike_sync_distance(spikes1, spikes2, k=k),
+                            0.5, decimal=16)
+
+    spikes2 = np.array([3.1])
+    spikes2 = spk.add_auxiliary_spikes(spikes2, 4.0)
+    for k in xrange(1, 3):
+        assert_almost_equal(spk.spike_sync_distance(spikes1, spikes2, k=k),
+                            0.5, decimal=16)
+
+    spikes2 = np.array([1.1])
+    spikes2 = spk.add_auxiliary_spikes(spikes2, 4.0)
+    for k in xrange(1, 3):
+        assert_almost_equal(spk.spike_sync_distance(spikes1, spikes2, k=k),
+                            0.5, decimal=16)
+
+    spikes2 = np.array([0.9])
+    spikes2 = spk.add_auxiliary_spikes(spikes2, 4.0)
+    for k in xrange(1, 3):
+        assert_almost_equal(spk.spike_sync_distance(spikes1, spikes2, k=k),
+                            0.5, decimal=16)
+
+    spikes1 = np.array([100, 300, 400, 405, 410, 500, 700, 800,
+                        805, 810, 815, 900])
+    spikes2 = np.array([100, 200, 205, 210, 295, 350, 400, 510,
+                        600, 605, 700, 910])
+    spikes3 = np.array([100, 180, 198, 295, 412, 420, 510, 640,
+                        695, 795, 820, 920])
+    spikes1 = spk.add_auxiliary_spikes(spikes1, 1000)
+    spikes2 = spk.add_auxiliary_spikes(spikes2, 1000)
+    spikes3 = spk.add_auxiliary_spikes(spikes3, 1000)
+    for k in xrange(1, 10):
+        assert_almost_equal(spk.spike_sync_distance(spikes1, spikes2, k=k),
+                            0.5, decimal=15)
+        assert_almost_equal(spk.spike_sync_distance(spikes1, spikes3, k=k),
+                            0.5, decimal=15)
+        assert_almost_equal(spk.spike_sync_distance(spikes2, spikes3, k=k),
+                            0.5, decimal=15)
+
+    f1 = spk.spike_sync_profile(spikes1, spikes2, k=1)
+    f2 = spk.spike_sync_profile(spikes1, spikes3, k=1)
+    f3 = spk.spike_sync_profile(spikes2, spikes3, k=1)
+    f = spk.spike_sync_profile_multi([spikes1, spikes2, spikes3], k=1)
+    # hands on definition of the average multivariate spike synchronization
+    expected = (f1.integral() + f2.integral() + f3.integral()) / \
+               (len(f1.y)+len(f2.y)+len(f3.y)-3)
+    assert_almost_equal(f.avrg(), expected, decimal=15)
+
+
 def check_multi_profile(profile_func, profile_func_multi):
     # generate spike trains:
     t1 = spk.add_auxiliary_spikes(np.array([0.2, 0.4, 0.6, 0.7]), 1.0)

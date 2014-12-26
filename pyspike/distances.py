@@ -11,7 +11,7 @@ import numpy as np
 import threading
 from functools import partial
 
-from pyspike import PieceWiseConstFunc, PieceWiseLinFunc
+from pyspike import PieceWiseConstFunc, PieceWiseLinFunc, IntervalSequence
 
 
 ############################################################
@@ -148,23 +148,34 @@ def spike_sync_profile(spikes1, spikes2, k=3):
         from python_backend import coincidence_python \
             as coincidence_impl
 
-    st, c = coincidence_impl(spikes1, spikes2)
+    st, J = coincidence_impl(spikes1, spikes2)
 
-    dc = np.zeros(len(c))
-    for i in xrange(2*k):
-        dc[k:-k] += c[i:-2*k+i]
+    N = len(J)
 
-    for n in xrange(0, k):
-        for i in xrange(n+k):
-            dc[n] += c[i]
-            dc[-n-1] += c[-i-1]
-        for i in xrange(k-n-1):
-            dc[n] += c[i]
-            dc[-n-1] += c[-i-1]
+    # compute the cumulative sum, include some extra values for boundary
+    # conditions
+    c = np.zeros(N + 2*k)
+    c[k:-k] = np.cumsum(J)
+    # set the boundary values
+    # on the left: c_0 = -c_1, c_{-1} = -c_2, ..., c{-k+1} = c_k
+    # on the right: c_{N+1} = c_N, c_{N+2} = 2*c_N - c_{N-1},
+    #               c_{N+2} = 2*c_N - c_{N-2}, ..., c_{N+k} = 2*c_N - c_{N-k+1}
+    for n in xrange(k):
+        c[k-n-1] = -c[k+n]
+        c[-k+n] = 2*c[-k-1] - c[-k-1-n]
+    # with the right boundary values, the differences become trivial
+    J_w = c[2*k:] - c[:-2*k]
+    # normalize to half the interval width
+    J_w *= 1.0/k
 
-    dc *= 1.0/k
+    return IntervalSequence(st, J_w)
 
-    return PieceWiseConstFunc(st, dc)
+
+############################################################
+# spike_sync_distance
+############################################################
+def spike_sync_distance(spikes1, spikes2, k=3):
+    return spike_sync_profile(spikes1, spikes2, k).avrg()
 
 
 ############################################################
@@ -201,8 +212,7 @@ def _generic_profile_multi(spike_trains, pair_distance_func, indices=None):
     for (i, j) in pairs[1:]:
         current_dist = pair_distance_func(spike_trains[i], spike_trains[j])
         average_dist.add(current_dist)       # add to the average
-    average_dist.mul_scalar(1.0/len(pairs))  # normalize
-    return average_dist
+    return average_dist, len(pairs)
 
 
 ############################################################
@@ -273,7 +283,10 @@ def isi_profile_multi(spike_trains, indices=None):
     :returns: The averaged isi profile :math:`<S_{isi}>(t)`
     :rtype: :class:`pyspike.function.PieceWiseConstFunc`
     """
-    return _generic_profile_multi(spike_trains, isi_profile, indices)
+    average_dist, M = _generic_profile_multi(spike_trains, isi_profile,
+                                             indices)
+    average_dist.mul_scalar(1.0/M)  # normalize
+    return average_dist
 
 
 ############################################################
@@ -314,7 +327,10 @@ def spike_profile_multi(spike_trains, indices=None):
     :rtype: :class:`pyspike.function.PieceWiseLinFunc`
 
     """
-    return _generic_profile_multi(spike_trains, spike_profile, indices)
+    average_dist, M = _generic_profile_multi(spike_trains, spike_profile,
+                                             indices)
+    average_dist.mul_scalar(1.0/M)  # normalize
+    return average_dist
 
 
 ############################################################
@@ -336,7 +352,10 @@ def spike_sync_profile_multi(spike_trains, indices=None, k=3):
 
     """
     prof_func = partial(spike_sync_profile, k=k)
-    return _generic_profile_multi(spike_trains, prof_func, indices)
+    average_dist, M = _generic_profile_multi(spike_trains, prof_func,
+                                             indices)
+    # average_dist.mul_scalar(1.0/M)  # no normalization here!
+    return average_dist
 
 
 ############################################################

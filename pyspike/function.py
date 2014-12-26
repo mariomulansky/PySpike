@@ -136,15 +136,6 @@ class PieceWiseConstFunc(object):
             a /= int_length
         return a
 
-    def avrg_function_value(self):
-        """ Computes the average function value of the piece-wise const
-        function: :math:`a = 1/N sum_i f_i` where N is the number of intervals.
-
-        :returns: the average a.
-        :rtype: float
-        """
-        return sum(self.y)/(len(self.y))
-
     def add(self, f):
         """ Adds another PieceWiseConst function to this function.
         Note: only functions defined on the same interval can be summed.
@@ -168,6 +159,146 @@ that PySpike is installed by running\n 'python setup.py build_ext --inplace'! \
                 add_piece_wise_const_impl
 
         self.x, self.y = add_piece_wise_const_impl(self.x, self.y, f.x, f.y)
+
+    def mul_scalar(self, fac):
+        """ Multiplies the function with a scalar value
+
+        :param fac: Value to multiply
+        :type fac: double
+        :rtype: None
+        """
+        self.y *= fac
+
+
+##############################################################
+# IntervalSequence
+##############################################################
+class IntervalSequence(object):
+    """ A class representing a sequence of values defined in some interval.
+    This is very similar to a `PieceWiseConstFunc`, but with different
+    averaging and addition.
+    """
+
+    def __init__(self, x, y):
+        """ Constructs the interval sequence.
+
+        :param x: array of length N+1 defining the edges of the intervals of
+                  the intervals.
+        :param y: array of length N defining the values at the intervals.
+        """
+        # convert parameters to arrays, also ensures copying
+        self.x = np.array(x)
+        self.y = np.array(y)
+        self.extra_zero_intervals = 0
+
+    def copy(self):
+        """ Returns a copy of itself
+
+        :rtype: :class:`IntervalSequence`
+        """
+        return IntervalSequence(self.x, self.y)
+
+    def almost_equal(self, other, decimal=14):
+        """ Checks if the function is equal to another function up to `decimal`
+        precision.
+
+        :param other: another :class:`IntervalSequence`
+        :returns: True if the two functions are equal up to `decimal` decimals,
+                  False otherwise
+        :rtype: bool
+        """
+        eps = 10.0**(-decimal)
+        return np.allclose(self.x, other.x, atol=eps, rtol=0.0) and \
+            np.allclose(self.y, other.y, atol=eps, rtol=0.0)
+
+    def get_plottable_data(self):
+        """ Returns two arrays containing x- and y-coordinates for immeditate
+        plotting of the interval sequence.
+
+        :returns: (x_plot, y_plot) containing plottable data
+        :rtype: pair of np.array
+
+        Example::
+
+            x, y = f.get_plottable_data()
+            plt.plot(x, y, '-o', label="Piece-wise const function")
+        """
+
+        x_plot = np.empty(2*len(self.x)-2)
+        x_plot[0] = self.x[0]
+        x_plot[1::2] = self.x[1:]
+        x_plot[2::2] = self.x[1:-1]
+        y_plot = np.empty(2*len(self.y))
+        y_plot[::2] = self.y
+        normalization = 1.0 * (len(self.y)-1) / (len(self.y) +
+                                                 self.extra_zero_intervals-1)
+        y_plot[1::2] = self.y
+
+        return x_plot, y_plot * normalization
+
+    def integral(self, interval=None):
+        """ Returns the integral over the given interval. For the interval
+        sequence this amounts to the sum over all values divided by the count
+        of intervals.
+
+        :param interval: integration interval given as a pair of floats, if
+                         None the integral over the whole function is computed.
+        :type interval: Pair of floats or None.
+        :returns: the integral
+        :rtype: float
+        """
+        if interval is None:
+            # no interval given, integrate over the whole spike train
+            # don't count the first value, which is zero by definition
+            a = np.sum(self.y)
+        else:
+            raise NotImplementedError()
+        return a
+
+    def avrg(self, interval=None):
+        """ Computes the average of the interval sequence:
+        :math:`a = 1/N sum f_n ` where N is the number of intervals.
+
+        :param interval: averaging interval given as a pair of floats, a
+                         sequence of pairs for averaging multiple intervals, or
+                         None, if None the average over the whole function is
+                         computed.
+        :type interval: Pair, sequence of pairs, or None.
+        :returns: the average a.
+        :rtype: float
+        """
+        if interval is None:
+            # no interval given, average over the whole spike train
+            # don't count the first interval for normalization
+            return self.integral() / (len(self.y)-1+self.extra_zero_intervals)
+        else:
+            raise NotImplementedError()
+
+    def add(self, f):
+        """ Adds another `IntervalSequence` function to this function.
+        Note: only functions defined on the same interval can be summed.
+
+        :param f: :class:`IntervalSequence` function to be added.
+        :rtype: None
+        """
+        assert self.x[0] == f.x[0], "The functions have different intervals"
+        assert self.x[-1] == f.x[-1], "The functions have different intervals"
+
+        # cython version
+        try:
+            from cython_add import add_interval_sequence_cython as \
+                add_interval_sequence_impl
+        except ImportError:
+#             print("Warning: add_piece_wise_const_cython not found. Make sure \
+# that PySpike is installed by running\n 'python setup.py build_ext --inplace'! \
+# \n Falling back to slow python backend.")
+            # use python backend
+            from python_backend import add_interval_sequence_python as \
+                add_interval_sequence_impl
+
+        self.x, self.y, extra_intervals = \
+            add_interval_sequence_impl(self.x, self.y, f.x, f.y)
+        self.extra_zero_intervals += extra_intervals
 
     def mul_scalar(self, fac):
         """ Multiplies the function with a scalar value

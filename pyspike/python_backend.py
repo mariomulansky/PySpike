@@ -289,7 +289,7 @@ def coincidence_python(spikes1, spikes2):
             n += 1
             st[n] = spikes1[i]
             c[n] = 1
-    c[0] = c[2]
+    #c[0] = c[2]
     st[0] = spikes1[0]
     st[-1] = spikes1[-1]
 
@@ -338,6 +338,86 @@ def add_piece_wise_const_python(x1, y1, x2, y2):
     # only use the data that was actually filled
 
     return x_new[:index+2], y_new[:index+1]
+
+
+############################################################
+# add_interval_sequence_python
+############################################################
+def add_interval_sequence_python(x1, y1, x2, y2):
+    yscale1 = np.empty_like(y1)
+    index2 = 1
+    # s1 = (len(y1)+len(y2)-2.0) / (len(y1)-1.0)
+    # s2 = (len(y1)+len(y2)-2.0) / (len(y2)-1.0)
+    s1 = 1.0
+    s2 = 1.0
+    for i in xrange(len(y1)):
+        c = 1
+        while index2 < len(x2)-1 and x2[index2] < x1[i+1]:
+            index2 += 1
+            c += 1
+        if index2 < len(x2)-1 and x2[index2] == x1[i+1]:
+            index2 += 1
+            # c += 1
+        yscale1[i] = s1/c
+
+    yscale2 = np.empty_like(y2)
+    index1 = 1
+    for i in xrange(len(y2)):
+        c = 1
+        while index1 < len(x1)-1 and x1[index1] < x2[i+1]:
+            index1 += 1
+            c += 1
+        if index1 < len(x1)-1 and x1[index1] == x2[i+1]:
+            index1 += 1
+            # c += 1
+        yscale2[i] = s2/c
+
+    x_new = np.empty(len(x1) + len(x2))
+    y_new = np.empty(len(x_new)-1)
+    x_new[0] = x1[0]
+    index1 = 0
+    index2 = 0
+    index = 0
+    additional_intervals = 0
+    while (index1+1 < len(y1)) and (index2+1 < len(y2)):
+        y_new[index] = y1[index1]*yscale1[index1] + y2[index2]*yscale2[index2]
+        index += 1
+        # print(index1+1, x1[index1+1], y1[index1+1], x_new[index])
+        if x1[index1+1] < x2[index2+1]:
+            index1 += 1
+            x_new[index] = x1[index1]
+        elif x1[index1+1] > x2[index2+1]:
+            index2 += 1
+            x_new[index] = x2[index2]
+        else:  # x1[index1+1] == x2[index2+1]
+            # y_new[index] = y1[index1]*yscale1[index1] + \
+            #     y2[index2]*yscale2[index2]
+            index1 += 1
+            # x_new[index] = x1[index1]
+            index2 += 1
+            # index += 1
+            x_new[index] = x1[index1]
+            additional_intervals += 1
+    y_new[index] = y1[index1]*yscale1[index1] + y2[index2]*yscale2[index2]
+    # one array reached the end -> copy the contents of the other to the end
+    if index1+1 < len(y1):
+        x_new[index+1:index+1+len(x1)-index1-1] = x1[index1+1:]
+        y_new[index+1:index+1+len(y1)-index1-1] = \
+            y1[index1+1:]*yscale1[index1+1:] + y2[-1]*yscale2[-1]
+        index += len(x1)-index1-2
+    elif index2+1 < len(y2):
+        x_new[index+1:index+1+len(x2)-index2-1] = x2[index2+1:]
+        y_new[index+1:index+1+len(y2)-index2-1] = \
+            y2[index2+1:]*yscale2[index2+1:] + y1[-1]*yscale1[-1]
+        index += len(x2)-index2-2
+    else:  # both arrays reached the end simultaneously
+        # only the last x-value missing
+        x_new[index+1] = x1[-1]
+    # the last value is again the end of the interval
+    # x_new[index+1] = x1[-1]
+    # only use the data that was actually filled
+
+    return x_new[:index+2], y_new[:index+1], additional_intervals
 
 
 ############################################################
