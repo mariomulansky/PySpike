@@ -199,11 +199,11 @@ def test_multi_spike():
 def test_multi_spike_sync():
     # some basic multivariate check
     spikes1 = np.array([100, 300, 400, 405, 410, 500, 700, 800,
-                        805, 810, 815, 900])
+                        805, 810, 815, 900], dtype=float)
     spikes2 = np.array([100, 200, 205, 210, 295, 350, 400, 510,
-                        600, 605, 700, 910])
+                        600, 605, 700, 910], dtype=float)
     spikes3 = np.array([100, 180, 198, 295, 412, 420, 510, 640,
-                        695, 795, 820, 920])
+                        695, 795, 820, 920], dtype=float)
     spikes1 = spk.add_auxiliary_spikes(spikes1, 1000)
     spikes2 = spk.add_auxiliary_spikes(spikes2, 1000)
     spikes3 = spk.add_auxiliary_spikes(spikes3, 1000)
