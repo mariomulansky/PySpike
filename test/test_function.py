@@ -216,8 +216,7 @@ def test_df():
     assert_array_almost_equal(xp, xp_expected, decimal=16)
     assert_array_almost_equal(yp, yp_expected, decimal=16)
 
-    avrg_expected = 2.0 / 5.0
-    assert_almost_equal(f.avrg(), avrg_expected, decimal=16)
+    assert_almost_equal(f.avrg(), 2.0/5.0, decimal=16)
 
     # interval averaging
     a = f.avrg([0.5, 2.4])
@@ -228,6 +227,10 @@ def test_df():
     assert_almost_equal(a, 2.0/5.0, decimal=16)
     a = f.avrg([1.1, 4.0])
     assert_almost_equal(a, 1.0/3.0, decimal=16)
+
+    # averaging over multiple intervals
+    a = f.avrg([(0.5, 1.5), (1.5, 2.6)])
+    assert_almost_equal(a, 2.0/5.0, decimal=16)
 
 
 if __name__ == "__main__":

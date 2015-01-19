@@ -420,26 +420,44 @@ class DiscreteFunction(object):
         function, this amounts to the sum over all values divided by the total
         multiplicity.
 
-        :param interval: integration interval given as a pair of floats, if
+        :param interval: integration interval given as a pair of floats, or a
+                         sequence of pairs in case of multiple intervals, if
                          None the integral over the whole function is computed.
-        :type interval: Pair of floats or None.
+        :type interval: Pair, sequence of pairs, or None.
         :returns: the integral
         :rtype: float
         """
+
+        def get_indices(ival):
+            start_ind = np.searchsorted(self.x, ival[0], side='right')
+            end_ind = np.searchsorted(self.x, ival[1], side='left')
+            assert start_ind > 0 and end_ind < len(self.x), \
+                "Invalid averaging interval"
+            return start_ind, end_ind
+
         if interval is None:
             # no interval given, integrate over the whole spike train
             # don't count the first value, which is zero by definition
-            a = 1.0 * np.sum(self.y[1:-1]) / np.sum(self.mp[1:-1])
-        else:
+            return 1.0 * np.sum(self.y[1:-1]) / np.sum(self.mp[1:-1])
+
+        # check if interval is as sequence
+        assert isinstance(interval, collections.Sequence), \
+            "Invalid value for `interval`. None, Sequence or Tuple expected."
+        # check if interval is a sequence of intervals
+        if not isinstance(interval[0], collections.Sequence):
             # find the indices corresponding to the interval
-            start_ind = np.searchsorted(self.x, interval[0], side='right')
-            end_ind = np.searchsorted(self.x, interval[1], side='left')
-            assert start_ind > 0 and end_ind < len(self.x), \
-                "Invalid averaging interval"
-            # first the contribution from between the indices
-            a = np.sum(self.y[start_ind:end_ind]) / \
-                np.sum(self.mp[start_ind:end_ind])
-        return a
+            start_ind, end_ind = get_indices(interval)
+            return (np.sum(self.y[start_ind:end_ind]) /
+                    np.sum(self.mp[start_ind:end_ind]))
+        else:
+            value = 0.0
+            multiplicity = 0.0
+            for ival in interval:
+                # find the indices corresponding to the interval
+                start_ind, end_ind = get_indices(ival)
+                value += np.sum(self.y[start_ind:end_ind])
+                multiplicity += np.sum(self.mp[start_ind:end_ind])
+        return value/multiplicity
 
     def avrg(self, interval=None):
         """ Computes the average of the interval sequence:
@@ -453,23 +471,7 @@ class DiscreteFunction(object):
         :returns: the average a.
         :rtype: float
         """
-        if interval is None:
-            # no interval given, average over the whole spike train
-            return self.integral()
-
-        # check if interval is as sequence
-        assert isinstance(interval, collections.Sequence), \
-            "Invalid value for `interval`. None, Sequence or Tuple expected."
-        # check if interval is a sequence of intervals
-        if not isinstance(interval[0], collections.Sequence):
-            # just one interval
-            a = self.integral(interval)
-        else:
-            # several intervals
-            a = 0.0
-            for ival in interval:
-                a += self.integral(ival)
-        return a
+        return self.integral(interval)
 
     def add(self, f):
         """ Adds another `DiscreteFunction` function to this function.
