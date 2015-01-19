@@ -11,7 +11,7 @@ import numpy as np
 import threading
 from functools import partial
 
-from pyspike import PieceWiseConstFunc, PieceWiseLinFunc, MultipleValueSequence
+from pyspike import PieceWiseConstFunc, PieceWiseLinFunc, DiscreteFunction
 
 
 ############################################################
@@ -148,7 +148,7 @@ Falling back to slow python backend.")
 
     times, coincidences, multiplicity = coincidence_impl(spikes1, spikes2)
 
-    return MultipleValueSequence(times, coincidences, multiplicity)
+    return DiscreteFunction(times, coincidences, multiplicity)
 
 
 ############################################################
@@ -328,7 +328,7 @@ def spike_sync_profile_multi(spike_trains, indices=None):
                     if None all given spike trains are used (default=None)
     :type indices: list or None
     :returns: The averaged spike profile :math:`<S_{ss}>(t)`
-    :rtype: :class:`pyspike.function.PieceWiseConstFunc`
+    :rtype: :class:`pyspike.function.DiscreteFunction`
 
     """
     prof_func = partial(spike_sync_profile)

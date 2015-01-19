@@ -172,3 +172,62 @@ def add_piece_wise_lin_cython(double[:] x1, double[:] y11, double[:] y12,
     return (np.array(x_new[:index+2]),
             np.array(y1_new[:index+1]), 
             np.array(y2_new[:index+1]))
+
+
+############################################################
+# add_discrete_function_cython
+############################################################
+def add_discrete_function_cython(double[:] x1, double[:] y1, double[:] mp1,
+                                 double[:] x2, double[:] y2, double[:] mp2):
+
+    cdef double[:] x_new = np.empty(len(x1) + len(x2))
+    cdef double[:] y_new = np.empty_like(x_new)
+    cdef double[:] mp_new = np.empty_like(x_new)
+    cdef int index1 = 0
+    cdef int index2 = 0
+    cdef int index = 0
+    cdef int N1 = len(y1)
+    cdef int N2 = len(y2)
+    x_new[0] = x1[0]
+    while (index1+1 < N1) and (index2+1 < N2):
+        if x1[index1+1] < x2[index2+1]:
+            index1 += 1
+            index += 1
+            x_new[index] = x1[index1]
+            y_new[index] = y1[index1]
+            mp_new[index] = mp1[index1]
+        elif x1[index1+1] > x2[index2+1]:
+            index2 += 1
+            index += 1
+            x_new[index] = x2[index2]
+            y_new[index] = y2[index2]
+            mp_new[index] = mp2[index2]
+        else:  # x1[index1+1] == x2[index2+1]
+            index1 += 1
+            index2 += 1
+            index += 1
+            x_new[index] = x1[index1]
+            y_new[index] = y1[index1] + y2[index2]
+            mp_new[index] = mp1[index1] + mp2[index2]
+    # one array reached the end -> copy the contents of the other to the end
+    if index1+1 < len(y1):
+        x_new[index+1:index+1+len(x1)-index1-1] = x1[index1+1:]
+        y_new[index+1:index+1+len(x1)-index1-1] = y1[index1+1:]
+        mp_new[index+1:index+1+len(x1)-index1-1] = mp1[index1+1:]
+        index += len(x1)-index1-1
+    elif index2+1 < len(y2):
+        x_new[index+1:index+1+len(x2)-index2-1] = x2[index2+1:]
+        y_new[index+1:index+1+len(x2)-index2-1] = y2[index2+1:]
+        mp_new[index+1:index+1+len(x2)-index2-1] = mp2[index2+1:]
+        index += len(x2)-index2-1
+    # else:  # both arrays reached the end simultaneously
+    #     x_new[index+1] = x1[-1]
+    #     y_new[index+1] = y1[-1] + y2[-1]
+    #     mp_new[index+1] = mp1[-1] + mp2[-1]
+
+    y_new[0] = y_new[1]
+    mp_new[0] = mp_new[1]
+
+    # the last value is again the end of the interval
+    # only use the data that was actually filled
+    return x_new[:index+1], y_new[:index+1], mp_new[:index+1]

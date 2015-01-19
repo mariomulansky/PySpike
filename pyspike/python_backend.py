@@ -358,62 +358,6 @@ def add_piece_wise_const_python(x1, y1, x2, y2):
 
 
 ############################################################
-# add_multiple_value_sequence_python
-############################################################
-def add_multiple_value_sequence_python(x1, y1, mp1, x2, y2, mp2):
-
-    x_new = np.empty(len(x1) + len(x2))
-    y_new = np.empty_like(x_new)
-    mp_new = np.empty_like(x_new)
-    x_new[0] = x1[0]
-    index1 = 0
-    index2 = 0
-    index = 0
-    while (index1+1 < len(y1)) and (index2+1 < len(y2)):
-        if x1[index1+1] < x2[index2+1]:
-            index1 += 1
-            index += 1
-            x_new[index] = x1[index1]
-            y_new[index] = y1[index1]
-            mp_new[index] = mp1[index1]
-        elif x1[index1+1] > x2[index2+1]:
-            index2 += 1
-            index += 1
-            x_new[index] = x2[index2]
-            y_new[index] = y2[index2]
-            mp_new[index] = mp2[index2]
-        else:  # x1[index1+1] == x2[index2+1]
-            index1 += 1
-            index2 += 1
-            index += 1
-            x_new[index] = x1[index1]
-            y_new[index] = y1[index1] + y2[index2]
-            mp_new[index] = mp1[index1] + mp2[index2]
-    # one array reached the end -> copy the contents of the other to the end
-    if index1+1 < len(y1):
-        x_new[index+1:index+1+len(x1)-index1-1] = x1[index1+1:]
-        y_new[index+1:index+1+len(x1)-index1-1] = y1[index1+1:]
-        mp_new[index+1:index+1+len(x1)-index1-1] = mp1[index1+1:]
-        index += len(x1)-index1-1
-    elif index2+1 < len(y2):
-        x_new[index+1:index+1+len(x2)-index2-1] = x2[index2+1:]
-        y_new[index+1:index+1+len(x2)-index2-1] = y2[index2+1:]
-        mp_new[index+1:index+1+len(x2)-index2-1] = mp2[index2+1:]
-        index += len(x2)-index2-1
-    # else:  # both arrays reached the end simultaneously
-    #     x_new[index+1] = x1[-1]
-    #     y_new[index+1] = y1[-1] + y2[-1]
-    #     mp_new[index+1] = mp1[-1] + mp2[-1]
-
-    y_new[0] = y_new[1]
-    mp_new[0] = mp_new[1]
-
-    # the last value is again the end of the interval
-    # only use the data that was actually filled
-    return x_new[:index+1], y_new[:index+1], mp_new[:index+1]
-
-
-############################################################
 # add_piece_lin_const_python
 ############################################################
 def add_piece_wise_lin_python(x1, y11, y12, x2, y21, y22):
@@ -482,3 +426,60 @@ def add_piece_wise_lin_python(x1, y11, y12, x2, y21, y22):
     y2_new[index] = y12[-1]+y22[-1]
     # only use the data that was actually filled
     return x_new[:index+2], y1_new[:index+1], y2_new[:index+1]
+
+
+############################################################
+# add_discrete_function_python
+############################################################
+def add_discrete_function_python(x1, y1, mp1, x2, y2, mp2):
+
+    x_new = np.empty(len(x1) + len(x2))
+    y_new = np.empty_like(x_new)
+    mp_new = np.empty_like(x_new)
+    x_new[0] = x1[0]
+    index1 = 0
+    index2 = 0
+    index = 0
+    while (index1+1 < len(y1)) and (index2+1 < len(y2)):
+        if x1[index1+1] < x2[index2+1]:
+            index1 += 1
+            index += 1
+            x_new[index] = x1[index1]
+            y_new[index] = y1[index1]
+            mp_new[index] = mp1[index1]
+        elif x1[index1+1] > x2[index2+1]:
+            index2 += 1
+            index += 1
+            x_new[index] = x2[index2]
+            y_new[index] = y2[index2]
+            mp_new[index] = mp2[index2]
+        else:  # x1[index1+1] == x2[index2+1]
+            index1 += 1
+            index2 += 1
+            index += 1
+            x_new[index] = x1[index1]
+            y_new[index] = y1[index1] + y2[index2]
+            mp_new[index] = mp1[index1] + mp2[index2]
+    # one array reached the end -> copy the contents of the other to the end
+    if index1+1 < len(y1):
+        x_new[index+1:index+1+len(x1)-index1-1] = x1[index1+1:]
+        y_new[index+1:index+1+len(x1)-index1-1] = y1[index1+1:]
+        mp_new[index+1:index+1+len(x1)-index1-1] = mp1[index1+1:]
+        index += len(x1)-index1-1
+    elif index2+1 < len(y2):
+        x_new[index+1:index+1+len(x2)-index2-1] = x2[index2+1:]
+        y_new[index+1:index+1+len(x2)-index2-1] = y2[index2+1:]
+        mp_new[index+1:index+1+len(x2)-index2-1] = mp2[index2+1:]
+        index += len(x2)-index2-1
+    # else:  # both arrays reached the end simultaneously
+    #     x_new[index+1] = x1[-1]
+    #     y_new[index+1] = y1[-1] + y2[-1]
+    #     mp_new[index+1] = mp1[-1] + mp2[-1]
+
+    y_new[0] = y_new[1]
+    mp_new[0] = mp_new[1]
+
+    # the last value is again the end of the interval
+    # only use the data that was actually filled
+    return x_new[:index+1], y_new[:index+1], mp_new[:index+1]
+
