@@ -203,6 +203,33 @@ def test_pwl_avrg():
     assert_array_almost_equal(f_avrg.y2, y2_expected, decimal=16)
 
 
+def test_df():
+    # testing discrete function
+    x = [0.0, 1.0, 2.0, 2.5, 4.0]
+    y = [0.0, 1.0, 1.0, 0.0, 1.0]
+    mp = [1.0, 2.0, 1.0, 2.0, 1.0]
+    f = spk.DiscreteFunction(x, y, mp)
+    xp, yp = f.get_plottable_data()
+
+    xp_expected = [0.0, 1.0, 2.0, 2.5, 4.0]
+    yp_expected = [0.0, 0.5, 1.0, 0.0, 1.0]
+    assert_array_almost_equal(xp, xp_expected, decimal=16)
+    assert_array_almost_equal(yp, yp_expected, decimal=16)
+
+    avrg_expected = 2.0 / 5.0
+    assert_almost_equal(f.avrg(), avrg_expected, decimal=16)
+
+    # interval averaging
+    a = f.avrg([0.5, 2.4])
+    assert_almost_equal(a, 2.0/3.0, decimal=16)
+    a = f.avrg([1.5, 3.5])
+    assert_almost_equal(a, 1.0/3.0, decimal=16)
+    a = f.avrg((0.9, 3.5))
+    assert_almost_equal(a, 2.0/5.0, decimal=16)
+    a = f.avrg([1.1, 4.0])
+    assert_almost_equal(a, 1.0/3.0, decimal=16)
+
+
 if __name__ == "__main__":
     test_pwc()
     test_pwc_add()

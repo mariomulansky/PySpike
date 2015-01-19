@@ -416,9 +416,9 @@ class DiscreteFunction(object):
         return 1.0*self.x, 1.0*self.y/self.mp
 
     def integral(self, interval=None):
-        """ Returns the integral over the given interval. For the interval
-        sequence this amounts to the sum over all values divided by the count
-        of intervals.
+        """ Returns the integral over the given interval. For the discrete
+        function, this amounts to the sum over all values divided by the total
+        multiplicity.
 
         :param interval: integration interval given as a pair of floats, if
                          None the integral over the whole function is computed.
@@ -429,9 +429,16 @@ class DiscreteFunction(object):
         if interval is None:
             # no interval given, integrate over the whole spike train
             # don't count the first value, which is zero by definition
-            a = 1.0*np.sum(self.y[1:-1])
+            a = 1.0 * np.sum(self.y[1:-1]) / np.sum(self.mp[1:-1])
         else:
-            raise NotImplementedError()
+            # find the indices corresponding to the interval
+            start_ind = np.searchsorted(self.x, interval[0], side='right')
+            end_ind = np.searchsorted(self.x, interval[1], side='left')
+            assert start_ind > 0 and end_ind < len(self.x), \
+                "Invalid averaging interval"
+            # first the contribution from between the indices
+            a = np.sum(self.y[start_ind:end_ind]) / \
+                np.sum(self.mp[start_ind:end_ind])
         return a
 
     def avrg(self, interval=None):
@@ -448,10 +455,21 @@ class DiscreteFunction(object):
         """
         if interval is None:
             # no interval given, average over the whole spike train
-            # don't count the first interval for normalization
-            return self.integral() / np.sum(self.mp[1:-1])
+            return self.integral()
+
+        # check if interval is as sequence
+        assert isinstance(interval, collections.Sequence), \
+            "Invalid value for `interval`. None, Sequence or Tuple expected."
+        # check if interval is a sequence of intervals
+        if not isinstance(interval[0], collections.Sequence):
+            # just one interval
+            a = self.integral(interval)
         else:
-            raise NotImplementedError()
+            # several intervals
+            a = 0.0
+            for ival in interval:
+                a += self.integral(ival)
+        return a
 
     def add(self, f):
         """ Adds another `DiscreteFunction` function to this function.
