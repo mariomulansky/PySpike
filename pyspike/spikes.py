@@ -67,7 +67,7 @@ def spike_train_from_string(s, sep=' ', is_sorted=False):
 # load_spike_trains_txt
 ############################################################
 def load_spike_trains_from_txt(file_name, time_interval=None,
-                               separator=' ', comment='#', sort=True):
+                               separator=' ', comment='#', is_sorted=False):
     """ Loads a number of spike trains from a text file. Each line of the text
     file should contain one spike train as a sequence of spike times separated
     by `separator`. Empty lines as well as lines starting with `comment` are
@@ -94,7 +94,7 @@ def load_spike_trains_from_txt(file_name, time_interval=None,
     for line in spike_file:
         if len(line) > 1 and not line.startswith(comment):
             # use only the lines with actual data and not commented
-            spike_train = spike_train_from_string(line, separator, sort)
+            spike_train = spike_train_from_string(line, separator, is_sorted)
             if time_interval is not None:  # add auxil. spikes if times given
                 spike_train = add_auxiliary_spikes(spike_train, time_interval)
             spike_trains.append(spike_train)

@@ -6,8 +6,8 @@ Distributed under the BSD License
 
 __all__ = ["function", "distances", "spikes"]
 
-from function import PieceWiseConstFunc, PieceWiseLinFunc, IntervalSequence,\
-    average_profile
+from function import PieceWiseConstFunc, PieceWiseLinFunc, \
+    MultipleValueSequence, average_profile
 from distances import isi_profile, isi_distance, \
     spike_profile, spike_distance, \
     spike_sync_profile, spike_sync_distance, \

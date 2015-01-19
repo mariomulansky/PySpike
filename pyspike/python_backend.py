@@ -248,52 +248,69 @@ def cumulative_sync_python(spikes1, spikes2):
 def coincidence_python(spikes1, spikes2):
 
     def get_tau(spikes1, spikes2, i, j):
-        return 0.5*min([spikes1[i]-spikes1[i-1], spikes1[i+1]-spikes1[i],
-                        spikes2[j]-spikes2[j-1], spikes2[j+1]-spikes2[j]])
+        m = 1E100   # some huge number
+        if i < len(spikes1)-2:
+            m = min(m, spikes1[i+1]-spikes1[i])
+        if j < len(spikes2)-2:
+            m = min(m, spikes2[j+1]-spikes2[j])
+        if i > 1:
+            m = min(m, spikes1[i]-spikes1[i-1])
+        if j > 1:
+            m = min(m, spikes2[j]-spikes2[j-1])
+        return 0.5*m
     N1 = len(spikes1)
     N2 = len(spikes2)
     i = 0
     j = 0
     n = 0
-    st = np.zeros(N1 + N2 - 2)
-    c = np.zeros(N1 + N2 - 3)
-    c[0] = 0
-    st[0] = 0
-    while n < N1 + N2:
+    st = np.zeros(N1 + N2 - 2)  # spike times
+    c = np.zeros(N1 + N2 - 2)   # coincidences
+    mp = np.ones(N1 + N2 - 2)   # multiplicity
+    while n < N1 + N2 - 2:
         if spikes1[i+1] < spikes2[j+1]:
             i += 1
             n += 1
             tau = get_tau(spikes1, spikes2, i, j)
             st[n] = spikes1[i]
-            if spikes1[i]-spikes2[j] > tau:
-                c[n] = 0
-            else:
+            if j > 0 and spikes1[i]-spikes2[j] < tau:
+                # coincidence between the current spike and the previous spike
+                # both get marked with 1
                 c[n] = 1
+                c[n-1] = 1
         elif spikes1[i+1] > spikes2[j+1]:
             j += 1
             n += 1
             tau = get_tau(spikes1, spikes2, i, j)
             st[n] = spikes2[j]
-            if spikes2[j]-spikes1[i] > tau:
-                c[n] = 0
-            else:
+            if i > 0 and spikes2[j]-spikes1[i] < tau:
+                # coincidence between the current spike and the previous spike
+                # both get marked with 1
                 c[n] = 1
+                c[n-1] = 1
         else:   # spikes1[i+1] = spikes2[j+1]
+            # advance in both spike trains
             j += 1
             i += 1
             if i == N1-1 or j == N2-1:
                 break
             n += 1
+            # add only one event, but with coincidence 2 and multiplicity 2
             st[n] = spikes1[i]
-            c[n] = 0
-            n += 1
-            st[n] = spikes1[i]
-            c[n] = 1
-    #c[0] = c[2]
+            c[n] = 2
+            mp[n] = 2
+
+    st = st[:n+2]
+    c = c[:n+2]
+    mp = mp[:n+2]
+
     st[0] = spikes1[0]
     st[-1] = spikes1[-1]
+    c[0] = c[1]
+    c[-1] = c[-2]
+    mp[0] = mp[1]
+    mp[-1] = mp[-2]
 
-    return st, c
+    return st, c, mp
 
 
 ############################################################
@@ -341,83 +358,59 @@ def add_piece_wise_const_python(x1, y1, x2, y2):
 
 
 ############################################################
-# add_interval_sequence_python
+# add_multiple_value_sequence_python
 ############################################################
-def add_interval_sequence_python(x1, y1, x2, y2):
-    yscale1 = np.empty_like(y1)
-    index2 = 1
-    # s1 = (len(y1)+len(y2)-2.0) / (len(y1)-1.0)
-    # s2 = (len(y1)+len(y2)-2.0) / (len(y2)-1.0)
-    s1 = 1.0
-    s2 = 1.0
-    for i in xrange(len(y1)):
-        c = 1
-        while index2 < len(x2)-1 and x2[index2] < x1[i+1]:
-            index2 += 1
-            c += 1
-        if index2 < len(x2)-1 and x2[index2] == x1[i+1]:
-            index2 += 1
-            # c += 1
-        yscale1[i] = s1/c
-
-    yscale2 = np.empty_like(y2)
-    index1 = 1
-    for i in xrange(len(y2)):
-        c = 1
-        while index1 < len(x1)-1 and x1[index1] < x2[i+1]:
-            index1 += 1
-            c += 1
-        if index1 < len(x1)-1 and x1[index1] == x2[i+1]:
-            index1 += 1
-            # c += 1
-        yscale2[i] = s2/c
+def add_multiple_value_sequence_python(x1, y1, mp1, x2, y2, mp2):
 
     x_new = np.empty(len(x1) + len(x2))
-    y_new = np.empty(len(x_new)-1)
+    y_new = np.empty_like(x_new)
+    mp_new = np.empty_like(x_new)
     x_new[0] = x1[0]
     index1 = 0
     index2 = 0
     index = 0
-    additional_intervals = 0
     while (index1+1 < len(y1)) and (index2+1 < len(y2)):
-        y_new[index] = y1[index1]*yscale1[index1] + y2[index2]*yscale2[index2]
-        index += 1
-        # print(index1+1, x1[index1+1], y1[index1+1], x_new[index])
         if x1[index1+1] < x2[index2+1]:
             index1 += 1
+            index += 1
             x_new[index] = x1[index1]
+            y_new[index] = y1[index1]
+            mp_new[index] = mp1[index1]
         elif x1[index1+1] > x2[index2+1]:
             index2 += 1
+            index += 1
             x_new[index] = x2[index2]
+            y_new[index] = y2[index2]
+            mp_new[index] = mp2[index2]
         else:  # x1[index1+1] == x2[index2+1]
-            # y_new[index] = y1[index1]*yscale1[index1] + \
-            #     y2[index2]*yscale2[index2]
             index1 += 1
-            # x_new[index] = x1[index1]
             index2 += 1
-            # index += 1
+            index += 1
             x_new[index] = x1[index1]
-            additional_intervals += 1
-    y_new[index] = y1[index1]*yscale1[index1] + y2[index2]*yscale2[index2]
+            y_new[index] = y1[index1] + y2[index2]
+            mp_new[index] = mp1[index1] + mp2[index2]
     # one array reached the end -> copy the contents of the other to the end
     if index1+1 < len(y1):
         x_new[index+1:index+1+len(x1)-index1-1] = x1[index1+1:]
-        y_new[index+1:index+1+len(y1)-index1-1] = \
-            y1[index1+1:]*yscale1[index1+1:] + y2[-1]*yscale2[-1]
-        index += len(x1)-index1-2
+        y_new[index+1:index+1+len(x1)-index1-1] = y1[index1+1:]
+        mp_new[index+1:index+1+len(x1)-index1-1] = mp1[index1+1:]
+        index += len(x1)-index1-1
     elif index2+1 < len(y2):
         x_new[index+1:index+1+len(x2)-index2-1] = x2[index2+1:]
-        y_new[index+1:index+1+len(y2)-index2-1] = \
-            y2[index2+1:]*yscale2[index2+1:] + y1[-1]*yscale1[-1]
-        index += len(x2)-index2-2
-    else:  # both arrays reached the end simultaneously
-        # only the last x-value missing
-        x_new[index+1] = x1[-1]
-    # the last value is again the end of the interval
-    # x_new[index+1] = x1[-1]
-    # only use the data that was actually filled
+        y_new[index+1:index+1+len(x2)-index2-1] = y2[index2+1:]
+        mp_new[index+1:index+1+len(x2)-index2-1] = mp2[index2+1:]
+        index += len(x2)-index2-1
+    # else:  # both arrays reached the end simultaneously
+    #     x_new[index+1] = x1[-1]
+    #     y_new[index+1] = y1[-1] + y2[-1]
+    #     mp_new[index+1] = mp1[-1] + mp2[-1]
 
-    return x_new[:index+2], y_new[:index+1], additional_intervals
+    y_new[0] = y_new[1]
+    mp_new[0] = mp_new[1]
+
+    # the last value is again the end of the interval
+    # only use the data that was actually filled
+    return x_new[:index+1], y_new[:index+1], mp_new[:index+1]
 
 
 ############################################################
