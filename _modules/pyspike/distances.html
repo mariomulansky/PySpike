@@ -59,8 +59,9 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 
-<span class="kn">from</span> <span class="nn">pyspike</span> <span class="kn">import</span> <span class="n">PieceWiseConstFunc</span><span class="p">,</span> <span class="n">PieceWiseLinFunc</span>
+<span class="kn">from</span> <span class="nn">pyspike</span> <span class="kn">import</span> <span class="n">PieceWiseConstFunc</span><span class="p">,</span> <span class="n">PieceWiseLinFunc</span><span class="p">,</span> <span class="n">DiscreteFunction</span>
 
 
 <span class="c">############################################################</span>
@@ -179,6 +180,62 @@
 
 
 <span class="c">############################################################</span>
+<span class="c"># spike_sync_profile</span>
+<span class="c">############################################################</span></div>
+<div class="viewcode-block" id="spike_sync_profile"><a class="viewcode-back" href="../../pyspike.html#pyspike.distances.spike_sync_profile">[docs]</a><span class="k">def</span> <span class="nf">spike_sync_profile</span><span class="p">(</span><span class="n">spikes1</span><span class="p">,</span> <span class="n">spikes2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Computes the spike-synchronization profile S_sync(t) of the two given</span>
+<span class="sd">    spike trains. Returns the profile as a DiscreteFunction object. The S_sync</span>
+<span class="sd">    values are either 1 or 0, indicating the presence or absence of a</span>
+<span class="sd">    coincidence. The spike trains are expected to have auxiliary spikes at the</span>
+<span class="sd">    beginning and end of the interval. Use the function add_auxiliary_spikes to</span>
+<span class="sd">    add those spikes to the spike train.</span>
+
+<span class="sd">    :param spikes1: ordered array of spike times with auxiliary spikes.</span>
+<span class="sd">    :param spikes2: ordered array of spike times with auxiliary spikes.</span>
+<span class="sd">    :returns: The spike-distance profile :math:`S_{sync}(t)`.</span>
+<span class="sd">    :rtype: :class:`pyspike.function.DiscreteFunction`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c"># cython implementation</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">cython_distance</span> <span class="kn">import</span> <span class="n">coincidence_cython</span> \
+            <span class="k">as</span> <span class="n">coincidence_impl</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;Warning: spike_distance_cython not found. Make sure that </span><span class="se">\</span>
+<span class="s">PySpike is installed by running</span><span class="se">\n</span><span class="s"> &#39;python setup.py build_ext --inplace&#39;!</span><span class="se">\n</span><span class="s"> </span><span class="se">\</span>
+<span class="s">Falling back to slow python backend.&quot;</span><span class="p">)</span>
+        <span class="c"># use python backend</span>
+        <span class="kn">from</span> <span class="nn">python_backend</span> <span class="kn">import</span> <span class="n">coincidence_python</span> \
+            <span class="k">as</span> <span class="n">coincidence_impl</span>
+
+    <span class="n">times</span><span class="p">,</span> <span class="n">coincidences</span><span class="p">,</span> <span class="n">multiplicity</span> <span class="o">=</span> <span class="n">coincidence_impl</span><span class="p">(</span><span class="n">spikes1</span><span class="p">,</span> <span class="n">spikes2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">DiscreteFunction</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">coincidences</span><span class="p">,</span> <span class="n">multiplicity</span><span class="p">)</span>
+
+
+<span class="c">############################################################</span>
+<span class="c"># spike_sync</span>
+<span class="c">############################################################</span></div>
+<div class="viewcode-block" id="spike_sync"><a class="viewcode-back" href="../../pyspike.html#pyspike.distances.spike_sync">[docs]</a><span class="k">def</span> <span class="nf">spike_sync</span><span class="p">(</span><span class="n">spikes1</span><span class="p">,</span> <span class="n">spikes2</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Computes the spike synchronization value SYNC of the given spike</span>
+<span class="sd">    trains. The spike synchronization value is the computed as the total number</span>
+<span class="sd">    of coincidences divided by the total number of spikes:</span>
+
+<span class="sd">    .. math:: SYNC = \sum_n C_n / N.</span>
+
+<span class="sd">    :param spikes1: ordered array of spike times with auxiliary spikes.</span>
+<span class="sd">    :param spikes2: ordered array of spike times with auxiliary spikes.</span>
+<span class="sd">    :param interval: averaging interval given as a pair of floats (T0, T1),</span>
+<span class="sd">                     if None the average over the whole function is computed.</span>
+<span class="sd">    :type interval: Pair of floats or None.</span>
+<span class="sd">    :returns: The spike synchronization value.</span>
+<span class="sd">    :rtype: double</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">spike_sync_profile</span><span class="p">(</span><span class="n">spikes1</span><span class="p">,</span> <span class="n">spikes2</span><span class="p">)</span><span class="o">.</span><span class="n">avrg</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
+
+
+<span class="c">############################################################</span>
 <span class="c"># _generic_profile_multi</span>
 <span class="c">############################################################</span></div>
 <span class="k">def</span> <span class="nf">_generic_profile_multi</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">pair_distance_func</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
@@ -212,8 +269,7 @@
     <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="ow">in</span> <span class="n">pairs</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
         <span class="n">current_dist</span> <span class="o">=</span> <span class="n">pair_distance_func</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">spike_trains</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
         <span class="n">average_dist</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">current_dist</span><span class="p">)</span>       <span class="c"># add to the average</span>
-    <span class="n">average_dist</span><span class="o">.</span><span class="n">mul_scalar</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">pairs</span><span class="p">))</span>  <span class="c"># normalize</span>
-    <span class="k">return</span> <span class="n">average_dist</span>
+    <span class="k">return</span> <span class="n">average_dist</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">pairs</span><span class="p">)</span>
 
 
 <span class="c">############################################################</span>
@@ -284,7 +340,10 @@
 <span class="sd">    :returns: The averaged isi profile :math:`&lt;S_{isi}&gt;(t)`</span>
 <span class="sd">    :rtype: :class:`pyspike.function.PieceWiseConstFunc`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_generic_profile_multi</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">isi_profile</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span>
+    <span class="n">average_dist</span><span class="p">,</span> <span class="n">M</span> <span class="o">=</span> <span class="n">_generic_profile_multi</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">isi_profile</span><span class="p">,</span>
+                                             <span class="n">indices</span><span class="p">)</span>
+    <span class="n">average_dist</span><span class="o">.</span><span class="n">mul_scalar</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">M</span><span class="p">)</span>  <span class="c"># normalize</span>
+    <span class="k">return</span> <span class="n">average_dist</span>
 
 
 <span class="c">############################################################</span>
@@ -325,7 +384,10 @@
 <span class="sd">    :rtype: :class:`pyspike.function.PieceWiseLinFunc`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_generic_profile_multi</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">spike_profile</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span>
+    <span class="n">average_dist</span><span class="p">,</span> <span class="n">M</span> <span class="o">=</span> <span class="n">_generic_profile_multi</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">spike_profile</span><span class="p">,</span>
+                                             <span class="n">indices</span><span class="p">)</span>
+    <span class="n">average_dist</span><span class="o">.</span><span class="n">mul_scalar</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">M</span><span class="p">)</span>  <span class="c"># normalize</span>
+    <span class="k">return</span> <span class="n">average_dist</span>
 
 
 <span class="c">############################################################</span>
@@ -348,6 +410,51 @@
 <span class="sd">    :rtype: double</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">spike_profile_multi</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span><span class="o">.</span><span class="n">avrg</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
+
+
+<span class="c">############################################################</span>
+<span class="c"># spike_profile_multi</span>
+<span class="c">############################################################</span></div>
+<div class="viewcode-block" id="spike_sync_profile_multi"><a class="viewcode-back" href="../../pyspike.html#pyspike.distances.spike_sync_profile_multi">[docs]</a><span class="k">def</span> <span class="nf">spike_sync_profile_multi</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Computes the multi-variate spike synchronization profile for a set of</span>
+<span class="sd">    spike trains. For each spike in the set of spike trains, the multi-variate</span>
+<span class="sd">    profile is defined as the number of coincidences divided by the number of</span>
+<span class="sd">    spike trains pairs involving the spike train of containing this spike,</span>
+<span class="sd">    which is the number of spike trains minus one (N-1).</span>
+
+<span class="sd">    :param spike_trains: list of spike trains</span>
+<span class="sd">    :param indices: list of indices defining which spike trains to use,</span>
+<span class="sd">                    if None all given spike trains are used (default=None)</span>
+<span class="sd">    :type indices: list or None</span>
+<span class="sd">    :returns: The multi-variate spike sync profile :math:`&lt;S_{sync}&gt;(t)`</span>
+<span class="sd">    :rtype: :class:`pyspike.function.DiscreteFunction`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">prof_func</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">spike_sync_profile</span><span class="p">)</span>
+    <span class="n">average_dist</span><span class="p">,</span> <span class="n">M</span> <span class="o">=</span> <span class="n">_generic_profile_multi</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">prof_func</span><span class="p">,</span>
+                                             <span class="n">indices</span><span class="p">)</span>
+    <span class="c"># average_dist.mul_scalar(1.0/M)  # no normalization here!</span>
+    <span class="k">return</span> <span class="n">average_dist</span>
+
+
+<span class="c">############################################################</span>
+<span class="c"># spike_distance_multi</span>
+<span class="c">############################################################</span></div>
+<div class="viewcode-block" id="spike_sync_multi"><a class="viewcode-back" href="../../pyspike.html#pyspike.distances.spike_sync_multi">[docs]</a><span class="k">def</span> <span class="nf">spike_sync_multi</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Computes the multi-variate spike synchronization value for a set of</span>
+<span class="sd">    spike trains.</span>
+
+<span class="sd">    :param spike_trains: list of spike trains</span>
+<span class="sd">    :param indices: list of indices defining which spike trains to use,</span>
+<span class="sd">                    if None all given spike trains are used (default=None)</span>
+<span class="sd">    :type indices: list or None</span>
+<span class="sd">    :param interval: averaging interval given as a pair of floats, if None</span>
+<span class="sd">                     the average over the whole function is computed.</span>
+<span class="sd">    :type interval: Pair of floats or None.</span>
+<span class="sd">    :returns: The multi-variate spike synchronization value SYNC.</span>
+<span class="sd">    :rtype: double</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">spike_sync_profile_multi</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span><span class="o">.</span><span class="n">avrg</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
 
 
 <span class="c">############################################################</span>
@@ -422,6 +529,28 @@
 <span class="sd">    :rtype: np.array</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_generic_distance_matrix</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">spike_distance</span><span class="p">,</span>
+                                    <span class="n">indices</span><span class="p">,</span> <span class="n">interval</span><span class="p">)</span>
+
+
+<span class="c">############################################################</span>
+<span class="c"># spike_sync_matrix</span>
+<span class="c">############################################################</span></div>
+<div class="viewcode-block" id="spike_sync_matrix"><a class="viewcode-back" href="../../pyspike.html#pyspike.distances.spike_sync_matrix">[docs]</a><span class="k">def</span> <span class="nf">spike_sync_matrix</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Computes the overall spike-synchronization value of all pairs of</span>
+<span class="sd">    spike-trains.</span>
+
+<span class="sd">    :param spike_trains: list of spike trains</span>
+<span class="sd">    :param indices: list of indices defining which spike trains to use,</span>
+<span class="sd">                    if None all given spike trains are used (default=None)</span>
+<span class="sd">    :type indices: list or None</span>
+<span class="sd">    :param interval: averaging interval given as a pair of floats, if None</span>
+<span class="sd">                     the average over the whole function is computed.</span>
+<span class="sd">    :type interval: Pair of floats or None.</span>
+<span class="sd">    :returns: 2D array with the pair wise time spike synchronization values</span>
+<span class="sd">              :math:`SYNC_{ij}`</span>
+<span class="sd">    :rtype: np.array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_generic_distance_matrix</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">spike_sync</span><span class="p">,</span>
                                     <span class="n">indices</span><span class="p">,</span> <span class="n">interval</span><span class="p">)</span></div>
 </pre></div>
 

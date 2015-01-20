@@ -117,7 +117,7 @@
 <span class="c"># load_spike_trains_txt</span>
 <span class="c">############################################################</span></div>
 <div class="viewcode-block" id="load_spike_trains_from_txt"><a class="viewcode-back" href="../../pyspike.html#pyspike.spikes.load_spike_trains_from_txt">[docs]</a><span class="k">def</span> <span class="nf">load_spike_trains_from_txt</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">time_interval</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-                               <span class="n">separator</span><span class="o">=</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s">&#39;#&#39;</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+                               <span class="n">separator</span><span class="o">=</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s">&#39;#&#39;</span><span class="p">,</span> <span class="n">is_sorted</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Loads a number of spike trains from a text file. Each line of the text</span>
 <span class="sd">    file should contain one spike train as a sequence of spike times separated</span>
 <span class="sd">    by `separator`. Empty lines as well as lines starting with `comment` are</span>
@@ -144,7 +144,7 @@
     <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">spike_file</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">comment</span><span class="p">):</span>
             <span class="c"># use only the lines with actual data and not commented</span>
-            <span class="n">spike_train</span> <span class="o">=</span> <span class="n">spike_train_from_string</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">separator</span><span class="p">,</span> <span class="n">sort</span><span class="p">)</span>
+            <span class="n">spike_train</span> <span class="o">=</span> <span class="n">spike_train_from_string</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">separator</span><span class="p">,</span> <span class="n">is_sorted</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">time_interval</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>  <span class="c"># add auxil. spikes if times given</span>
                 <span class="n">spike_train</span> <span class="o">=</span> <span class="n">add_auxiliary_spikes</span><span class="p">(</span><span class="n">spike_train</span><span class="p">,</span> <span class="n">time_interval</span><span class="p">)</span>
             <span class="n">spike_trains</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spike_train</span><span class="p">)</span>
@@ -178,7 +178,47 @@
         <span class="k">if</span> <span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">lens</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>       <span class="c"># remove spike train index if ended</span>
             <span class="n">index_list</span> <span class="o">=</span> <span class="n">index_list</span><span class="p">[</span><span class="n">index_list</span> <span class="o">!=</span> <span class="n">i</span><span class="p">]</span>
         <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="n">spike_trains</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="n">indices</span><span class="p">[</span><span class="n">n</span><span class="p">]]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">index_list</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">merged_spikes</span></div>
+    <span class="k">return</span> <span class="n">merged_spikes</span>
+
+
+<span class="c">############################################################</span>
+<span class="c"># generate_poisson_spikes</span>
+<span class="c">############################################################</span></div>
+<div class="viewcode-block" id="generate_poisson_spikes"><a class="viewcode-back" href="../../pyspike.html#pyspike.spikes.generate_poisson_spikes">[docs]</a><span class="k">def</span> <span class="nf">generate_poisson_spikes</span><span class="p">(</span><span class="n">rate</span><span class="p">,</span> <span class="n">time_interval</span><span class="p">,</span> <span class="n">add_aux_spikes</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Generates a Poisson spike train with the given rate in the given time</span>
+<span class="sd">    interval</span>
+
+<span class="sd">    :param rate: The rate of the spike trains</span>
+<span class="sd">    :param time_interval: A pair (T_start, T_end) of values representing the</span>
+<span class="sd">                          start and end time of the spike train measurement or</span>
+<span class="sd">                          a single value representing the end time, the T_start</span>
+<span class="sd">                          is then assuemd as 0. Auxiliary spikes will be added</span>
+<span class="sd">                          to the spike train at the beginning and end of this</span>
+<span class="sd">                          interval, if they are not yet present.</span>
+<span class="sd">    :type time_interval: pair of doubles or double</span>
+<span class="sd">    :returns: Poisson spike train</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">T_start</span> <span class="o">=</span> <span class="n">time_interval</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">T_end</span> <span class="o">=</span> <span class="n">time_interval</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">T_start</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">T_end</span> <span class="o">=</span> <span class="n">time_interval</span>
+    <span class="c"># roughly how many spikes are required to fill the interval</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="mf">1.2</span> <span class="o">*</span> <span class="n">rate</span> <span class="o">*</span> <span class="p">(</span><span class="n">T_end</span><span class="o">-</span><span class="n">T_start</span><span class="p">)))</span>
+    <span class="n">N_append</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">rate</span> <span class="o">*</span> <span class="p">(</span><span class="n">T_end</span><span class="o">-</span><span class="n">T_start</span><span class="p">)))</span>
+    <span class="n">intervals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">exponential</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">rate</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+    <span class="c"># make sure we have enough spikes</span>
+    <span class="k">while</span> <span class="n">T_start</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="n">intervals</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">T_end</span><span class="p">:</span>
+        <span class="k">print</span> <span class="n">T_start</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="n">intervals</span><span class="p">)</span>
+        <span class="n">intervals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">intervals</span><span class="p">,</span>
+                              <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">exponential</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">rate</span><span class="p">,</span> <span class="n">N_append</span><span class="p">))</span>
+    <span class="n">spikes</span> <span class="o">=</span> <span class="n">T_start</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">intervals</span><span class="p">)</span>
+    <span class="n">spikes</span> <span class="o">=</span> <span class="n">spikes</span><span class="p">[</span><span class="n">spikes</span> <span class="o">&lt;</span> <span class="n">T_end</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">add_aux_spikes</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">add_auxiliary_spikes</span><span class="p">(</span><span class="n">spikes</span><span class="p">,</span> <span class="n">time_interval</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">spikes</span></div>
 </pre></div>
 
           </div>

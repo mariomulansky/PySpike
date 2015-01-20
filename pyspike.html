@@ -347,6 +347,151 @@ if None all given spike trains are used (default=None)</li>
 </table>
 </dd></dl>
 
+<dl class="function">
+<dt id="pyspike.distances.spike_sync">
+<tt class="descclassname">pyspike.distances.</tt><tt class="descname">spike_sync</tt><big>(</big><em>spikes1</em>, <em>spikes2</em>, <em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/distances.html#spike_sync"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.distances.spike_sync" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the spike synchronization value SYNC of the given spike
+trains. The spike synchronization value is the computed as the total number
+of coincidences divided by the total number of spikes:</p>
+<div class="math">
+\[SYNC = \sum_n C_n / N.\]</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>spikes1</strong> &#8211; ordered array of spike times with auxiliary spikes.</li>
+<li><strong>spikes2</strong> &#8211; ordered array of spike times with auxiliary spikes.</li>
+<li><strong>interval</strong> (<em>Pair of floats or None.</em>) &#8211; averaging interval given as a pair of floats (T0, T1),
+if None the average over the whole function is computed.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The spike synchronization value.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">double</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyspike.distances.spike_sync_matrix">
+<tt class="descclassname">pyspike.distances.</tt><tt class="descname">spike_sync_matrix</tt><big>(</big><em>spike_trains</em>, <em>indices=None</em>, <em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/distances.html#spike_sync_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.distances.spike_sync_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the overall spike-synchronization value of all pairs of
+spike-trains.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>spike_trains</strong> &#8211; list of spike trains</li>
+<li><strong>indices</strong> (<em>list or None</em>) &#8211; list of indices defining which spike trains to use,
+if None all given spike trains are used (default=None)</li>
+<li><strong>interval</strong> (<em>Pair of floats or None.</em>) &#8211; averaging interval given as a pair of floats, if None
+the average over the whole function is computed.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">2D array with the pair wise time spike synchronization values
+<span class="math">\(SYNC_{ij}\)</span></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyspike.distances.spike_sync_multi">
+<tt class="descclassname">pyspike.distances.</tt><tt class="descname">spike_sync_multi</tt><big>(</big><em>spike_trains</em>, <em>indices=None</em>, <em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/distances.html#spike_sync_multi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.distances.spike_sync_multi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the multi-variate spike synchronization value for a set of
+spike trains.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>spike_trains</strong> &#8211; list of spike trains</li>
+<li><strong>indices</strong> (<em>list or None</em>) &#8211; list of indices defining which spike trains to use,
+if None all given spike trains are used (default=None)</li>
+<li><strong>interval</strong> (<em>Pair of floats or None.</em>) &#8211; averaging interval given as a pair of floats, if None
+the average over the whole function is computed.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The multi-variate spike synchronization value SYNC.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">double</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyspike.distances.spike_sync_profile">
+<tt class="descclassname">pyspike.distances.</tt><tt class="descname">spike_sync_profile</tt><big>(</big><em>spikes1</em>, <em>spikes2</em><big>)</big><a class="reference internal" href="_modules/pyspike/distances.html#spike_sync_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.distances.spike_sync_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the spike-synchronization profile S_sync(t) of the two given
+spike trains. Returns the profile as a DiscreteFunction object. The S_sync
+values are either 1 or 0, indicating the presence or absence of a
+coincidence. The spike trains are expected to have auxiliary spikes at the
+beginning and end of the interval. Use the function add_auxiliary_spikes to
+add those spikes to the spike train.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>spikes1</strong> &#8211; ordered array of spike times with auxiliary spikes.</li>
+<li><strong>spikes2</strong> &#8211; ordered array of spike times with auxiliary spikes.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The spike-distance profile <span class="math">\(S_{sync}(t)\)</span>.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#pyspike.function.DiscreteFunction" title="pyspike.function.DiscreteFunction"><tt class="xref py py-class docutils literal"><span class="pre">pyspike.function.DiscreteFunction</span></tt></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyspike.distances.spike_sync_profile_multi">
+<tt class="descclassname">pyspike.distances.</tt><tt class="descname">spike_sync_profile_multi</tt><big>(</big><em>spike_trains</em>, <em>indices=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/distances.html#spike_sync_profile_multi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.distances.spike_sync_profile_multi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the multi-variate spike synchronization profile for a set of
+spike trains. For each spike in the set of spike trains, the multi-variate
+profile is defined as the number of coincidences divided by the number of
+spike trains pairs involving the spike train of containing this spike,
+which is the number of spike trains minus one (N-1).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>spike_trains</strong> &#8211; list of spike trains</li>
+<li><strong>indices</strong> (<em>list or None</em>) &#8211; list of indices defining which spike trains to use,
+if None all given spike trains are used (default=None)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The multi-variate spike sync profile <span class="math">\(&lt;S_{sync}&gt;(t)\)</span></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#pyspike.function.DiscreteFunction" title="pyspike.function.DiscreteFunction"><tt class="xref py py-class docutils literal"><span class="pre">pyspike.function.DiscreteFunction</span></tt></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 <div class="section" id="module-pyspike.function">
 <span id="pyspike-function-module"></span><h2>pyspike.function module<a class="headerlink" href="#module-pyspike.function" title="Permalink to this headline">¶</a></h2>
@@ -355,6 +500,164 @@ if None all given spike trains are used (default=None)</li>
 linear functions.</p>
 <p>Copyright 2014, Mario Mulansky &lt;<a class="reference external" href="mailto:mario&#46;mulansky&#37;&#52;&#48;gmx&#46;net">mario<span>&#46;</span>mulansky<span>&#64;</span>gmx<span>&#46;</span>net</a>&gt;</p>
 <p>Distributed under the BSD License</p>
+<dl class="class">
+<dt id="pyspike.function.DiscreteFunction">
+<em class="property">class </em><tt class="descclassname">pyspike.function.</tt><tt class="descname">DiscreteFunction</tt><big>(</big><em>x</em>, <em>y</em>, <em>multiplicity</em><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#DiscreteFunction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.DiscreteFunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>A class representing values defined on a discrete set of points.</p>
+<dl class="method">
+<dt id="pyspike.function.DiscreteFunction.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>x</em>, <em>y</em>, <em>multiplicity</em><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#DiscreteFunction.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.DiscreteFunction.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs the discrete function.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>x</strong> &#8211; array of length N defining the points at which the values are</td>
+</tr>
+</tbody>
+</table>
+<p>defined.
+:param y: array of length N degining the values at the points x.
+:param multiplicity: array of length N defining the multiplicity of the
+values.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyspike.function.DiscreteFunction.add">
+<tt class="descname">add</tt><big>(</big><em>f</em><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#DiscreteFunction.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.DiscreteFunction.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds another <cite>DiscreteFunction</cite> function to this function.
+Note: only functions defined on the same interval can be summed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>f</strong> &#8211; <a class="reference internal" href="#pyspike.function.DiscreteFunction" title="pyspike.function.DiscreteFunction"><tt class="xref py py-class docutils literal"><span class="pre">DiscreteFunction</span></tt></a> function to be added.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyspike.function.DiscreteFunction.almost_equal">
+<tt class="descname">almost_equal</tt><big>(</big><em>other</em>, <em>decimal=14</em><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#DiscreteFunction.almost_equal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.DiscreteFunction.almost_equal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the function is equal to another function up to <cite>decimal</cite>
+precision.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>other</strong> &#8211; another <a class="reference internal" href="#pyspike.function.DiscreteFunction" title="pyspike.function.DiscreteFunction"><tt class="xref py py-class docutils literal"><span class="pre">DiscreteFunction</span></tt></a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if the two functions are equal up to <cite>decimal</cite> decimals,
+False otherwise</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyspike.function.DiscreteFunction.avrg">
+<tt class="descname">avrg</tt><big>(</big><em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#DiscreteFunction.avrg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.DiscreteFunction.avrg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the average of the interval sequence:
+:math:<a href="#id1"><span class="problematic" id="id2">`</span></a>a = 1/N sum f_n ` where N is the number of intervals.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>interval</strong> (<em>Pair, sequence of pairs, or None.</em>) &#8211; averaging interval given as a pair of floats, a
+sequence of pairs for averaging multiple intervals, or
+None, if None the average over the whole function is
+computed.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the average a.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyspike.function.DiscreteFunction.copy">
+<tt class="descname">copy</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#DiscreteFunction.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.DiscreteFunction.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of itself</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#pyspike.function.DiscreteFunction" title="pyspike.function.DiscreteFunction"><tt class="xref py py-class docutils literal"><span class="pre">DiscreteFunction</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyspike.function.DiscreteFunction.get_plottable_data">
+<tt class="descname">get_plottable_data</tt><big>(</big><em>k=0</em><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#DiscreteFunction.get_plottable_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.DiscreteFunction.get_plottable_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns two arrays containing x- and y-coordinates for immeditate
+plotting of the interval sequence.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(x_plot, y_plot) containing plottable data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">pair of np.array</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">get_plottable_data</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s">&#39;-o&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&quot;Discrete function&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyspike.function.DiscreteFunction.integral">
+<tt class="descname">integral</tt><big>(</big><em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#DiscreteFunction.integral"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.DiscreteFunction.integral" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the integral over the given interval. For the discrete
+function, this amounts to the sum over all values divided by the total
+multiplicity.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>interval</strong> (<em>Pair, sequence of pairs, or None.</em>) &#8211; integration interval given as a pair of floats, or a
+sequence of pairs in case of multiple intervals, if
+None the integral over the whole function is computed.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the integral</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyspike.function.DiscreteFunction.mul_scalar">
+<tt class="descname">mul_scalar</tt><big>(</big><em>fac</em><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#DiscreteFunction.mul_scalar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.DiscreteFunction.mul_scalar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Multiplies the function with a scalar value</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fac</strong> (<em>double</em>) &#8211; Value to multiply</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="class">
 <dt id="pyspike.function.PieceWiseConstFunc">
 <em class="property">class </em><tt class="descclassname">pyspike.function.</tt><tt class="descname">PieceWiseConstFunc</tt><big>(</big><em>x</em>, <em>y</em><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#PieceWiseConstFunc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.PieceWiseConstFunc" title="Permalink to this definition">¶</a></dt>
@@ -724,8 +1027,35 @@ interval, if they are not yet present.</li>
 </dd></dl>
 
 <dl class="function">
+<dt id="pyspike.spikes.generate_poisson_spikes">
+<tt class="descclassname">pyspike.spikes.</tt><tt class="descname">generate_poisson_spikes</tt><big>(</big><em>rate</em>, <em>time_interval</em>, <em>add_aux_spikes=True</em><big>)</big><a class="reference internal" href="_modules/pyspike/spikes.html#generate_poisson_spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spikes.generate_poisson_spikes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a Poisson spike train with the given rate in the given time
+interval</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>rate</strong> &#8211; The rate of the spike trains</li>
+<li><strong>time_interval</strong> (<em>pair of doubles or double</em>) &#8211; A pair (T_start, T_end) of values representing the
+start and end time of the spike train measurement or
+a single value representing the end time, the T_start
+is then assuemd as 0. Auxiliary spikes will be added
+to the spike train at the beginning and end of this
+interval, if they are not yet present.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Poisson spike train</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="pyspike.spikes.load_spike_trains_from_txt">
-<tt class="descclassname">pyspike.spikes.</tt><tt class="descname">load_spike_trains_from_txt</tt><big>(</big><em>file_name</em>, <em>time_interval=None</em>, <em>separator=' '</em>, <em>comment='#'</em>, <em>sort=True</em><big>)</big><a class="reference internal" href="_modules/pyspike/spikes.html#load_spike_trains_from_txt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spikes.load_spike_trains_from_txt" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">pyspike.spikes.</tt><tt class="descname">load_spike_trains_from_txt</tt><big>(</big><em>file_name</em>, <em>time_interval=None</em>, <em>separator=' '</em>, <em>comment='#'</em>, <em>is_sorted=False</em><big>)</big><a class="reference internal" href="_modules/pyspike/spikes.html#load_spike_trains_from_txt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spikes.load_spike_trains_from_txt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads a number of spike trains from a text file. Each line of the text
 file should contain one spike train as a sequence of spike times separated
 by <cite>separator</cite>. Empty lines as well as lines starting with <cite>comment</cite> are

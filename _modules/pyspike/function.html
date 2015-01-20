@@ -404,6 +404,162 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">y1</span> <span class="o">*=</span> <span class="n">fac</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y2</span> <span class="o">*=</span> <span class="n">fac</span>
 
+
+<span class="c">##############################################################</span>
+<span class="c"># DiscreteFunction</span>
+<span class="c">##############################################################</span></div></div>
+<div class="viewcode-block" id="DiscreteFunction"><a class="viewcode-back" href="../../pyspike.html#pyspike.function.DiscreteFunction">[docs]</a><span class="k">class</span> <span class="nc">DiscreteFunction</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; A class representing values defined on a discrete set of points.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DiscreteFunction.__init__"><a class="viewcode-back" href="../../pyspike.html#pyspike.function.DiscreteFunction.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">multiplicity</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Constructs the discrete function.</span>
+
+<span class="sd">        :param x: array of length N defining the points at which the values are</span>
+<span class="sd">        defined.</span>
+<span class="sd">        :param y: array of length N degining the values at the points x.</span>
+<span class="sd">        :param multiplicity: array of length N defining the multiplicity of the</span>
+<span class="sd">        values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># convert parameters to arrays, also ensures copying</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">multiplicity</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="DiscreteFunction.copy"><a class="viewcode-back" href="../../pyspike.html#pyspike.function.DiscreteFunction.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a copy of itself</span>
+
+<span class="sd">        :rtype: :class:`DiscreteFunction`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">DiscreteFunction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mp</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="DiscreteFunction.almost_equal"><a class="viewcode-back" href="../../pyspike.html#pyspike.function.DiscreteFunction.almost_equal">[docs]</a>    <span class="k">def</span> <span class="nf">almost_equal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">decimal</span><span class="o">=</span><span class="mi">14</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Checks if the function is equal to another function up to `decimal`</span>
+<span class="sd">        precision.</span>
+
+<span class="sd">        :param other: another :class:`DiscreteFunction`</span>
+<span class="sd">        :returns: True if the two functions are equal up to `decimal` decimals,</span>
+<span class="sd">                  False otherwise</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">eps</span> <span class="o">=</span> <span class="mf">10.0</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="n">decimal</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">eps</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span> <span class="ow">and</span> \
+            <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">eps</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span> <span class="ow">and</span> \
+            <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mp</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">mp</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">eps</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="DiscreteFunction.get_plottable_data"><a class="viewcode-back" href="../../pyspike.html#pyspike.function.DiscreteFunction.get_plottable_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_plottable_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns two arrays containing x- and y-coordinates for immeditate</span>
+<span class="sd">        plotting of the interval sequence.</span>
+
+<span class="sd">        :returns: (x_plot, y_plot) containing plottable data</span>
+<span class="sd">        :rtype: pair of np.array</span>
+
+<span class="sd">        Example::</span>
+
+<span class="sd">            x, y = f.get_plottable_data()</span>
+<span class="sd">            plt.plot(x, y, &#39;-o&#39;, label=&quot;Discrete function&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">k</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="mf">1.0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="mf">1.0</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">mp</span>
+</div>
+<div class="viewcode-block" id="DiscreteFunction.integral"><a class="viewcode-back" href="../../pyspike.html#pyspike.function.DiscreteFunction.integral">[docs]</a>    <span class="k">def</span> <span class="nf">integral</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the integral over the given interval. For the discrete</span>
+<span class="sd">        function, this amounts to the sum over all values divided by the total</span>
+<span class="sd">        multiplicity.</span>
+
+<span class="sd">        :param interval: integration interval given as a pair of floats, or a</span>
+<span class="sd">                         sequence of pairs in case of multiple intervals, if</span>
+<span class="sd">                         None the integral over the whole function is computed.</span>
+<span class="sd">        :type interval: Pair, sequence of pairs, or None.</span>
+<span class="sd">        :returns: the integral</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">get_indices</span><span class="p">(</span><span class="n">ival</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot; Retuns the indeces surrounding the given interval&quot;&quot;&quot;</span>
+            <span class="n">start_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">ival</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">side</span><span class="o">=</span><span class="s">&#39;right&#39;</span><span class="p">)</span>
+            <span class="n">end_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">ival</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">side</span><span class="o">=</span><span class="s">&#39;left&#39;</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">start_ind</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">end_ind</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">),</span> \
+                <span class="s">&quot;Invalid averaging interval&quot;</span>
+            <span class="k">return</span> <span class="n">start_ind</span><span class="p">,</span> <span class="n">end_ind</span>
+
+        <span class="k">if</span> <span class="n">interval</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="c"># no interval given, integrate over the whole spike train</span>
+            <span class="c"># don&#39;t count the first value, which is zero by definition</span>
+            <span class="k">return</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mp</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="c"># check if interval is as sequence</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">interval</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Sequence</span><span class="p">),</span> \
+            <span class="s">&quot;Invalid value for `interval`. None, Sequence or Tuple expected.&quot;</span>
+        <span class="c"># check if interval is a sequence of intervals</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">interval</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">collections</span><span class="o">.</span><span class="n">Sequence</span><span class="p">):</span>
+            <span class="c"># find the indices corresponding to the interval</span>
+            <span class="n">start_ind</span><span class="p">,</span> <span class="n">end_ind</span> <span class="o">=</span> <span class="n">get_indices</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">start_ind</span><span class="p">:</span><span class="n">end_ind</span><span class="p">])</span> <span class="o">/</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mp</span><span class="p">[</span><span class="n">start_ind</span><span class="p">:</span><span class="n">end_ind</span><span class="p">]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">multiplicity</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">for</span> <span class="n">ival</span> <span class="ow">in</span> <span class="n">interval</span><span class="p">:</span>
+                <span class="c"># find the indices corresponding to the interval</span>
+                <span class="n">start_ind</span><span class="p">,</span> <span class="n">end_ind</span> <span class="o">=</span> <span class="n">get_indices</span><span class="p">(</span><span class="n">ival</span><span class="p">)</span>
+                <span class="n">value</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">start_ind</span><span class="p">:</span><span class="n">end_ind</span><span class="p">])</span>
+                <span class="n">multiplicity</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mp</span><span class="p">[</span><span class="n">start_ind</span><span class="p">:</span><span class="n">end_ind</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">value</span><span class="o">/</span><span class="n">multiplicity</span>
+</div>
+<div class="viewcode-block" id="DiscreteFunction.avrg"><a class="viewcode-back" href="../../pyspike.html#pyspike.function.DiscreteFunction.avrg">[docs]</a>    <span class="k">def</span> <span class="nf">avrg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Computes the average of the interval sequence:</span>
+<span class="sd">        :math:`a = 1/N sum f_n ` where N is the number of intervals.</span>
+
+<span class="sd">        :param interval: averaging interval given as a pair of floats, a</span>
+<span class="sd">                         sequence of pairs for averaging multiple intervals, or</span>
+<span class="sd">                         None, if None the average over the whole function is</span>
+<span class="sd">                         computed.</span>
+<span class="sd">        :type interval: Pair, sequence of pairs, or None.</span>
+<span class="sd">        :returns: the average a.</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">integral</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="DiscreteFunction.add"><a class="viewcode-back" href="../../pyspike.html#pyspike.function.DiscreteFunction.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Adds another `DiscreteFunction` function to this function.</span>
+<span class="sd">        Note: only functions defined on the same interval can be summed.</span>
+
+<span class="sd">        :param f: :class:`DiscreteFunction` function to be added.</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">f</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&quot;The functions have different intervals&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">f</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s">&quot;The functions have different intervals&quot;</span>
+
+        <span class="c"># cython version</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">cython_add</span> <span class="kn">import</span> <span class="n">add_discrete_function_cython</span> <span class="k">as</span> \
+                <span class="n">add_discrete_function_impl</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&quot;Warning: add_discrete_function_cython not found. Make </span><span class="se">\</span>
+<span class="s">sure that PySpike is installed by running</span><span class="se">\n\</span>
+<span class="s">&#39;python setup.py build_ext --inplace&#39;! </span><span class="se">\</span>
+<span class="se">\n</span><span class="s"> Falling back to slow python backend.&quot;</span><span class="p">)</span>
+            <span class="c"># use python backend</span>
+            <span class="kn">from</span> <span class="nn">python_backend</span> <span class="kn">import</span> <span class="n">add_discrete_function_python</span> <span class="k">as</span> \
+                <span class="n">add_discrete_function_impl</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mp</span> <span class="o">=</span> \
+            <span class="n">add_discrete_function_impl</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mp</span><span class="p">,</span>
+                                       <span class="n">f</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">mp</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="DiscreteFunction.mul_scalar"><a class="viewcode-back" href="../../pyspike.html#pyspike.function.DiscreteFunction.mul_scalar">[docs]</a>    <span class="k">def</span> <span class="nf">mul_scalar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fac</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Multiplies the function with a scalar value</span>
+
+<span class="sd">        :param fac: Value to multiply</span>
+<span class="sd">        :type fac: double</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">*=</span> <span class="n">fac</span>
+
 </div></div>
 <div class="viewcode-block" id="average_profile"><a class="viewcode-back" href="../../pyspike.html#pyspike.function.average_profile">[docs]</a><span class="k">def</span> <span class="nf">average_profile</span><span class="p">(</span><span class="n">profiles</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Computes the average profile from the given ISI- or SPIKE-profiles.</span>
