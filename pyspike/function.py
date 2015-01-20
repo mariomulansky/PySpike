@@ -429,6 +429,7 @@ class DiscreteFunction(object):
         """
 
         def get_indices(ival):
+            """ Retuns the indeces surrounding the given interval"""
             start_ind = np.searchsorted(self.x, ival[0], side='right')
             end_ind = np.searchsorted(self.x, ival[1], side='left')
             assert start_ind > 0 and end_ind < len(self.x), \

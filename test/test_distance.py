@@ -135,22 +135,22 @@ def test_spike_sync():
     spikes2 = np.array([2.1])
     spikes1 = spk.add_auxiliary_spikes(spikes1, 4.0)
     spikes2 = spk.add_auxiliary_spikes(spikes2, 4.0)
-    assert_almost_equal(spk.spike_sync_distance(spikes1, spikes2),
+    assert_almost_equal(spk.spike_sync(spikes1, spikes2),
                         0.5, decimal=16)
 
     spikes2 = np.array([3.1])
     spikes2 = spk.add_auxiliary_spikes(spikes2, 4.0)
-    assert_almost_equal(spk.spike_sync_distance(spikes1, spikes2),
+    assert_almost_equal(spk.spike_sync(spikes1, spikes2),
                         0.5, decimal=16)
 
     spikes2 = np.array([1.1])
     spikes2 = spk.add_auxiliary_spikes(spikes2, 4.0)
-    assert_almost_equal(spk.spike_sync_distance(spikes1, spikes2),
+    assert_almost_equal(spk.spike_sync(spikes1, spikes2),
                         0.5, decimal=16)
 
     spikes2 = np.array([0.9])
     spikes2 = spk.add_auxiliary_spikes(spikes2, 4.0)
-    assert_almost_equal(spk.spike_sync_distance(spikes1, spikes2),
+    assert_almost_equal(spk.spike_sync(spikes1, spikes2),
                         0.5, decimal=16)
 
 
@@ -207,11 +207,11 @@ def test_multi_spike_sync():
     spikes1 = spk.add_auxiliary_spikes(spikes1, 1000)
     spikes2 = spk.add_auxiliary_spikes(spikes2, 1000)
     spikes3 = spk.add_auxiliary_spikes(spikes3, 1000)
-    assert_almost_equal(spk.spike_sync_distance(spikes1, spikes2),
+    assert_almost_equal(spk.spike_sync(spikes1, spikes2),
                         0.5, decimal=15)
-    assert_almost_equal(spk.spike_sync_distance(spikes1, spikes3),
+    assert_almost_equal(spk.spike_sync(spikes1, spikes3),
                         0.5, decimal=15)
-    assert_almost_equal(spk.spike_sync_distance(spikes2, spikes3),
+    assert_almost_equal(spk.spike_sync(spikes2, spikes3),
                         0.5, decimal=15)
 
     f = spk.spike_sync_profile_multi([spikes1, spikes2, spikes3])
@@ -220,6 +220,8 @@ def test_multi_spike_sync():
     #            (np.sum(f1.mp[1:-1])+np.sum(f2.mp[1:-1])+np.sum(f3.mp[1:-1]))
     expected = 0.5
     assert_almost_equal(f.avrg(), expected, decimal=15)
+    assert_almost_equal(spk.spike_sync_multi([spikes1, spikes2, spikes3]),
+                        expected, decimal=15)
 
     # multivariate regression test
     spike_trains = spk.load_spike_trains_from_txt("test/SPIKE_Sync_Test.txt",
@@ -265,6 +267,10 @@ def test_isi_matrix():
 
 def test_spike_matrix():
     check_dist_matrix(spk.spike_distance, spk.spike_distance_matrix)
+
+
+def test_spike_sync_matrix():
+    check_dist_matrix(spk.spike_sync, spk.spike_sync_matrix)
 
 
 def test_regression_spiky():

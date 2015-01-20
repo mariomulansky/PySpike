@@ -152,10 +152,10 @@ Falling back to slow python backend.")
 
 
 ############################################################
-# spike_sync_distance
+# spike_sync
 ############################################################
-def spike_sync_distance(spikes1, spikes2):
-    return spike_sync_profile(spikes1, spikes2).avrg()
+def spike_sync(spikes1, spikes2, interval=None):
+    return spike_sync_profile(spikes1, spikes2).avrg(interval)
 
 
 ############################################################
@@ -314,6 +314,28 @@ def spike_profile_multi(spike_trains, indices=None):
 
 
 ############################################################
+# spike_distance_multi
+############################################################
+def spike_distance_multi(spike_trains, indices=None, interval=None):
+    """ Computes the multi-variate spike distance for a set of spike trains.
+    That is the time average of the multi-variate spike profile:
+    S_{spike} = \int_0^T 2/((N(N-1)) sum_{<i,j>} S_{spike}^{i, j} dt
+    where the sum goes over all pairs <i,j>
+
+    :param spike_trains: list of spike trains
+    :param indices: list of indices defining which spike trains to use,
+                    if None all given spike trains are used (default=None)
+    :type indices: list or None
+    :param interval: averaging interval given as a pair of floats, if None
+                     the average over the whole function is computed.
+    :type interval: Pair of floats or None.
+    :returns: The averaged spike distance S.
+    :rtype: double
+    """
+    return spike_profile_multi(spike_trains, indices).avrg(interval)
+
+
+############################################################
 # spike_profile_multi
 ############################################################
 def spike_sync_profile_multi(spike_trains, indices=None):
@@ -341,11 +363,9 @@ def spike_sync_profile_multi(spike_trains, indices=None):
 ############################################################
 # spike_distance_multi
 ############################################################
-def spike_distance_multi(spike_trains, indices=None, interval=None):
-    """ Computes the multi-variate spike distance for a set of spike trains.
-    That is the time average of the multi-variate spike profile:
-    S_{spike} = \int_0^T 2/((N(N-1)) sum_{<i,j>} S_{spike}^{i, j} dt
-    where the sum goes over all pairs <i,j>
+def spike_sync_multi(spike_trains, indices=None, interval=None):
+    """ Computes the multi-variate spike synchronization value for a set of
+    spike trains.
 
     :param spike_trains: list of spike trains
     :param indices: list of indices defining which spike trains to use,
@@ -354,10 +374,10 @@ def spike_distance_multi(spike_trains, indices=None, interval=None):
     :param interval: averaging interval given as a pair of floats, if None
                      the average over the whole function is computed.
     :type interval: Pair of floats or None.
-    :returns: The averaged spike distance S.
+    :returns: The averaged spike synchronization value SYNC.
     :rtype: double
     """
-    return spike_profile_multi(spike_trains, indices).avrg(interval)
+    return spike_sync_profile_multi(spike_trains, indices).avrg(interval)
 
 
 ############################################################
@@ -432,4 +452,26 @@ def spike_distance_matrix(spike_trains, indices=None, interval=None):
     :rtype: np.array
     """
     return _generic_distance_matrix(spike_trains, spike_distance,
+                                    indices, interval)
+
+
+############################################################
+# spike_sync_matrix
+############################################################
+def spike_sync_matrix(spike_trains, indices=None, interval=None):
+    """ Computes the time averaged spike-synchronization value of all pairs of
+    spike-trains.
+
+    :param spike_trains: list of spike trains
+    :param indices: list of indices defining which spike trains to use,
+                    if None all given spike trains are used (default=None)
+    :type indices: list or None
+    :param interval: averaging interval given as a pair of floats, if None
+                     the average over the whole function is computed.
+    :type interval: Pair of floats or None.
+    :returns: 2D array with the pair wise time spike synchronization values
+              :math:`SYNC_{ij}`
+    :rtype: np.array
+    """
+    return _generic_distance_matrix(spike_trains, spike_sync,
                                     indices, interval)
