@@ -42,3 +42,18 @@ print("SPIKE-distance (0-1000):                    %.8f" % spike1)
 print("SPIKE-distance (1000-2000):                 %.8f" % spike2)
 print("SPIKE-distance (0-1000) and (2000-3000):    %.8f" % spike3)
 print("SPIKE-distance (1000-2000) and (3000-4000): %.8f" % spike4)
+print()
+
+f = spk.spike_sync_profile(spike_trains[0], spike_trains[1])
+
+print("SPIKE-Synchronization: %.8f" % f.avrg())
+
+spike_sync1 = f.avrg(interval=(0, 1000))
+spike_sync2 = f.avrg(interval=(1000, 2000))
+spike_sync3 = f.avrg(interval=[(0, 1000), (2000, 3000)])
+spike_sync4 = f.avrg(interval=[(1000, 2000), (3000, 4000)])
+
+print("SPIKE-Sync (0-1000):                        %.8f" % spike_sync1)
+print("SPIKE-Sync (1000-2000):                     %.8f" % spike_sync2)
+print("SPIKE-Sync (0-1000) and (2000-3000):        %.8f" % spike_sync3)
+print("SPIKE-Sync (1000-2000) and (3000-4000):     %.8f" % spike_sync4)
