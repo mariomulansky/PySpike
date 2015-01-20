@@ -30,4 +30,9 @@ spike_distance = spk.spike_distance_matrix(spike_trains, interval=(0, 1000))
 plt.imshow(spike_distance, interpolation='none')
 plt.title("SPIKE-distance, T=0-1000")
 
+plt.figure()
+spike_sync = spk.spike_sync_matrix(spike_trains, interval=(2000, 4000))
+plt.imshow(spike_sync, interpolation='none')
+plt.title("SPIKE-Sync, T=2000-4000")
+
 plt.show()

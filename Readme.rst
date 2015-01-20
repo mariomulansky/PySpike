@@ -5,8 +5,8 @@ PySpike
     :target: https://travis-ci.org/mariomulansky/PySpike
 
 PySpike is a Python library for the numerical analysis of spike train similarity. 
-Its core functionality is the implementation of the bivariate ISI_ and SPIKE_ distance [#]_ [#]_.
-Additionally, it provides functions to compute multivariate SPIKE and ISI distances, as well as averaging and general spike train processing.
+Its core functionality is the implementation of the bivariate ISI_ and SPIKE_ distance [#]_ [#]_ as well as SPIKE-Synchronization_ [#]_.
+Additionally, it provides functions to compute multivariate profiles, distance matrices, as well as averaging and general spike train processing.
 All computation intensive parts are implemented in C via cython_ to reach a competitive performance (factor 100-200 over plain Python).
 
 PySpike provides the same fundamental functionality as the SPIKY_ framework for Matlab, which additionally contains spike-train generators, more spike train distance measures and many visualization routines.
@@ -16,6 +16,8 @@ All source codes are published under the BSD_License_.
 .. [#] Kreuz T, Haas JS, Morelli A, Abarbanel HDI, Politi A, *Measuring spike train synchrony.* J Neurosci Methods 165, 151 (2007) `[pdf] <http://wwwold.fi.isc.cnr.it/users/thomas.kreuz/images/Kreuz_JNeurosciMethods_2007_Spike-Train-Synchrony.pdf>`_
 
 .. [#] Kreuz T, Chicharro D, Houghton C, Andrzejak RG, Mormann F, *Monitoring spike train synchrony.* J Neurophysiol 109, 1457 (2013) `[pdf] <http://wwwold.fi.isc.cnr.it/users/thomas.kreuz/images/Kreuz_JNeurophysiol_2013_SPIKE-distance.pdf>`_
+
+.. [#] Kreuz T, Mulansky M and Bozanic N, *SPIKY: A graphical user interface for monitoring spike train synchrony*, tbp (2015)
 
 Requirements and Installation
 -----------------------------
@@ -162,32 +164,11 @@ If you are only interested in the scalar ISI-distance and not the profile, you c
 
 where :code:`interval` is optional, as above, and if omitted the ISI-distance is computed for the complete spike trains.
 
-Furthermore, PySpike provides the :code:`average_profile` function that can be used to compute the average profile of a list of given :code:`PieceWiseConstFunc` instances.
-
-.. code:: python
-
-    isi_profile1 = spk.isi_profile(spike_trains[0], spike_trains[1])
-    isi_profile2 = spk.isi_profile(spike_trains[0], spike_trains[2])
-    isi_profile3 = spk.isi_profile(spike_trains[1], spike_trains[2])
-
-    avrg_profile = spk.average_profile([isi_profile1, isi_profile2, isi_profile3])
-    x, y = avrg_profile.get_plottable_data()
-    plt.plot(x, y, label="Average ISI profile")
-
-Note the difference between the :code:`average_profile` function, which returns a :code:`PieceWiseConstFunc` (or :code:`PieceWiseLinFunc`, see below), and the :code:`avrg` member function above, that computes the integral over the time profile resulting in a single value.
-So to obtain overall average ISI-distance of a list of ISI profiles you can first compute the average profile using :code:`average_profile` and the use 
-
-.. code:: python
-
-    avrg_isi = avrg_profile.avrg()
-
-to obtain the final, scalar average ISI distance of the whole set (see also "Computing multivariate distance" below).
-
 
 SPIKE-distance
 ..............
 
-To compute for the spike distance you use the function :code:`spike_profile` instead of :code:`isi_profile` above. 
+To compute for the spike distance profile you use the function :code:`spike_profile` instead of :code:`isi_profile` above. 
 But the general approach is very similar:
 
 .. code:: python
@@ -217,22 +198,52 @@ Again, you can use
 
 to compute the SPIKE distance directly, if you are not interested in the profile at all.
 The parameter :code:`interval` is optional and if neglected the whole spike train is used.
-Furthmore, you can use the :code:`average_profile` function to compute an average profile of a list of SPIKE-profiles:
+
+
+SPIKE synchronization
+..............
+
+**Important note:**
+
+------------------------------
+
+    SPIKE-Synchronization measures *similarity*. 
+    That means, a value of zero indicates absence of synchrony, while a value of one denotes the presence of synchrony.
+    This is exactly opposite to the other two measures: ISI- and SPIKE-distance.
+
+----------------------
+
+
+SPIKE synchronization is another approach to measure spike synchrony.
+In contrast to the SPIKE- and ISI-distance, it measures similarity instead of dissimilarity, i.e. higher values represent larger synchrony.
+Another difference is that the SPIKE synchronization profile is only defined exactly at the spike times, not for the whole interval of the spike trains.
+Therefore, it is represented by a :code:`DiscreteFunction`.
+
+To compute for the spike synchronization profile, PySpike provides the function :code:`spike_sync_profile`.
+The general handling of the profile, however, is similar to the other profiles above:
 
 .. code:: python
+
+    import matplotlib.pyplot as plt
+    import pyspike as spk
     
-    avrg_profile = spk.average_profile([spike_profile1, spike_profile2, 
-                                        spike_profile3])
-    x, y = avrg_profile.get_plottable_data()
-    plt.plot(x, y, label="Average SPIKE profile")
+    spike_trains = spk.load_spike_trains_from_txt("PySpike_testdata.txt",
+                                                  time_interval=(0, 4000))
+    spike_profile = spk.spike_sync_profile(spike_trains[0], spike_trains[1])
+    x, y = spike_profile.get_plottable_data()
+
+For the direct computation of the overall spike synchronization value within some interval, the :code:`spike_sync` function can be used:
+
+.. code:: python
+   
+   spike_sync = spk.spike_sync(spike_trains[0], spike_trains[1], interval)
 
 
 Computing multivariate profiles and distances
 ----------------------------------------------
 
-To compute the multivariate ISI- or SPIKE-profile of a set of spike trains, you can compute all bivariate profiles separately and then use the :code:`average_profile` function above.
-However, PySpike provides convenience functions for that purpose.
-The following example computes the multivariate ISI- and SPIKE-profile for a list of spike trains:
+To compute the multivariate ISI-profile, SPIKE-profile or SPIKE-Synchronization profile f a set of spike trains, PySpike provides multi-variate version of the profile function.
+The following example computes the multivariate ISI-, SPIKE- and SPIKE-Sync-profile for a list of spike trains:
 
 .. code:: python
 
@@ -240,15 +251,16 @@ The following example computes the multivariate ISI- and SPIKE-profile for a lis
                                                   time_interval=(0, 4000))
     avrg_isi_profile = spk.isi_profile_multi(spike_trains)
     avrg_spike_profile = spk.spike_profile_multi(spike_trains)
+    avrg_spike_sync_profile = spk.spike_sync_profile_multi(spike_trains)
 
-Both functions take an optional parameter :code:`indices`, a list of indices that allows to define the spike trains that should be used for the multivariate profile.
-As before, if you are only interested in the distance values, and not in the profile, PySpike offers the functions: :code:`isi_distance_multi` and :code:`spike_distance_multi`, that return the scalar multivariate ISI- and SPIKE-distance.
-Both distance functions also accept an :code:`interval` parameter that can be used to specify the begin and end of the averaging interval as a pair of floats, if neglected the complete interval is used.
+All functions take an optional parameter :code:`indices`, a list of indices that allows to define the spike trains that should be used for the multivariate profile.
+As before, if you are only interested in the distance values, and not in the profile, PySpike offers the functions: :code:`isi_distance_multi`, :code:`spike_distance_multi` and :code:`spike_sync_multi`, that return the scalar overall multivariate ISI- and SPIKE-distance as well as the SPIKE-Synchronization value.
+Those functions also accept an :code:`interval` parameter that can be used to specify the begin and end of the averaging interval as a pair of floats, if neglected the complete interval is used.
 
 Another option to characterize large sets of spike trains are distance matrices.
-Each entry in the distance matrix represents a bivariate distance of two spike trains.
-The distance matrix is symmetric and has zero values at the diagonal.
-The following example computes and plots the ISI- and SPIKE-distance matrix, where for the latter one the averaging is performed only the time interval T=0..1000.
+Each entry in the distance matrix represents a bivariate distance (similarity for SPIKE-Synchronization) of two spike trains.
+The distance matrix is symmetric and has zero values (ones) at the diagonal.
+The following example computes and plots the ISI- and SPIKE-distance matrix as well as the SPIKE-Synchronization-matrix, with different intervals.
 
 .. code:: python
 
@@ -263,6 +275,11 @@ The following example computes and plots the ISI- and SPIKE-distance matrix, whe
     spike_distance = spk.spike_distance_matrix(spike_trains, interval=(0,1000))
     plt.imshow(spike_distance, interpolation='none')
     plt.title("SPIKE-distance")
+
+    plt.figure()
+    spike_sync = spk.spike_sync_matrix(spike_trains, interval=(2000,4000))
+    plt.imshow(spike_sync, interpolation='none')
+    plt.title("SPIKE-Sync")
 
     plt.show()
 
@@ -284,6 +301,7 @@ Curie Initial Training Network* `Neural Engineering Transformative Technologies
 
 .. _ISI: http://www.scholarpedia.org/article/Measures_of_spike_train_synchrony#ISI-distance
 .. _SPIKE: http://www.scholarpedia.org/article/SPIKE-distance
+.. _SPIKE-Synchronization: http://www.scholarpedia.org/article/Measures_of_spike_train_synchrony#SPIKE_synchronization
 .. _cython: http://www.cython.org
 .. _SPIKY: http://wwwold.fi.isc.cnr.it/users/thomas.kreuz/Source-Code/SPIKY.html
 .. _BSD_License: http://opensource.org/licenses/BSD-2-Clause
