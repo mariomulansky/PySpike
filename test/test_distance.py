@@ -293,6 +293,25 @@ def test_regression_spiky():
     # assert_equal(spike_dist, 0.2445)
 
 
+def test_multi_variate_subsets():
+    spike_trains = spk.load_spike_trains_from_txt("test/PySpike_testdata.txt",
+                                                  (0.0, 4000.0))
+    sub_set = [1, 3, 5, 7]
+    spike_trains_sub_set = [spike_trains[i] for i in sub_set]
+
+    v1 = spk.isi_distance_multi(spike_trains_sub_set)
+    v2 = spk.isi_distance_multi(spike_trains, sub_set)
+    assert_equal(v1, v2)
+
+    v1 = spk.spike_distance_multi(spike_trains_sub_set)
+    v2 = spk.spike_distance_multi(spike_trains, sub_set)
+    assert_equal(v1, v2)
+
+    v1 = spk.spike_sync_multi(spike_trains_sub_set)
+    v2 = spk.spike_sync_multi(spike_trains, sub_set)
+    assert_equal(v1, v2)
+
+
 if __name__ == "__main__":
     test_isi()
     test_spike()
