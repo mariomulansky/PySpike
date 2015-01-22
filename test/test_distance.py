@@ -172,6 +172,10 @@ def check_multi_profile(profile_func, profile_func_multi):
     f_multi = profile_func_multi(spike_trains, [0, 1])
     assert f_multi.almost_equal(f12, decimal=14)
 
+    f_multi1 = profile_func_multi(spike_trains, [1, 2, 3])
+    f_multi2 = profile_func_multi(spike_trains[1:])
+    assert f_multi1.almost_equal(f_multi2, decimal=14)
+
     f = copy(f12)
     f.add(f13)
     f.add(f23)
