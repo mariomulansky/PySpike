@@ -212,7 +212,7 @@ def _generic_profile_multi(spike_trains, pair_distance_func, indices=None):
     assert (indices < len(spike_trains)).all() and (indices >= 0).all(), \
         "Invalid index list."
     # generate a list of possible index pairs
-    pairs = [(i, j) for i in indices for j in indices[i+1:]]
+    pairs = [(indices[i], j) for i in range(len(indices)) for j in indices[i+1:]]
     # start with first pair
     (i, j) = pairs[0]
     average_dist = pair_distance_func(spike_trains[i], spike_trains[j])
@@ -251,7 +251,7 @@ def _multi_distance_par(spike_trains, pair_distance_func, indices=None):
     assert (indices < len(spike_trains)).all() and (indices >= 0).all(), \
         "Invalid index list."
     # generate a list of possible index pairs
-    pairs = [(i, j) for i in indices for j in indices[i+1:]]
+    pairs = [(indices[i], j) for i in range(len(indices)) for j in indices[i+1:]]
     num_pairs = len(pairs)
 
     # start with first pair
@@ -430,7 +430,7 @@ def _generic_distance_matrix(spike_trains, dist_function,
     assert (indices < len(spike_trains)).all() and (indices >= 0).all(), \
         "Invalid index list."
     # generate a list of possible index pairs
-    pairs = [(i, j) for i in indices for j in indices[i+1:]]
+    pairs = [(indices[i], j) for i in range(len(indices)) for j in indices[i+1:]]
 
     distance_matrix = np.zeros((len(indices), len(indices)))
     for i, j in pairs:
