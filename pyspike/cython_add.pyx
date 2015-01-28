@@ -230,4 +230,6 @@ def add_discrete_function_cython(double[:] x1, double[:] y1, double[:] mp1,
 
     # the last value is again the end of the interval
     # only use the data that was actually filled
-    return x_new[:index+1], y_new[:index+1], mp_new[:index+1]
+    return (np.array(x_new[:index+1]), 
+            np.array(y_new[:index+1]), 
+            np.array(mp_new[:index+1]))
