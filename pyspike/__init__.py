@@ -4,10 +4,13 @@ Copyright 2014, Mario Mulansky <mario.mulansky@gmx.net>
 Distributed under the BSD License
 """
 
-__all__ = ["function", "distances", "spikes"]
+__all__ = ["distances", "spikes", "PieceWiseConstFunc", "PieceWiseLinFunc",
+           "DiscreteFunc"]
 
-from function import PieceWiseConstFunc, PieceWiseLinFunc, \
-    DiscreteFunction, average_profile
+from PieceWiseConstFunc import PieceWiseConstFunc
+from PieceWiseLinFunc import PieceWiseLinFunc
+from DiscreteFunc import DiscreteFunc
+
 from distances import isi_profile, isi_distance, \
     spike_profile, spike_distance, \
     spike_sync_profile, spike_sync, \
