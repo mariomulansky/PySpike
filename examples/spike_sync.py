@@ -32,7 +32,11 @@ plt.figure()
 
 f = spk.spike_sync_profile_multi(spike_trains)
 x, y = f.get_plottable_data()
-plt.plot(x, y, '-k', label="SPIKE-Sync profile")
+plt.plot(x, y, '-b', alpha=0.7, label="SPIKE-Sync profile")
+
+x1, y1 = f.get_plottable_data(averaging_window_size=50)
+plt.plot(x1, y1, '-k', lw=2.5, label="averaged SPIKE-Sync profile")
+
 
 print("Average:", f.avrg())
 

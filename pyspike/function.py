@@ -397,10 +397,13 @@ class DiscreteFunction(object):
             np.allclose(self.y, other.y, atol=eps, rtol=0.0) and \
             np.allclose(self.mp, other.mp, atol=eps, rtol=0.0)
 
-    def get_plottable_data(self, k=0):
-        """ Returns two arrays containing x- and y-coordinates for immeditate
-        plotting of the interval sequence.
+    def get_plottable_data(self, averaging_window_size=0):
+        """ Returns two arrays containing x- and y-coordinates for plotting
+        the interval sequence. The optional parameter `averaging_window_size`
+        determines the size of an averaging window to smoothen the profile. If
+        this value is 0, no averaging is performed.
 
+        :param averaging_window_size: size of the averaging window, default=0.
         :returns: (x_plot, y_plot) containing plottable data
         :rtype: pair of np.array
 
@@ -410,10 +413,62 @@ class DiscreteFunction(object):
             plt.plot(x, y, '-o', label="Discrete function")
         """
 
-        if k > 0:
-            raise NotImplementedError()
+        if averaging_window_size > 0:
+            # for the averaged profile we have to take the multiplicity into
+            # account. values with higher multiplicity should be consider as if
+            # they appeared several times. Hence we can not know how many
+            # entries we have to consider to the left and right. Rather, we
+            # will iterate until some wanted multiplicity is reached.
 
-        return 1.0*self.x, 1.0*self.y/self.mp
+            # the first value in self.mp contains the number of averaged
+            # profiles without any possible extra multiplicities
+            # (by implementation)
+            expected_mp = (averaging_window_size+1) * int(self.mp[0])
+            y_plot = np.zeros_like(self.y)
+            # compute the values in a loop, could be done in cython if required
+            for i in xrange(len(y_plot)):
+
+                if self.mp[i] >= expected_mp:
+                    # the current value contains already all the wanted
+                    # multiplicity
+                    y_plot[i] = self.y[i]/self.mp[i]
+                    continue
+
+                # first look to the right
+                y = self.y[i]
+                mp_r = self.mp[i]
+                j = i+1
+                while j < len(y_plot):
+                    if mp_r+self.mp[j] < expected_mp:
+                        # if we still dont reach the required multiplicity
+                        # we take the whole value
+                        y += self.y[j]
+                        mp_r += self.mp[j]
+                    else:
+                        # otherwise, just some fraction
+                        y += self.y[j] * (expected_mp - mp_r)/self.mp[j]
+                        mp_r += (expected_mp - mp_r)
+                        break
+                    j += 1
+
+                # same story to the left
+                mp_l = self.mp[i]
+                j = i-1
+                while j >= 0:
+                    if mp_l+self.mp[j] < expected_mp:
+                        y += self.y[j]
+                        mp_l += self.mp[j]
+                    else:
+                        y += self.y[j] * (expected_mp - mp_l)/self.mp[j]
+                        mp_l += (expected_mp - mp_l)
+                        break
+                    j -= 1
+                y_plot[i] = y/(mp_l+mp_r-self.mp[i])
+            return 1.0*self.x, y_plot
+
+        else:  # k = 0
+
+            return 1.0*self.x, 1.0*self.y/self.mp
 
     def integral(self, interval=None):
         """ Returns the integral over the given interval. For the discrete
