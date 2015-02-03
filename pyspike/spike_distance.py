@@ -35,14 +35,15 @@ def spike_profile(spikes1, spikes2):
 
     # cython implementation
     try:
-        from cython_distance import spike_distance_cython \
+        from cython.cython_distance import spike_distance_cython \
             as spike_distance_impl
     except ImportError:
         print("Warning: spike_distance_cython not found. Make sure that \
 PySpike is installed by running\n 'python setup.py build_ext --inplace'!\n \
 Falling back to slow python backend.")
         # use python backend
-        from python_backend import spike_distance_python as spike_distance_impl
+        from cython.python_backend import spike_distance_python \
+            as spike_distance_impl
 
     times, y_starts, y_ends = spike_distance_impl(spikes1, spikes2)
     return PieceWiseLinFunc(times, y_starts, y_ends)

@@ -33,14 +33,14 @@ def spike_sync_profile(spikes1, spikes2):
 
     # cython implementation
     try:
-        from cython_distance import coincidence_cython \
+        from cython.cython_distance import coincidence_cython \
             as coincidence_impl
     except ImportError:
         print("Warning: spike_distance_cython not found. Make sure that \
 PySpike is installed by running\n 'python setup.py build_ext --inplace'!\n \
 Falling back to slow python backend.")
         # use python backend
-        from python_backend import coincidence_python \
+        from cython.python_backend import coincidence_python \
             as coincidence_impl
 
     times, coincidences, multiplicity = coincidence_impl(spikes1, spikes2)

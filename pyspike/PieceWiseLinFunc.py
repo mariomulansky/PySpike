@@ -173,14 +173,14 @@ class PieceWiseLinFunc:
 
         # cython version
         try:
-            from cython_add import add_piece_wise_lin_cython as \
+            from cython.cython_add import add_piece_wise_lin_cython as \
                 add_piece_wise_lin_impl
         except ImportError:
             print("Warning: add_piece_wise_lin_cython not found. Make sure \
 that PySpike is installed by running\n 'python setup.py build_ext --inplace'! \
 \n Falling back to slow python backend.")
             # use python backend
-            from python_backend import add_piece_wise_lin_python as \
+            from cython.python_backend import add_piece_wise_lin_python as \
                 add_piece_wise_lin_impl
 
         self.x, self.y1, self.y2 = add_piece_wise_lin_impl(

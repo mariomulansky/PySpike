@@ -35,13 +35,15 @@ def isi_profile(spikes1, spikes2):
 
     # load cython implementation
     try:
-        from cython_distance import isi_distance_cython as isi_distance_impl
+        from cython.cython_distance import isi_distance_cython \
+            as isi_distance_impl
     except ImportError:
         print("Warning: isi_distance_cython not found. Make sure that PySpike \
 is installed by running\n 'python setup.py build_ext --inplace'!\n \
 Falling back to slow python backend.")
         # use python backend
-        from python_backend import isi_distance_python as isi_distance_impl
+        from cython.python_backend import isi_distance_python \
+            as isi_distance_impl
 
     times, values = isi_distance_impl(spikes1, spikes2)
     return PieceWiseConstFunc(times, values)
