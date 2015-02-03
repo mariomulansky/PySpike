@@ -1,5 +1,5 @@
 """
-Copyright 2014, Mario Mulansky <mario.mulansky@gmx.net>
+Copyright 2014-2015, Mario Mulansky <mario.mulansky@gmx.net>
 
 Distributed under the BSD License
 """

@@ -95,7 +95,7 @@ def spike_sync_profile_multi(spike_trains, indices=None):
 
 
 ############################################################
-# spike_distance_multi
+# spike_sync_multi
 ############################################################
 def spike_sync_multi(spike_trains, indices=None, interval=None):
     """ Computes the multi-variate spike synchronization value for a set of
