@@ -482,4 +482,3 @@ def add_discrete_function_python(x1, y1, mp1, x2, y2, mp2):
     # the last value is again the end of the interval
     # only use the data that was actually filled
     return x_new[:index+1], y_new[:index+1], mp_new[:index+1]
-
