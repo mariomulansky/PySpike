@@ -92,11 +92,12 @@ def test_pwc_avrg():
     y = [0.5, 1.0, -0.25, 0.0, 1.5]
     f2 = spk.PieceWiseConstFunc(x, y)
 
-    f_avrg = spk.average_profile([f1, f2])
+    f1.add(f2)
+    f1.mul_scalar(0.5)
     x_expected = [0.0, 0.75, 1.0, 2.0, 2.5, 2.7, 4.0]
     y_expected = [0.75, 1.0, 0.25, 0.625, 0.375, 1.125]
-    assert_array_almost_equal(f_avrg.x, x_expected, decimal=16)
-    assert_array_almost_equal(f_avrg.y, y_expected, decimal=16)
+    assert_array_almost_equal(f1.x, x_expected, decimal=16)
+    assert_array_almost_equal(f1.y, y_expected, decimal=16)
 
 
 def test_pwl():
@@ -196,11 +197,12 @@ def test_pwl_avrg():
     y2_expected = np.array([0.8+1.0+0.5*0.75, 1.5+1.0-0.8*0.25/1.25, -0.4+0.2,
                             1.5-1.0, 0.75-0.5*0.2/1.5, 2.25]) / 2
 
-    f_avrg = spk.average_profile([f1, f2])
+    f1.add(f2)
+    f1.mul_scalar(0.5)
 
-    assert_array_almost_equal(f_avrg.x, x_expected, decimal=16)
-    assert_array_almost_equal(f_avrg.y1, y1_expected, decimal=16)
-    assert_array_almost_equal(f_avrg.y2, y2_expected, decimal=16)
+    assert_array_almost_equal(f1.x, x_expected, decimal=16)
+    assert_array_almost_equal(f1.y1, y1_expected, decimal=16)
+    assert_array_almost_equal(f1.y2, y2_expected, decimal=16)
 
 
 def test_df():
@@ -208,7 +210,7 @@ def test_df():
     x = [0.0, 1.0, 2.0, 2.5, 4.0]
     y = [0.0, 1.0, 1.0, 0.0, 1.0]
     mp = [1.0, 2.0, 1.0, 2.0, 1.0]
-    f = spk.DiscreteFunction(x, y, mp)
+    f = spk.DiscreteFunc(x, y, mp)
     xp, yp = f.get_plottable_data()
 
     xp_expected = [0.0, 1.0, 2.0, 2.5, 4.0]
@@ -237,6 +239,9 @@ if __name__ == "__main__":
     test_pwc()
     test_pwc_add()
     test_pwc_mul()
+    test_pwc_avrg()
     test_pwl()
     test_pwl_add()
     test_pwl_mul()
+    test_pwl_avrg()
+    test_df()
