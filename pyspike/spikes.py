@@ -54,7 +54,7 @@ def spike_train_from_string(s, sep=' ', is_sorted=False):
     :param s: the string with (ordered) spike times
     :param sep: The separator between the time numbers, default=' '.
     :param is_sorted: if True, the spike times are not sorted after loading,
-    if False, spike times are sorted with `np.sort`
+                      if False, spike times are sorted with `np.sort`
     :returns: array of spike times
     """
     if not(is_sorted):

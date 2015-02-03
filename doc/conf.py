@@ -57,7 +57,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'PySpike'
-copyright = u'2014, Mario Mulansky'
+copyright = u'2014-2015, Mario Mulansky'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -254,7 +254,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'PySpike', u'PySpike Documentation',
-   u'Mario Mulansky', 'PySpike', 'One line description of project.',
+   u'Mario Mulansky', 'PySpike', 'Measure of spike train synchrony.',
    'Miscellaneous'),
 ]
 

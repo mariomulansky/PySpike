@@ -23,10 +23,10 @@ class DiscreteFunc(object):
         """ Constructs the discrete function.
 
         :param x: array of length N defining the points at which the values are
-        defined.
+                  defined.
         :param y: array of length N degining the values at the points x.
         :param multiplicity: array of length N defining the multiplicity of the
-        values.
+                             values.
         """
         # convert parameters to arrays, also ensures copying
         self.x = np.array(x)
@@ -174,7 +174,7 @@ class DiscreteFunc(object):
 
     def avrg(self, interval=None):
         """ Computes the average of the interval sequence:
-        :math:`a = 1/N sum f_n ` where N is the number of intervals.
+        :math:`a = 1/N sum f_n` where N is the number of intervals.
 
         :param interval: averaging interval given as a pair of floats, a
                          sequence of pairs for averaging multiple intervals, or

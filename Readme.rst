@@ -11,7 +11,7 @@ All computation intensive parts are implemented in C via cython_ to reach a comp
 
 PySpike provides the same fundamental functionality as the SPIKY_ framework for Matlab, which additionally contains spike-train generators, more spike train distance measures and many visualization routines.
 
-All source codes are published under the BSD_License_.
+All source codes are available on `Github <https://github.com/mariomulansky/PySpike>`_  and are published under the BSD_License_.
 
 .. [#] Kreuz T, Haas JS, Morelli A, Abarbanel HDI, Politi A, *Measuring spike train synchrony.* J Neurosci Methods 165, 151 (2007) `[pdf] <http://wwwold.fi.isc.cnr.it/users/thomas.kreuz/images/Kreuz_JNeurosciMethods_2007_Spike-Train-Synchrony.pdf>`_
 
@@ -201,7 +201,7 @@ The parameter :code:`interval` is optional and if neglected the whole spike trai
 
 
 SPIKE synchronization
-..............
+.....................
 
 **Important note:**
 

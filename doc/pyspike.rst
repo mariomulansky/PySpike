@@ -4,35 +4,58 @@ pyspike package
 Submodules
 ----------
 
-pyspike.distances module
-------------------------
+pyspike.isi_distance module
+----------------------------------------
 
-.. automodule:: pyspike.distances
+.. automodule:: pyspike.isi_distance
     :members:
     :undoc-members:
     :show-inheritance:
 
-pyspike.function module
------------------------
+pyspike.spike_distance module
+----------------------------------------
 
-.. automodule:: pyspike.function
+.. automodule:: pyspike.spike_distance
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pyspike.spike_sync module
+----------------------------------------
+
+.. automodule:: pyspike.spike_sync
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pyspike.PieceWiseConstFunc module
+----------------------------------------
+
+.. automodule:: pyspike.PieceWiseConstFunc
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pyspike.PieceWiseLinFunc module
+----------------------------------------
+
+.. automodule:: pyspike.PieceWiseLinFunc
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pyspike.DiscreteFunc module
+----------------------------------------
+
+.. automodule:: pyspike.DiscreteFunc
     :members:
     :undoc-members:
     :show-inheritance:
 
 pyspike.spikes module
----------------------
+----------------------------------------
 
 .. automodule:: pyspike.spikes
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: pyspike
     :members:
     :undoc-members:
     :show-inheritance:
