@@ -57,7 +57,7 @@ Its core functionality is the implementation of the bivariate <a class="referenc
 Additionally, it provides functions to compute multivariate profiles, distance matrices, as well as averaging and general spike train processing.
 All computation intensive parts are implemented in C via <a class="reference external" href="http://www.cython.org">cython</a> to reach a competitive performance (factor 100-200 over plain Python).</p>
 <p>PySpike provides the same fundamental functionality as the <a class="reference external" href="http://wwwold.fi.isc.cnr.it/users/thomas.kreuz/Source-Code/SPIKY.html">SPIKY</a> framework for Matlab, which additionally contains spike-train generators, more spike train distance measures and many visualization routines.</p>
-<p>All source codes are published under the <a class="reference external" href="http://opensource.org/licenses/BSD-2-Clause">BSD_License</a>.</p>
+<p>All source codes are available on <a class="reference external" href="https://github.com/mariomulansky/PySpike">Github</a>  and are published under the <a class="reference external" href="http://opensource.org/licenses/BSD-2-Clause">BSD_License</a>.</p>
 <table class="docutils footnote" frame="void" id="id4" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
@@ -314,10 +314,13 @@ Curie Initial Training Network</em> <a class="reference external" href="http://w
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="pyspike.html">pyspike package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="pyspike.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyspike.html#module-pyspike.distances">pyspike.distances module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyspike.html#module-pyspike.function">pyspike.function module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyspike.html#module-pyspike.isi_distance">pyspike.isi_distance module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyspike.html#module-pyspike.spike_distance">pyspike.spike_distance module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyspike.html#module-pyspike.spike_sync">pyspike.spike_sync module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyspike.html#module-pyspike.PieceWiseConstFunc">pyspike.PieceWiseConstFunc module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyspike.html#module-pyspike.PieceWiseLinFunc">pyspike.PieceWiseLinFunc module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyspike.html#module-pyspike.DiscreteFunc">pyspike.DiscreteFunc module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pyspike.html#module-pyspike.spikes">pyspike.spikes module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyspike.html#module-pyspike">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -403,7 +406,7 @@ Curie Initial Training Network</em> <a class="reference external" href="http://w
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2014, Mario Mulansky.
+        &copy; Copyright 2014-2015, Mario Mulansky.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>

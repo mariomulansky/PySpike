@@ -54,15 +54,14 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-pyspike.distances">
-<span id="pyspike-distances-module"></span><h2>pyspike.distances module<a class="headerlink" href="#module-pyspike.distances" title="Permalink to this headline">¶</a></h2>
-<p>distances.py</p>
-<p>Module containing several functions to compute spike distances</p>
-<p>Copyright 2014, Mario Mulansky &lt;<a class="reference external" href="mailto:mario&#46;mulansky&#37;&#52;&#48;gmx&#46;net">mario<span>&#46;</span>mulansky<span>&#64;</span>gmx<span>&#46;</span>net</a>&gt;</p>
+<div class="section" id="module-pyspike.isi_distance">
+<span id="pyspike-isi-distance-module"></span><h2>pyspike.isi_distance module<a class="headerlink" href="#module-pyspike.isi_distance" title="Permalink to this headline">¶</a></h2>
+<p>Module containing several functions to compute the ISI profiles and distances</p>
+<p>Copyright 2014-2015, Mario Mulansky &lt;<a class="reference external" href="mailto:mario&#46;mulansky&#37;&#52;&#48;gmx&#46;net">mario<span>&#46;</span>mulansky<span>&#64;</span>gmx<span>&#46;</span>net</a>&gt;</p>
 <p>Distributed under the BSD License</p>
 <dl class="function">
-<dt id="pyspike.distances.isi_distance">
-<tt class="descclassname">pyspike.distances.</tt><tt class="descname">isi_distance</tt><big>(</big><em>spikes1</em>, <em>spikes2</em>, <em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/distances.html#isi_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.distances.isi_distance" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.isi_distance.isi_distance">
+<tt class="descclassname">pyspike.isi_distance.</tt><tt class="descname">isi_distance</tt><big>(</big><em>spikes1</em>, <em>spikes2</em>, <em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/isi_distance.html#isi_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.isi_distance.isi_distance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the isi-distance I of the given spike trains. The
 isi-distance is the integral over the isi distance profile
 <span class="math">\(S_{isi}(t)\)</span>:</p>
@@ -91,8 +90,8 @@ if None the average over the whole function is computed.</li>
 </dd></dl>
 
 <dl class="function">
-<dt id="pyspike.distances.isi_distance_matrix">
-<tt class="descclassname">pyspike.distances.</tt><tt class="descname">isi_distance_matrix</tt><big>(</big><em>spike_trains</em>, <em>indices=None</em>, <em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/distances.html#isi_distance_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.distances.isi_distance_matrix" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.isi_distance.isi_distance_matrix">
+<tt class="descclassname">pyspike.isi_distance.</tt><tt class="descname">isi_distance_matrix</tt><big>(</big><em>spike_trains</em>, <em>indices=None</em>, <em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/isi_distance.html#isi_distance_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.isi_distance.isi_distance_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the time averaged isi-distance of all pairs of spike-trains.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -119,8 +118,8 @@ the average over the whole function is computed.</li>
 </dd></dl>
 
 <dl class="function">
-<dt id="pyspike.distances.isi_distance_multi">
-<tt class="descclassname">pyspike.distances.</tt><tt class="descname">isi_distance_multi</tt><big>(</big><em>spike_trains</em>, <em>indices=None</em>, <em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/distances.html#isi_distance_multi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.distances.isi_distance_multi" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.isi_distance.isi_distance_multi">
+<tt class="descclassname">pyspike.isi_distance.</tt><tt class="descname">isi_distance_multi</tt><big>(</big><em>spike_trains</em>, <em>indices=None</em>, <em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/isi_distance.html#isi_distance_multi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.isi_distance.isi_distance_multi" title="Permalink to this definition">¶</a></dt>
 <dd><p>computes the multi-variate isi-distance for a set of spike-trains.
 That is the time average of the multi-variate spike profile:
 I = int_0^T 2/((N(N-1)) sum_{&lt;i,j&gt;} S_{isi}^{i,j},
@@ -149,8 +148,8 @@ the average over the whole function is computed.</li>
 </dd></dl>
 
 <dl class="function">
-<dt id="pyspike.distances.isi_profile">
-<tt class="descclassname">pyspike.distances.</tt><tt class="descname">isi_profile</tt><big>(</big><em>spikes1</em>, <em>spikes2</em><big>)</big><a class="reference internal" href="_modules/pyspike/distances.html#isi_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.distances.isi_profile" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.isi_distance.isi_profile">
+<tt class="descclassname">pyspike.isi_distance.</tt><tt class="descname">isi_profile</tt><big>(</big><em>spikes1</em>, <em>spikes2</em><big>)</big><a class="reference internal" href="_modules/pyspike/isi_distance.html#isi_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.isi_distance.isi_profile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the isi-distance profile <span class="math">\(S_{isi}(t)\)</span> of the two given
 spike trains. Retruns the profile as a PieceWiseConstFunc object. The S_isi
 values are defined positive S_isi(t)&gt;=0.  The spike trains are expected
@@ -169,7 +168,7 @@ function add_auxiliary_spikes to add those spikes to the spike train.</p>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The isi-distance profile <span class="math">\(S_{isi}(t)\)</span></p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#pyspike.function.PieceWiseConstFunc" title="pyspike.function.PieceWiseConstFunc"><tt class="xref py py-class docutils literal"><span class="pre">pyspike.function.PieceWiseConstFunc</span></tt></a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><tt class="xref py py-class docutils literal"><span class="pre">pyspike.function.PieceWiseConstFunc</span></tt></p>
 </td>
 </tr>
 </tbody>
@@ -177,8 +176,8 @@ function add_auxiliary_spikes to add those spikes to the spike train.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="pyspike.distances.isi_profile_multi">
-<tt class="descclassname">pyspike.distances.</tt><tt class="descname">isi_profile_multi</tt><big>(</big><em>spike_trains</em>, <em>indices=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/distances.html#isi_profile_multi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.distances.isi_profile_multi" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.isi_distance.isi_profile_multi">
+<tt class="descclassname">pyspike.isi_distance.</tt><tt class="descname">isi_profile_multi</tt><big>(</big><em>spike_trains</em>, <em>indices=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/isi_distance.html#isi_profile_multi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.isi_distance.isi_profile_multi" title="Permalink to this definition">¶</a></dt>
 <dd><p>computes the multi-variate isi distance profile for a set of spike
 trains. That is the average isi-distance of all pairs of spike-trains:
 S_isi(t) = 2/((N(N-1)) sum_{&lt;i,j&gt;} S_{isi}^{i,j},
@@ -197,16 +196,22 @@ if None all given spike trains are used (default=None)</li>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The averaged isi profile <span class="math">\(&lt;S_{isi}&gt;(t)\)</span></p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#pyspike.function.PieceWiseConstFunc" title="pyspike.function.PieceWiseConstFunc"><tt class="xref py py-class docutils literal"><span class="pre">pyspike.function.PieceWiseConstFunc</span></tt></a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><tt class="xref py py-class docutils literal"><span class="pre">pyspike.function.PieceWiseConstFunc</span></tt></p>
 </td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
+</div>
+<div class="section" id="module-pyspike.spike_distance">
+<span id="pyspike-spike-distance-module"></span><h2>pyspike.spike_distance module<a class="headerlink" href="#module-pyspike.spike_distance" title="Permalink to this headline">¶</a></h2>
+<p>Module containing several functions to compute SPIKE profiles and distances</p>
+<p>Copyright 2014-2015, Mario Mulansky &lt;<a class="reference external" href="mailto:mario&#46;mulansky&#37;&#52;&#48;gmx&#46;net">mario<span>&#46;</span>mulansky<span>&#64;</span>gmx<span>&#46;</span>net</a>&gt;</p>
+<p>Distributed under the BSD License</p>
 <dl class="function">
-<dt id="pyspike.distances.spike_distance">
-<tt class="descclassname">pyspike.distances.</tt><tt class="descname">spike_distance</tt><big>(</big><em>spikes1</em>, <em>spikes2</em>, <em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/distances.html#spike_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.distances.spike_distance" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.spike_distance.spike_distance">
+<tt class="descclassname">pyspike.spike_distance.</tt><tt class="descname">spike_distance</tt><big>(</big><em>spikes1</em>, <em>spikes2</em>, <em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/spike_distance.html#spike_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_distance.spike_distance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the spike-distance S of the given spike trains. The
 spike-distance is the integral over the isi distance profile S_spike(t):</p>
 <div class="math">
@@ -234,8 +239,8 @@ if None the average over the whole function is computed.</li>
 </dd></dl>
 
 <dl class="function">
-<dt id="pyspike.distances.spike_distance_matrix">
-<tt class="descclassname">pyspike.distances.</tt><tt class="descname">spike_distance_matrix</tt><big>(</big><em>spike_trains</em>, <em>indices=None</em>, <em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/distances.html#spike_distance_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.distances.spike_distance_matrix" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.spike_distance.spike_distance_matrix">
+<tt class="descclassname">pyspike.spike_distance.</tt><tt class="descname">spike_distance_matrix</tt><big>(</big><em>spike_trains</em>, <em>indices=None</em>, <em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/spike_distance.html#spike_distance_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_distance.spike_distance_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the time averaged spike-distance of all pairs of spike-trains.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -262,8 +267,8 @@ the average over the whole function is computed.</li>
 </dd></dl>
 
 <dl class="function">
-<dt id="pyspike.distances.spike_distance_multi">
-<tt class="descclassname">pyspike.distances.</tt><tt class="descname">spike_distance_multi</tt><big>(</big><em>spike_trains</em>, <em>indices=None</em>, <em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/distances.html#spike_distance_multi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.distances.spike_distance_multi" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.spike_distance.spike_distance_multi">
+<tt class="descclassname">pyspike.spike_distance.</tt><tt class="descname">spike_distance_multi</tt><big>(</big><em>spike_trains</em>, <em>indices=None</em>, <em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/spike_distance.html#spike_distance_multi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_distance.spike_distance_multi" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the multi-variate spike distance for a set of spike trains.
 That is the time average of the multi-variate spike profile:
 S_{spike} = int_0^T 2/((N(N-1)) sum_{&lt;i,j&gt;} S_{spike}^{i, j} dt
@@ -292,8 +297,8 @@ the average over the whole function is computed.</li>
 </dd></dl>
 
 <dl class="function">
-<dt id="pyspike.distances.spike_profile">
-<tt class="descclassname">pyspike.distances.</tt><tt class="descname">spike_profile</tt><big>(</big><em>spikes1</em>, <em>spikes2</em><big>)</big><a class="reference internal" href="_modules/pyspike/distances.html#spike_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.distances.spike_profile" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.spike_distance.spike_profile">
+<tt class="descclassname">pyspike.spike_distance.</tt><tt class="descname">spike_profile</tt><big>(</big><em>spikes1</em>, <em>spikes2</em><big>)</big><a class="reference internal" href="_modules/pyspike/spike_distance.html#spike_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_distance.spike_profile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the spike-distance profile S_spike(t) of the two given spike
 trains. Returns the profile as a PieceWiseLinFunc object. The S_spike
 values are defined positive S_spike(t)&gt;=0. The spike trains are expected to
@@ -312,7 +317,7 @@ function add_auxiliary_spikes to add those spikes to the spike train.</p>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The spike-distance profile <span class="math">\(S_{spike}(t)\)</span>.</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#pyspike.function.PieceWiseLinFunc" title="pyspike.function.PieceWiseLinFunc"><tt class="xref py py-class docutils literal"><span class="pre">pyspike.function.PieceWiseLinFunc</span></tt></a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><tt class="xref py py-class docutils literal"><span class="pre">pyspike.function.PieceWiseLinFunc</span></tt></p>
 </td>
 </tr>
 </tbody>
@@ -320,8 +325,8 @@ function add_auxiliary_spikes to add those spikes to the spike train.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="pyspike.distances.spike_profile_multi">
-<tt class="descclassname">pyspike.distances.</tt><tt class="descname">spike_profile_multi</tt><big>(</big><em>spike_trains</em>, <em>indices=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/distances.html#spike_profile_multi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.distances.spike_profile_multi" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.spike_distance.spike_profile_multi">
+<tt class="descclassname">pyspike.spike_distance.</tt><tt class="descname">spike_profile_multi</tt><big>(</big><em>spike_trains</em>, <em>indices=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/spike_distance.html#spike_profile_multi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_distance.spike_profile_multi" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the multi-variate spike distance profile for a set of spike
 trains. That is the average spike-distance of all pairs of spike-trains:
 <span class="math">\(S_spike(t) = 2/((N(N-1)) sum_{&lt;i,j&gt;} S_{spike}^{i, j}\)</span>,
@@ -340,16 +345,23 @@ if None all given spike trains are used (default=None)</li>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The averaged spike profile <span class="math">\(&lt;S_{spike}&gt;(t)\)</span></p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#pyspike.function.PieceWiseLinFunc" title="pyspike.function.PieceWiseLinFunc"><tt class="xref py py-class docutils literal"><span class="pre">pyspike.function.PieceWiseLinFunc</span></tt></a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><tt class="xref py py-class docutils literal"><span class="pre">pyspike.function.PieceWiseLinFunc</span></tt></p>
 </td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
+</div>
+<div class="section" id="module-pyspike.spike_sync">
+<span id="pyspike-spike-sync-module"></span><h2>pyspike.spike_sync module<a class="headerlink" href="#module-pyspike.spike_sync" title="Permalink to this headline">¶</a></h2>
+<p>Module containing several functions to compute SPIKE-Synchronization profiles
+and distances</p>
+<p>Copyright 2014-2015, Mario Mulansky &lt;<a class="reference external" href="mailto:mario&#46;mulansky&#37;&#52;&#48;gmx&#46;net">mario<span>&#46;</span>mulansky<span>&#64;</span>gmx<span>&#46;</span>net</a>&gt;</p>
+<p>Distributed under the BSD License</p>
 <dl class="function">
-<dt id="pyspike.distances.spike_sync">
-<tt class="descclassname">pyspike.distances.</tt><tt class="descname">spike_sync</tt><big>(</big><em>spikes1</em>, <em>spikes2</em>, <em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/distances.html#spike_sync"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.distances.spike_sync" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.spike_sync.spike_sync">
+<tt class="descclassname">pyspike.spike_sync.</tt><tt class="descname">spike_sync</tt><big>(</big><em>spikes1</em>, <em>spikes2</em>, <em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/spike_sync.html#spike_sync"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_sync.spike_sync" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the spike synchronization value SYNC of the given spike
 trains. The spike synchronization value is the computed as the total number
 of coincidences divided by the total number of spikes:</p>
@@ -378,8 +390,8 @@ if None the average over the whole function is computed.</li>
 </dd></dl>
 
 <dl class="function">
-<dt id="pyspike.distances.spike_sync_matrix">
-<tt class="descclassname">pyspike.distances.</tt><tt class="descname">spike_sync_matrix</tt><big>(</big><em>spike_trains</em>, <em>indices=None</em>, <em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/distances.html#spike_sync_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.distances.spike_sync_matrix" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.spike_sync.spike_sync_matrix">
+<tt class="descclassname">pyspike.spike_sync.</tt><tt class="descname">spike_sync_matrix</tt><big>(</big><em>spike_trains</em>, <em>indices=None</em>, <em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/spike_sync.html#spike_sync_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_sync.spike_sync_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the overall spike-synchronization value of all pairs of
 spike-trains.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -407,8 +419,8 @@ the average over the whole function is computed.</li>
 </dd></dl>
 
 <dl class="function">
-<dt id="pyspike.distances.spike_sync_multi">
-<tt class="descclassname">pyspike.distances.</tt><tt class="descname">spike_sync_multi</tt><big>(</big><em>spike_trains</em>, <em>indices=None</em>, <em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/distances.html#spike_sync_multi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.distances.spike_sync_multi" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.spike_sync.spike_sync_multi">
+<tt class="descclassname">pyspike.spike_sync.</tt><tt class="descname">spike_sync_multi</tt><big>(</big><em>spike_trains</em>, <em>indices=None</em>, <em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/spike_sync.html#spike_sync_multi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_sync.spike_sync_multi" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the multi-variate spike synchronization value for a set of
 spike trains.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -435,8 +447,8 @@ the average over the whole function is computed.</li>
 </dd></dl>
 
 <dl class="function">
-<dt id="pyspike.distances.spike_sync_profile">
-<tt class="descclassname">pyspike.distances.</tt><tt class="descname">spike_sync_profile</tt><big>(</big><em>spikes1</em>, <em>spikes2</em><big>)</big><a class="reference internal" href="_modules/pyspike/distances.html#spike_sync_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.distances.spike_sync_profile" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.spike_sync.spike_sync_profile">
+<tt class="descclassname">pyspike.spike_sync.</tt><tt class="descname">spike_sync_profile</tt><big>(</big><em>spikes1</em>, <em>spikes2</em><big>)</big><a class="reference internal" href="_modules/pyspike/spike_sync.html#spike_sync_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_sync.spike_sync_profile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the spike-synchronization profile S_sync(t) of the two given
 spike trains. Returns the profile as a DiscreteFunction object. The S_sync
 values are either 1 or 0, indicating the presence or absence of a
@@ -456,7 +468,7 @@ add those spikes to the spike train.</p>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The spike-distance profile <span class="math">\(S_{sync}(t)\)</span>.</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#pyspike.function.DiscreteFunction" title="pyspike.function.DiscreteFunction"><tt class="xref py py-class docutils literal"><span class="pre">pyspike.function.DiscreteFunction</span></tt></a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><tt class="xref py py-class docutils literal"><span class="pre">pyspike.function.DiscreteFunction</span></tt></p>
 </td>
 </tr>
 </tbody>
@@ -464,8 +476,8 @@ add those spikes to the spike train.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="pyspike.distances.spike_sync_profile_multi">
-<tt class="descclassname">pyspike.distances.</tt><tt class="descname">spike_sync_profile_multi</tt><big>(</big><em>spike_trains</em>, <em>indices=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/distances.html#spike_sync_profile_multi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.distances.spike_sync_profile_multi" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.spike_sync.spike_sync_profile_multi">
+<tt class="descclassname">pyspike.spike_sync.</tt><tt class="descname">spike_sync_profile_multi</tt><big>(</big><em>spike_trains</em>, <em>indices=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/spike_sync.html#spike_sync_profile_multi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_sync.spike_sync_profile_multi" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the multi-variate spike synchronization profile for a set of
 spike trains. For each spike in the set of spike trains, the multi-variate
 profile is defined as the number of coincidences divided by the number of
@@ -485,7 +497,7 @@ if None all given spike trains are used (default=None)</li>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The multi-variate spike sync profile <span class="math">\(&lt;S_{sync}&gt;(t)\)</span></p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#pyspike.function.DiscreteFunction" title="pyspike.function.DiscreteFunction"><tt class="xref py py-class docutils literal"><span class="pre">pyspike.function.DiscreteFunction</span></tt></a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><tt class="xref py py-class docutils literal"><span class="pre">pyspike.function.DiscreteFunction</span></tt></p>
 </td>
 </tr>
 </tbody>
@@ -493,179 +505,19 @@ if None all given spike trains are used (default=None)</li>
 </dd></dl>
 
 </div>
-<div class="section" id="module-pyspike.function">
-<span id="pyspike-function-module"></span><h2>pyspike.function module<a class="headerlink" href="#module-pyspike.function" title="Permalink to this headline">¶</a></h2>
-<p>function.py</p>
-<p>Module containing classes representing piece-wise constant and piece-wise
-linear functions.</p>
-<p>Copyright 2014, Mario Mulansky &lt;<a class="reference external" href="mailto:mario&#46;mulansky&#37;&#52;&#48;gmx&#46;net">mario<span>&#46;</span>mulansky<span>&#64;</span>gmx<span>&#46;</span>net</a>&gt;</p>
+<div class="section" id="module-pyspike.PieceWiseConstFunc">
+<span id="pyspike-piecewiseconstfunc-module"></span><h2>pyspike.PieceWiseConstFunc module<a class="headerlink" href="#module-pyspike.PieceWiseConstFunc" title="Permalink to this headline">¶</a></h2>
+<p>Class representing piece-wise constant functions.</p>
+<p>Copyright 2014-2015, Mario Mulansky &lt;<a class="reference external" href="mailto:mario&#46;mulansky&#37;&#52;&#48;gmx&#46;net">mario<span>&#46;</span>mulansky<span>&#64;</span>gmx<span>&#46;</span>net</a>&gt;</p>
 <p>Distributed under the BSD License</p>
 <dl class="class">
-<dt id="pyspike.function.DiscreteFunction">
-<em class="property">class </em><tt class="descclassname">pyspike.function.</tt><tt class="descname">DiscreteFunction</tt><big>(</big><em>x</em>, <em>y</em>, <em>multiplicity</em><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#DiscreteFunction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.DiscreteFunction" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
-<p>A class representing values defined on a discrete set of points.</p>
-<dl class="method">
-<dt id="pyspike.function.DiscreteFunction.__init__">
-<tt class="descname">__init__</tt><big>(</big><em>x</em>, <em>y</em>, <em>multiplicity</em><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#DiscreteFunction.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.DiscreteFunction.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Constructs the discrete function.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>x</strong> &#8211; array of length N defining the points at which the values are</td>
-</tr>
-</tbody>
-</table>
-<p>defined.
-:param y: array of length N degining the values at the points x.
-:param multiplicity: array of length N defining the multiplicity of the
-values.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyspike.function.DiscreteFunction.add">
-<tt class="descname">add</tt><big>(</big><em>f</em><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#DiscreteFunction.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.DiscreteFunction.add" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adds another <cite>DiscreteFunction</cite> function to this function.
-Note: only functions defined on the same interval can be summed.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>f</strong> &#8211; <a class="reference internal" href="#pyspike.function.DiscreteFunction" title="pyspike.function.DiscreteFunction"><tt class="xref py py-class docutils literal"><span class="pre">DiscreteFunction</span></tt></a> function to be added.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">None</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyspike.function.DiscreteFunction.almost_equal">
-<tt class="descname">almost_equal</tt><big>(</big><em>other</em>, <em>decimal=14</em><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#DiscreteFunction.almost_equal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.DiscreteFunction.almost_equal" title="Permalink to this definition">¶</a></dt>
-<dd><p>Checks if the function is equal to another function up to <cite>decimal</cite>
-precision.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>other</strong> &#8211; another <a class="reference internal" href="#pyspike.function.DiscreteFunction" title="pyspike.function.DiscreteFunction"><tt class="xref py py-class docutils literal"><span class="pre">DiscreteFunction</span></tt></a></td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if the two functions are equal up to <cite>decimal</cite> decimals,
-False otherwise</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyspike.function.DiscreteFunction.avrg">
-<tt class="descname">avrg</tt><big>(</big><em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#DiscreteFunction.avrg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.DiscreteFunction.avrg" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the average of the interval sequence:
-:math:<a href="#id1"><span class="problematic" id="id2">`</span></a>a = 1/N sum f_n ` where N is the number of intervals.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>interval</strong> (<em>Pair, sequence of pairs, or None.</em>) &#8211; averaging interval given as a pair of floats, a
-sequence of pairs for averaging multiple intervals, or
-None, if None the average over the whole function is
-computed.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the average a.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyspike.function.DiscreteFunction.copy">
-<tt class="descname">copy</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#DiscreteFunction.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.DiscreteFunction.copy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a copy of itself</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#pyspike.function.DiscreteFunction" title="pyspike.function.DiscreteFunction"><tt class="xref py py-class docutils literal"><span class="pre">DiscreteFunction</span></tt></a></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyspike.function.DiscreteFunction.get_plottable_data">
-<tt class="descname">get_plottable_data</tt><big>(</big><em>k=0</em><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#DiscreteFunction.get_plottable_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.DiscreteFunction.get_plottable_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns two arrays containing x- and y-coordinates for immeditate
-plotting of the interval sequence.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(x_plot, y_plot) containing plottable data</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">pair of np.array</td>
-</tr>
-</tbody>
-</table>
-<p>Example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">get_plottable_data</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s">&#39;-o&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&quot;Discrete function&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyspike.function.DiscreteFunction.integral">
-<tt class="descname">integral</tt><big>(</big><em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#DiscreteFunction.integral"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.DiscreteFunction.integral" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the integral over the given interval. For the discrete
-function, this amounts to the sum over all values divided by the total
-multiplicity.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>interval</strong> (<em>Pair, sequence of pairs, or None.</em>) &#8211; integration interval given as a pair of floats, or a
-sequence of pairs in case of multiple intervals, if
-None the integral over the whole function is computed.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the integral</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyspike.function.DiscreteFunction.mul_scalar">
-<tt class="descname">mul_scalar</tt><big>(</big><em>fac</em><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#DiscreteFunction.mul_scalar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.DiscreteFunction.mul_scalar" title="Permalink to this definition">¶</a></dt>
-<dd><p>Multiplies the function with a scalar value</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fac</strong> (<em>double</em>) &#8211; Value to multiply</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">None</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="pyspike.function.PieceWiseConstFunc">
-<em class="property">class </em><tt class="descclassname">pyspike.function.</tt><tt class="descname">PieceWiseConstFunc</tt><big>(</big><em>x</em>, <em>y</em><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#PieceWiseConstFunc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.PieceWiseConstFunc" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.PieceWiseConstFunc.PieceWiseConstFunc">
+<em class="property">class </em><tt class="descclassname">pyspike.PieceWiseConstFunc.</tt><tt class="descname">PieceWiseConstFunc</tt><big>(</big><em>x</em>, <em>y</em><big>)</big><a class="reference internal" href="_modules/pyspike/PieceWiseConstFunc.html#PieceWiseConstFunc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.PieceWiseConstFunc.PieceWiseConstFunc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <p>A class representing a piece-wise constant function.</p>
 <dl class="method">
-<dt id="pyspike.function.PieceWiseConstFunc.__init__">
-<tt class="descname">__init__</tt><big>(</big><em>x</em>, <em>y</em><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#PieceWiseConstFunc.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.PieceWiseConstFunc.__init__" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.PieceWiseConstFunc.PieceWiseConstFunc.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>x</em>, <em>y</em><big>)</big><a class="reference internal" href="_modules/pyspike/PieceWiseConstFunc.html#PieceWiseConstFunc.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.PieceWiseConstFunc.PieceWiseConstFunc.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructs the piece-wise const function.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -684,15 +536,15 @@ intervals.</li>
 </dd></dl>
 
 <dl class="method">
-<dt id="pyspike.function.PieceWiseConstFunc.add">
-<tt class="descname">add</tt><big>(</big><em>f</em><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#PieceWiseConstFunc.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.PieceWiseConstFunc.add" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.PieceWiseConstFunc.PieceWiseConstFunc.add">
+<tt class="descname">add</tt><big>(</big><em>f</em><big>)</big><a class="reference internal" href="_modules/pyspike/PieceWiseConstFunc.html#PieceWiseConstFunc.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.PieceWiseConstFunc.PieceWiseConstFunc.add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds another PieceWiseConst function to this function.
 Note: only functions defined on the same interval can be summed.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>f</strong> &#8211; <a class="reference internal" href="#pyspike.function.PieceWiseConstFunc" title="pyspike.function.PieceWiseConstFunc"><tt class="xref py py-class docutils literal"><span class="pre">PieceWiseConstFunc</span></tt></a> function to be added.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>f</strong> &#8211; <a class="reference internal" href="#pyspike.PieceWiseConstFunc.PieceWiseConstFunc" title="pyspike.PieceWiseConstFunc.PieceWiseConstFunc"><tt class="xref py py-class docutils literal"><span class="pre">PieceWiseConstFunc</span></tt></a> function to be added.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">None</td>
 </tr>
@@ -701,15 +553,15 @@ Note: only functions defined on the same interval can be summed.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pyspike.function.PieceWiseConstFunc.almost_equal">
-<tt class="descname">almost_equal</tt><big>(</big><em>other</em>, <em>decimal=14</em><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#PieceWiseConstFunc.almost_equal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.PieceWiseConstFunc.almost_equal" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.PieceWiseConstFunc.PieceWiseConstFunc.almost_equal">
+<tt class="descname">almost_equal</tt><big>(</big><em>other</em>, <em>decimal=14</em><big>)</big><a class="reference internal" href="_modules/pyspike/PieceWiseConstFunc.html#PieceWiseConstFunc.almost_equal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.PieceWiseConstFunc.PieceWiseConstFunc.almost_equal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Checks if the function is equal to another function up to <cite>decimal</cite>
 precision.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>other</strong> &#8211; another <a class="reference internal" href="#pyspike.function.PieceWiseConstFunc" title="pyspike.function.PieceWiseConstFunc"><tt class="xref py py-class docutils literal"><span class="pre">PieceWiseConstFunc</span></tt></a></td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>other</strong> &#8211; another <a class="reference internal" href="#pyspike.PieceWiseConstFunc.PieceWiseConstFunc" title="pyspike.PieceWiseConstFunc.PieceWiseConstFunc"><tt class="xref py py-class docutils literal"><span class="pre">PieceWiseConstFunc</span></tt></a></td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if the two functions are equal up to <cite>decimal</cite> decimals,
 False otherwise</td>
@@ -721,8 +573,8 @@ False otherwise</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="pyspike.function.PieceWiseConstFunc.avrg">
-<tt class="descname">avrg</tt><big>(</big><em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#PieceWiseConstFunc.avrg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.PieceWiseConstFunc.avrg" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.PieceWiseConstFunc.PieceWiseConstFunc.avrg">
+<tt class="descname">avrg</tt><big>(</big><em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/PieceWiseConstFunc.html#PieceWiseConstFunc.avrg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.PieceWiseConstFunc.PieceWiseConstFunc.avrg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the average of the piece-wise const function:
 <span class="math">\(a = 1/T int_0^T f(x) dx\)</span> where T is the length of the interval.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -743,22 +595,22 @@ computed.</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="pyspike.function.PieceWiseConstFunc.copy">
-<tt class="descname">copy</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#PieceWiseConstFunc.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.PieceWiseConstFunc.copy" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.PieceWiseConstFunc.PieceWiseConstFunc.copy">
+<tt class="descname">copy</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pyspike/PieceWiseConstFunc.html#PieceWiseConstFunc.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.PieceWiseConstFunc.PieceWiseConstFunc.copy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a copy of itself</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#pyspike.function.PieceWiseConstFunc" title="pyspike.function.PieceWiseConstFunc"><tt class="xref py py-class docutils literal"><span class="pre">PieceWiseConstFunc</span></tt></a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#pyspike.PieceWiseConstFunc.PieceWiseConstFunc" title="pyspike.PieceWiseConstFunc.PieceWiseConstFunc"><tt class="xref py py-class docutils literal"><span class="pre">PieceWiseConstFunc</span></tt></a></td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
 <dl class="method">
-<dt id="pyspike.function.PieceWiseConstFunc.get_plottable_data">
-<tt class="descname">get_plottable_data</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#PieceWiseConstFunc.get_plottable_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.PieceWiseConstFunc.get_plottable_data" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.PieceWiseConstFunc.PieceWiseConstFunc.get_plottable_data">
+<tt class="descname">get_plottable_data</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pyspike/PieceWiseConstFunc.html#PieceWiseConstFunc.get_plottable_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.PieceWiseConstFunc.PieceWiseConstFunc.get_plottable_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns two arrays containing x- and y-coordinates for immeditate
 plotting of the piece-wise function.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -779,8 +631,8 @@ plotting of the piece-wise function.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pyspike.function.PieceWiseConstFunc.integral">
-<tt class="descname">integral</tt><big>(</big><em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#PieceWiseConstFunc.integral"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.PieceWiseConstFunc.integral" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.PieceWiseConstFunc.PieceWiseConstFunc.integral">
+<tt class="descname">integral</tt><big>(</big><em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/PieceWiseConstFunc.html#PieceWiseConstFunc.integral"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.PieceWiseConstFunc.PieceWiseConstFunc.integral" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the integral over the given interval.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -798,8 +650,8 @@ None the integral over the whole function is computed.</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="pyspike.function.PieceWiseConstFunc.mul_scalar">
-<tt class="descname">mul_scalar</tt><big>(</big><em>fac</em><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#PieceWiseConstFunc.mul_scalar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.PieceWiseConstFunc.mul_scalar" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.PieceWiseConstFunc.PieceWiseConstFunc.mul_scalar">
+<tt class="descname">mul_scalar</tt><big>(</big><em>fac</em><big>)</big><a class="reference internal" href="_modules/pyspike/PieceWiseConstFunc.html#PieceWiseConstFunc.mul_scalar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.PieceWiseConstFunc.PieceWiseConstFunc.mul_scalar" title="Permalink to this definition">¶</a></dt>
 <dd><p>Multiplies the function with a scalar value</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -815,13 +667,19 @@ None the integral over the whole function is computed.</td>
 
 </dd></dl>
 
+</div>
+<div class="section" id="module-pyspike.PieceWiseLinFunc">
+<span id="pyspike-piecewiselinfunc-module"></span><h2>pyspike.PieceWiseLinFunc module<a class="headerlink" href="#module-pyspike.PieceWiseLinFunc" title="Permalink to this headline">¶</a></h2>
+<p>Class representing piece-wise linear functions.</p>
+<p>Copyright 2014-2015, Mario Mulansky &lt;<a class="reference external" href="mailto:mario&#46;mulansky&#37;&#52;&#48;gmx&#46;net">mario<span>&#46;</span>mulansky<span>&#64;</span>gmx<span>&#46;</span>net</a>&gt;</p>
+<p>Distributed under the BSD License</p>
 <dl class="class">
-<dt id="pyspike.function.PieceWiseLinFunc">
-<em class="property">class </em><tt class="descclassname">pyspike.function.</tt><tt class="descname">PieceWiseLinFunc</tt><big>(</big><em>x</em>, <em>y1</em>, <em>y2</em><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#PieceWiseLinFunc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.PieceWiseLinFunc" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.PieceWiseLinFunc.PieceWiseLinFunc">
+<em class="property">class </em><tt class="descclassname">pyspike.PieceWiseLinFunc.</tt><tt class="descname">PieceWiseLinFunc</tt><big>(</big><em>x</em>, <em>y1</em>, <em>y2</em><big>)</big><a class="reference internal" href="_modules/pyspike/PieceWiseLinFunc.html#PieceWiseLinFunc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.PieceWiseLinFunc.PieceWiseLinFunc" title="Permalink to this definition">¶</a></dt>
 <dd><p>A class representing a piece-wise linear function.</p>
 <dl class="method">
-<dt id="pyspike.function.PieceWiseLinFunc.__init__">
-<tt class="descname">__init__</tt><big>(</big><em>x</em>, <em>y1</em>, <em>y2</em><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#PieceWiseLinFunc.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.PieceWiseLinFunc.__init__" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.PieceWiseLinFunc.PieceWiseLinFunc.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>x</em>, <em>y1</em>, <em>y2</em><big>)</big><a class="reference internal" href="_modules/pyspike/PieceWiseLinFunc.html#PieceWiseLinFunc.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.PieceWiseLinFunc.PieceWiseLinFunc.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructs the piece-wise linear function.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -842,15 +700,15 @@ of the intervals.</li>
 </dd></dl>
 
 <dl class="method">
-<dt id="pyspike.function.PieceWiseLinFunc.add">
-<tt class="descname">add</tt><big>(</big><em>f</em><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#PieceWiseLinFunc.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.PieceWiseLinFunc.add" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.PieceWiseLinFunc.PieceWiseLinFunc.add">
+<tt class="descname">add</tt><big>(</big><em>f</em><big>)</big><a class="reference internal" href="_modules/pyspike/PieceWiseLinFunc.html#PieceWiseLinFunc.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.PieceWiseLinFunc.PieceWiseLinFunc.add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds another PieceWiseLin function to this function.
 Note: only functions defined on the same interval can be summed.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>f</strong> &#8211; <a class="reference internal" href="#pyspike.function.PieceWiseLinFunc" title="pyspike.function.PieceWiseLinFunc"><tt class="xref py py-class docutils literal"><span class="pre">PieceWiseLinFunc</span></tt></a> function to be added.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>f</strong> &#8211; <a class="reference internal" href="#pyspike.PieceWiseLinFunc.PieceWiseLinFunc" title="pyspike.PieceWiseLinFunc.PieceWiseLinFunc"><tt class="xref py py-class docutils literal"><span class="pre">PieceWiseLinFunc</span></tt></a> function to be added.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">None</td>
 </tr>
@@ -859,15 +717,15 @@ Note: only functions defined on the same interval can be summed.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pyspike.function.PieceWiseLinFunc.almost_equal">
-<tt class="descname">almost_equal</tt><big>(</big><em>other</em>, <em>decimal=14</em><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#PieceWiseLinFunc.almost_equal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.PieceWiseLinFunc.almost_equal" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.PieceWiseLinFunc.PieceWiseLinFunc.almost_equal">
+<tt class="descname">almost_equal</tt><big>(</big><em>other</em>, <em>decimal=14</em><big>)</big><a class="reference internal" href="_modules/pyspike/PieceWiseLinFunc.html#PieceWiseLinFunc.almost_equal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.PieceWiseLinFunc.PieceWiseLinFunc.almost_equal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Checks if the function is equal to another function up to <cite>decimal</cite>
 precision.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>other</strong> &#8211; another <a class="reference internal" href="#pyspike.function.PieceWiseLinFunc" title="pyspike.function.PieceWiseLinFunc"><tt class="xref py py-class docutils literal"><span class="pre">PieceWiseLinFunc</span></tt></a></td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>other</strong> &#8211; another <a class="reference internal" href="#pyspike.PieceWiseLinFunc.PieceWiseLinFunc" title="pyspike.PieceWiseLinFunc.PieceWiseLinFunc"><tt class="xref py py-class docutils literal"><span class="pre">PieceWiseLinFunc</span></tt></a></td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if the two functions are equal up to <cite>decimal</cite> decimals,
 False otherwise</td>
@@ -879,8 +737,8 @@ False otherwise</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="pyspike.function.PieceWiseLinFunc.avrg">
-<tt class="descname">avrg</tt><big>(</big><em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#PieceWiseLinFunc.avrg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.PieceWiseLinFunc.avrg" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.PieceWiseLinFunc.PieceWiseLinFunc.avrg">
+<tt class="descname">avrg</tt><big>(</big><em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/PieceWiseLinFunc.html#PieceWiseLinFunc.avrg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.PieceWiseLinFunc.PieceWiseLinFunc.avrg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the average of the piece-wise linear function:
 <span class="math">\(a = 1/T int_0^T f(x) dx\)</span> where T is the length of the interval.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -901,22 +759,22 @@ computed.</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="pyspike.function.PieceWiseLinFunc.copy">
-<tt class="descname">copy</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#PieceWiseLinFunc.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.PieceWiseLinFunc.copy" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.PieceWiseLinFunc.PieceWiseLinFunc.copy">
+<tt class="descname">copy</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pyspike/PieceWiseLinFunc.html#PieceWiseLinFunc.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.PieceWiseLinFunc.PieceWiseLinFunc.copy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a copy of itself</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#pyspike.function.PieceWiseLinFunc" title="pyspike.function.PieceWiseLinFunc"><tt class="xref py py-class docutils literal"><span class="pre">PieceWiseLinFunc</span></tt></a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#pyspike.PieceWiseLinFunc.PieceWiseLinFunc" title="pyspike.PieceWiseLinFunc.PieceWiseLinFunc"><tt class="xref py py-class docutils literal"><span class="pre">PieceWiseLinFunc</span></tt></a></td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
 <dl class="method">
-<dt id="pyspike.function.PieceWiseLinFunc.get_plottable_data">
-<tt class="descname">get_plottable_data</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#PieceWiseLinFunc.get_plottable_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.PieceWiseLinFunc.get_plottable_data" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.PieceWiseLinFunc.PieceWiseLinFunc.get_plottable_data">
+<tt class="descname">get_plottable_data</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pyspike/PieceWiseLinFunc.html#PieceWiseLinFunc.get_plottable_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.PieceWiseLinFunc.PieceWiseLinFunc.get_plottable_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns two arrays containing x- and y-coordinates for immeditate
 plotting of the piece-wise function.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -937,8 +795,8 @@ plotting of the piece-wise function.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pyspike.function.PieceWiseLinFunc.integral">
-<tt class="descname">integral</tt><big>(</big><em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#PieceWiseLinFunc.integral"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.PieceWiseLinFunc.integral" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.PieceWiseLinFunc.PieceWiseLinFunc.integral">
+<tt class="descname">integral</tt><big>(</big><em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/PieceWiseLinFunc.html#PieceWiseLinFunc.integral"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.PieceWiseLinFunc.PieceWiseLinFunc.integral" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the integral over the given interval.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -956,8 +814,179 @@ None the integral over the whole function is computed.</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="pyspike.function.PieceWiseLinFunc.mul_scalar">
-<tt class="descname">mul_scalar</tt><big>(</big><em>fac</em><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#PieceWiseLinFunc.mul_scalar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.PieceWiseLinFunc.mul_scalar" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.PieceWiseLinFunc.PieceWiseLinFunc.mul_scalar">
+<tt class="descname">mul_scalar</tt><big>(</big><em>fac</em><big>)</big><a class="reference internal" href="_modules/pyspike/PieceWiseLinFunc.html#PieceWiseLinFunc.mul_scalar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.PieceWiseLinFunc.PieceWiseLinFunc.mul_scalar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Multiplies the function with a scalar value</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fac</strong> (<em>double</em>) &#8211; Value to multiply</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyspike.DiscreteFunc">
+<span id="pyspike-discretefunc-module"></span><h2>pyspike.DiscreteFunc module<a class="headerlink" href="#module-pyspike.DiscreteFunc" title="Permalink to this headline">¶</a></h2>
+<p>Class representing discrete functions.</p>
+<p>Copyright 2014-2015, Mario Mulansky &lt;<a class="reference external" href="mailto:mario&#46;mulansky&#37;&#52;&#48;gmx&#46;net">mario<span>&#46;</span>mulansky<span>&#64;</span>gmx<span>&#46;</span>net</a>&gt;</p>
+<p>Distributed under the BSD License</p>
+<dl class="class">
+<dt id="pyspike.DiscreteFunc.DiscreteFunc">
+<em class="property">class </em><tt class="descclassname">pyspike.DiscreteFunc.</tt><tt class="descname">DiscreteFunc</tt><big>(</big><em>x</em>, <em>y</em>, <em>multiplicity</em><big>)</big><a class="reference internal" href="_modules/pyspike/DiscreteFunc.html#DiscreteFunc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.DiscreteFunc.DiscreteFunc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>A class representing values defined on a discrete set of points.</p>
+<dl class="method">
+<dt id="pyspike.DiscreteFunc.DiscreteFunc.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>x</em>, <em>y</em>, <em>multiplicity</em><big>)</big><a class="reference internal" href="_modules/pyspike/DiscreteFunc.html#DiscreteFunc.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.DiscreteFunc.DiscreteFunc.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs the discrete function.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>x</strong> &#8211; array of length N defining the points at which the values are
+defined.</li>
+<li><strong>y</strong> &#8211; array of length N degining the values at the points x.</li>
+<li><strong>multiplicity</strong> &#8211; array of length N defining the multiplicity of the
+values.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyspike.DiscreteFunc.DiscreteFunc.add">
+<tt class="descname">add</tt><big>(</big><em>f</em><big>)</big><a class="reference internal" href="_modules/pyspike/DiscreteFunc.html#DiscreteFunc.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.DiscreteFunc.DiscreteFunc.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds another <cite>DiscreteFunc</cite> function to this function.
+Note: only functions defined on the same interval can be summed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>f</strong> &#8211; <a class="reference internal" href="#pyspike.DiscreteFunc.DiscreteFunc" title="pyspike.DiscreteFunc.DiscreteFunc"><tt class="xref py py-class docutils literal"><span class="pre">DiscreteFunc</span></tt></a> function to be added.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyspike.DiscreteFunc.DiscreteFunc.almost_equal">
+<tt class="descname">almost_equal</tt><big>(</big><em>other</em>, <em>decimal=14</em><big>)</big><a class="reference internal" href="_modules/pyspike/DiscreteFunc.html#DiscreteFunc.almost_equal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.DiscreteFunc.DiscreteFunc.almost_equal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the function is equal to another function up to <cite>decimal</cite>
+precision.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>other</strong> &#8211; another <a class="reference internal" href="#pyspike.DiscreteFunc.DiscreteFunc" title="pyspike.DiscreteFunc.DiscreteFunc"><tt class="xref py py-class docutils literal"><span class="pre">DiscreteFunc</span></tt></a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if the two functions are equal up to <cite>decimal</cite> decimals,
+False otherwise</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyspike.DiscreteFunc.DiscreteFunc.avrg">
+<tt class="descname">avrg</tt><big>(</big><em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/DiscreteFunc.html#DiscreteFunc.avrg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.DiscreteFunc.DiscreteFunc.avrg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the average of the interval sequence:
+<span class="math">\(a = 1/N sum f_n\)</span> where N is the number of intervals.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>interval</strong> (<em>Pair, sequence of pairs, or None.</em>) &#8211; averaging interval given as a pair of floats, a
+sequence of pairs for averaging multiple intervals, or
+None, if None the average over the whole function is
+computed.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the average a.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyspike.DiscreteFunc.DiscreteFunc.copy">
+<tt class="descname">copy</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pyspike/DiscreteFunc.html#DiscreteFunc.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.DiscreteFunc.DiscreteFunc.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of itself</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#pyspike.DiscreteFunc.DiscreteFunc" title="pyspike.DiscreteFunc.DiscreteFunc"><tt class="xref py py-class docutils literal"><span class="pre">DiscreteFunc</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyspike.DiscreteFunc.DiscreteFunc.get_plottable_data">
+<tt class="descname">get_plottable_data</tt><big>(</big><em>averaging_window_size=0</em><big>)</big><a class="reference internal" href="_modules/pyspike/DiscreteFunc.html#DiscreteFunc.get_plottable_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.DiscreteFunc.DiscreteFunc.get_plottable_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns two arrays containing x- and y-coordinates for plotting
+the interval sequence. The optional parameter <cite>averaging_window_size</cite>
+determines the size of an averaging window to smoothen the profile. If
+this value is 0, no averaging is performed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>averaging_window_size</strong> &#8211; size of the averaging window, default=0.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">(x_plot, y_plot) containing plottable data</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">pair of np.array</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">get_plottable_data</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s">&#39;-o&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&quot;Discrete function&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyspike.DiscreteFunc.DiscreteFunc.integral">
+<tt class="descname">integral</tt><big>(</big><em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/DiscreteFunc.html#DiscreteFunc.integral"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.DiscreteFunc.DiscreteFunc.integral" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the integral over the given interval. For the discrete
+function, this amounts to the sum over all values divided by the total
+multiplicity.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>interval</strong> (<em>Pair, sequence of pairs, or None.</em>) &#8211; integration interval given as a pair of floats, or a
+sequence of pairs in case of multiple intervals, if
+None the integral over the whole function is computed.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the integral</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyspike.DiscreteFunc.DiscreteFunc.mul_scalar">
+<tt class="descname">mul_scalar</tt><big>(</big><em>fac</em><big>)</big><a class="reference internal" href="_modules/pyspike/DiscreteFunc.html#DiscreteFunc.mul_scalar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.DiscreteFunc.DiscreteFunc.mul_scalar" title="Permalink to this definition">¶</a></dt>
 <dd><p>Multiplies the function with a scalar value</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -974,20 +1003,20 @@ None the integral over the whole function is computed.</td>
 </dd></dl>
 
 <dl class="function">
-<dt id="pyspike.function.average_profile">
-<tt class="descclassname">pyspike.function.</tt><tt class="descname">average_profile</tt><big>(</big><em>profiles</em><big>)</big><a class="reference internal" href="_modules/pyspike/function.html#average_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.function.average_profile" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.DiscreteFunc.average_profile">
+<tt class="descclassname">pyspike.DiscreteFunc.</tt><tt class="descname">average_profile</tt><big>(</big><em>profiles</em><big>)</big><a class="reference internal" href="_modules/pyspike/DiscreteFunc.html#average_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.DiscreteFunc.average_profile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the average profile from the given ISI- or SPIKE-profiles.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>profiles</strong> &#8211; list of <a class="reference internal" href="#pyspike.function.PieceWiseConstFunc" title="pyspike.function.PieceWiseConstFunc"><tt class="xref py py-class docutils literal"><span class="pre">PieceWiseConstFunc</span></tt></a> or
-<a class="reference internal" href="#pyspike.function.PieceWiseLinFunc" title="pyspike.function.PieceWiseLinFunc"><tt class="xref py py-class docutils literal"><span class="pre">PieceWiseLinFunc</span></tt></a> representing ISI- or
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>profiles</strong> &#8211; list of <tt class="xref py py-class docutils literal"><span class="pre">PieceWiseConstFunc</span></tt> or
+<tt class="xref py py-class docutils literal"><span class="pre">PieceWiseLinFunc</span></tt> representing ISI- or
 SPIKE-profiles to be averaged.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the averages profile <span class="math">\(&lt;S_{isi}&gt;\)</span> or <span class="math">\(&lt;S_{spike}&gt;\)</span>.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#pyspike.function.PieceWiseConstFunc" title="pyspike.function.PieceWiseConstFunc"><tt class="xref py py-class docutils literal"><span class="pre">PieceWiseConstFunc</span></tt></a> or <a class="reference internal" href="#pyspike.function.PieceWiseLinFunc" title="pyspike.function.PieceWiseLinFunc"><tt class="xref py py-class docutils literal"><span class="pre">PieceWiseLinFunc</span></tt></a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">PieceWiseConstFunc</span></tt> or <tt class="xref py py-class docutils literal"><span class="pre">PieceWiseLinFunc</span></tt></td>
 </tr>
 </tbody>
 </table>
@@ -1113,24 +1142,21 @@ of this interval.</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>s</strong> &#8211; the string with (ordered) spike times</li>
 <li><strong>sep</strong> &#8211; The separator between the time numbers, default=&#8217; &#8216;.</li>
-<li><strong>is_sorted</strong> &#8211; if True, the spike times are not sorted after loading,</li>
+<li><strong>is_sorted</strong> &#8211; if True, the spike times are not sorted after loading,
+if False, spike times are sorted with <cite>np.sort</cite></li>
 </ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">array of spike times</p>
 </td>
 </tr>
 </tbody>
 </table>
-<p>if False, spike times are sorted with <cite>np.sort</cite>
-:returns: array of spike times</p>
 </dd></dl>
 
-</div>
-<div class="section" id="module-pyspike">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pyspike" title="Permalink to this headline">¶</a></h2>
-<p>Copyright 2014, Mario Mulansky &lt;<a class="reference external" href="mailto:mario&#46;mulansky&#37;&#52;&#48;gmx&#46;net">mario<span>&#46;</span>mulansky<span>&#64;</span>gmx<span>&#46;</span>net</a>&gt;</p>
-<p>Distributed under the BSD License</p>
 </div>
 </div>
 
@@ -1144,10 +1170,13 @@ of this interval.</li>
   <ul>
 <li><a class="reference internal" href="#">pyspike package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-pyspike.distances">pyspike.distances module</a></li>
-<li><a class="reference internal" href="#module-pyspike.function">pyspike.function module</a></li>
+<li><a class="reference internal" href="#module-pyspike.isi_distance">pyspike.isi_distance module</a></li>
+<li><a class="reference internal" href="#module-pyspike.spike_distance">pyspike.spike_distance module</a></li>
+<li><a class="reference internal" href="#module-pyspike.spike_sync">pyspike.spike_sync module</a></li>
+<li><a class="reference internal" href="#module-pyspike.PieceWiseConstFunc">pyspike.PieceWiseConstFunc module</a></li>
+<li><a class="reference internal" href="#module-pyspike.PieceWiseLinFunc">pyspike.PieceWiseLinFunc module</a></li>
+<li><a class="reference internal" href="#module-pyspike.DiscreteFunc">pyspike.DiscreteFunc module</a></li>
 <li><a class="reference internal" href="#module-pyspike.spikes">pyspike.spikes module</a></li>
-<li><a class="reference internal" href="#module-pyspike">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -1193,7 +1222,7 @@ of this interval.</li>
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2014, Mario Mulansky.
+        &copy; Copyright 2014-2015, Mario Mulansky.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
