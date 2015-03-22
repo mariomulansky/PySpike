@@ -138,7 +138,7 @@ The following code loads some exemplary spike trains, computes the dissimilarity
     isi_profile = spk.isi_profile(spike_trains[0], spike_trains[1])
     x, y = isi_profile.get_plottable_data()
     plt.plot(x, y, '--k')
-    print("ISI distance: %.8f" % isi_profil.avrg())
+    print("ISI distance: %.8f" % isi_profile.avrg())
     plt.show()
 
 The ISI-profile is a piece-wise constant function, and hence the function :code:`isi_profile` returns an instance of the :code:`PieceWiseConstFunc` class.
@@ -149,10 +149,10 @@ In the above example, the following code computes the ISI-distances obtained fro
 
 .. code:: python
 
-    isi1 = isi_profil.avrg(interval=(0, 1000))
-    isi2 = isi_profil.avrg(interval=(1000, 2000))
-    isi3 = isi_profil.avrg(interval=[(0, 1000), (2000, 3000)])
-    isi4 = isi_profil.avrg(interval=[(1000, 2000), (3000, 4000)])
+    isi1 = isi_profile.avrg(interval=(0, 1000))
+    isi2 = isi_profile.avrg(interval=(1000, 2000))
+    isi3 = isi_profile.avrg(interval=[(0, 1000), (2000, 3000)])
+    isi4 = isi_profile.avrg(interval=[(1000, 2000), (3000, 4000)])
 
 Note, how also multiple intervals can be supplied by giving a list of tuples.
 
@@ -181,7 +181,7 @@ But the general approach is very similar:
     spike_profile = spk.spike_profile(spike_trains[0], spike_trains[1])
     x, y = spike_profile.get_plottable_data()
     plt.plot(x, y, '--k')
-    print("SPIKE distance: %.8f" % spike_profil.avrg())
+    print("SPIKE distance: %.8f" % spike_profile.avrg())
     plt.show()
 
 This short example computes and plots the SPIKE-profile of the first two spike trains in the file :code:`PySpike_testdata.txt`.
