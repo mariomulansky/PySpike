@@ -160,7 +160,7 @@ def generate_poisson_spikes(rate, time_interval, add_aux_spikes=True):
     intervals = np.random.exponential(1.0/rate, N)
     # make sure we have enough spikes
     while T_start + sum(intervals) < T_end:
-        print T_start + sum(intervals)
+        # print T_start + sum(intervals)
         intervals = np.append(intervals,
                               np.random.exponential(1.0/rate, N_append))
     spikes = T_start + np.cumsum(intervals)
