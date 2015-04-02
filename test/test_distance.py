@@ -138,6 +138,10 @@ def test_spike_sync():
     assert_almost_equal(spk.spike_sync(spikes1, spikes2),
                         0.5, decimal=16)
 
+    # test with some small max_tau, spike_sync should be 0
+    assert_almost_equal(spk.spike_sync(spikes1, spikes2, max_tau=0.05),
+                        0.0, decimal=16)
+
     spikes2 = np.array([3.1])
     spikes2 = spk.add_auxiliary_spikes(spikes2, 4.0)
     assert_almost_equal(spk.spike_sync(spikes1, spikes2),

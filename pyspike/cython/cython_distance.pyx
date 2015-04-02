@@ -236,7 +236,8 @@ def spike_distance_cython(double[:] t1,
 ############################################################
 # coincidence_python
 ############################################################
-cdef inline double get_tau(double[:] spikes1, double[:] spikes2, int i, int j):
+cdef inline double get_tau(double[:] spikes1, double[:] spikes2,
+                           int i, int j, max_tau):
     cdef double m = 1E100   # some huge number
     cdef int N1 = len(spikes1)-2
     cdef int N2 = len(spikes2)-2
@@ -248,13 +249,16 @@ cdef inline double get_tau(double[:] spikes1, double[:] spikes2, int i, int j):
         m = fmin(m, spikes1[i]-spikes1[i-1])
     if j > 1:
         m = fmin(m, spikes2[j]-spikes2[j-1])
-    return 0.5*m
+    m *= 0.5
+    if max_tau > 0.0:
+        m = fmin(m, max_tau)
+    return m
     
 
 ############################################################
 # coincidence_cython
 ############################################################
-def coincidence_cython(double[:] spikes1, double[:] spikes2):
+def coincidence_cython(double[:] spikes1, double[:] spikes2, double max_tau):
 
     cdef int N1 = len(spikes1)
     cdef int N2 = len(spikes2)
@@ -269,7 +273,7 @@ def coincidence_cython(double[:] spikes1, double[:] spikes2):
         if spikes1[i+1] < spikes2[j+1]:
             i += 1
             n += 1
-            tau = get_tau(spikes1, spikes2, i, j)
+            tau = get_tau(spikes1, spikes2, i, j, max_tau)
             st[n] = spikes1[i]
             if j > 0 and spikes1[i]-spikes2[j] < tau:
                 # coincidence between the current spike and the previous spike
@@ -279,7 +283,7 @@ def coincidence_cython(double[:] spikes1, double[:] spikes2):
         elif spikes1[i+1] > spikes2[j+1]:
             j += 1
             n += 1
-            tau = get_tau(spikes1, spikes2, i, j)
+            tau = get_tau(spikes1, spikes2, i, j, max_tau)
             st[n] = spikes2[j]
             if i > 0 and spikes2[j]-spikes1[i] < tau:
                 # coincidence between the current spike and the previous spike
