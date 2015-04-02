@@ -245,9 +245,9 @@ def cumulative_sync_python(spikes1, spikes2):
 ############################################################
 # coincidence_python
 ############################################################
-def coincidence_python(spikes1, spikes2):
+def coincidence_python(spikes1, spikes2, max_tau):
 
-    def get_tau(spikes1, spikes2, i, j):
+    def get_tau(spikes1, spikes2, i, j, max_tau):
         m = 1E100   # some huge number
         if i < len(spikes1)-2:
             m = min(m, spikes1[i+1]-spikes1[i])
@@ -257,7 +257,10 @@ def coincidence_python(spikes1, spikes2):
             m = min(m, spikes1[i]-spikes1[i-1])
         if j > 1:
             m = min(m, spikes2[j]-spikes2[j-1])
-        return 0.5*m
+        m *= 0.5
+        if max_tau > 0.0:
+            m = min(m, max_tau)
+        return m
     N1 = len(spikes1)
     N2 = len(spikes2)
     i = 0
@@ -270,7 +273,7 @@ def coincidence_python(spikes1, spikes2):
         if spikes1[i+1] < spikes2[j+1]:
             i += 1
             n += 1
-            tau = get_tau(spikes1, spikes2, i, j)
+            tau = get_tau(spikes1, spikes2, i, j, max_tau)
             st[n] = spikes1[i]
             if j > 0 and spikes1[i]-spikes2[j] < tau:
                 # coincidence between the current spike and the previous spike
@@ -280,7 +283,7 @@ def coincidence_python(spikes1, spikes2):
         elif spikes1[i+1] > spikes2[j+1]:
             j += 1
             n += 1
-            tau = get_tau(spikes1, spikes2, i, j)
+            tau = get_tau(spikes1, spikes2, i, j, max_tau)
             st[n] = spikes2[j]
             if i > 0 and spikes2[j]-spikes1[i] < tau:
                 # coincidence between the current spike and the previous spike
