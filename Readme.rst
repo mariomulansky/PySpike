@@ -297,7 +297,9 @@ Curie Initial Training Network* `Neural Engineering Transformative Technologies
 **Scientific Methods:**
  - Thomas Kreuz
  - Nebojsa D. Bozanic
-
+ - Mario Mulansky
+ - Conor Houghton
+ - Daniel Chicharro
 
 .. _ISI: http://www.scholarpedia.org/article/Measures_of_spike_train_synchrony#ISI-distance
 .. _SPIKE: http://www.scholarpedia.org/article/SPIKE-distance
