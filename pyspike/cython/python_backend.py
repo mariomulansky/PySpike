@@ -15,50 +15,72 @@ import numpy as np
 ############################################################
 # isi_distance_python
 ############################################################
-def isi_distance_python(s1, s2):
+def isi_distance_python(s1, s2, t_start, t_end):
     """ Plain Python implementation of the isi distance.
     """
-    # compute the interspike interval
-    nu1 = s1[1:] - s1[:-1]
-    nu2 = s2[1:] - s2[:-1]
+    N1 = len(s1)
+    N2 = len(s2)
 
     # compute the isi-distance
-    spike_events = np.empty(len(nu1) + len(nu2))
-    spike_events[0] = s1[0]
+    spike_events = np.empty(N1+N2+2)
+    spike_events[0] = t_start
     # the values have one entry less - the number of intervals between events
     isi_values = np.empty(len(spike_events) - 1)
-    # add the distance of the first events
-    # isi_values[0] = nu1[0]/nu2[0] - 1.0 if nu1[0] <= nu2[0] \
-    #                 else 1.0 - nu2[0]/nu1[0]
-    isi_values[0] = abs(nu1[0] - nu2[0]) / max(nu1[0], nu2[0])
-    index1 = 0
-    index2 = 0
+    if s1[0] > t_start:
+        nu1 = s1[0] - t_start
+        index1 = -1
+    else:
+        nu1 = s1[1] - s1[0]
+        index1 = 0
+    if s2[0] > t_start:
+        nu2 = s2[0] - t_start
+        index2 = -1
+    else:
+        nu2 = s2[1] - s2[0]
+        index2 = 0
+
+    isi_values[0] = abs(nu1 - nu2) / max(nu1, nu2)
     index = 1
-    while True:
+    while index1+index2 < N1+N2-2:
         # check which spike is next - from s1 or s2
-        if s1[index1+1] < s2[index2+1]:
+        if (index1 < N1-1) and (index2 == N2-1 or s1[index1+1] < s2[index2+1]):
             index1 += 1
-            # break condition relies on existence of spikes at T_end
-            if index1 >= len(nu1):
-                break
             spike_events[index] = s1[index1]
-        elif s1[index1+1] > s2[index2+1]:
+            if index1 < N1-1:
+                nu1 = s1[index1+1]-s1[index1]
+            else:
+                nu1 = t_end-s1[index1]
+
+        elif (index2 < N2-1) and (index1 == N1-1 or
+                                  s1[index1+1] > s2[index2+1]):
             index2 += 1
-            if index2 >= len(nu2):
-                break
             spike_events[index] = s2[index2]
+            if index2 < N2-1:
+                nu2 = s2[index2+1]-s2[index2]
+            else:
+                nu2 = t_end-s2[index2]
+
         else:  # s1[index1 + 1] == s2[index2 + 1]
             index1 += 1
             index2 += 1
-            if (index1 >= len(nu1)) or (index2 >= len(nu2)):
-                break
             spike_events[index] = s1[index1]
+            if index1 < N1-1:
+                nu1 = s1[index1+1]-s1[index1]
+            else:
+                nu1 = t_end-s1[index1]
+            if index2 < N2-1:
+                nu2 = s2[index2+1]-s2[index2]
+            else:
+                nu2 = t_end-s2[index2]
         # compute the corresponding isi-distance
-        isi_values[index] = abs(nu1[index1] - nu2[index2]) / \
-            max(nu1[index1], nu2[index2])
+        isi_values[index] = abs(nu1 - nu2) / \
+            max(nu1, nu2)
         index += 1
     # the last event is the interval end
-    spike_events[index] = s1[-1]
+    if spike_events[index-1] == t_end:
+        index -= 1
+    else:
+        spike_events[index] = t_end
     # use only the data added above
     # could be less than original length due to equal spike times
     return spike_events[:index + 1], isi_values[:index]

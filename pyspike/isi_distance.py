@@ -14,23 +14,25 @@ from pyspike.generic import _generic_profile_multi, _generic_distance_matrix
 ############################################################
 # isi_profile
 ############################################################
-def isi_profile(spikes1, spikes2):
+def isi_profile(spike_train1, spike_train2):
     """ Computes the isi-distance profile :math:`S_{isi}(t)` of the two given
     spike trains. Retruns the profile as a PieceWiseConstFunc object. The S_isi
     values are defined positive S_isi(t)>=0.  The spike trains are expected
     to have auxiliary spikes at the beginning and end of the interval. Use the
     function add_auxiliary_spikes to add those spikes to the spike train.
 
-    :param spikes1: ordered array of spike times with auxiliary spikes.
-    :param spikes2: ordered array of spike times with auxiliary spikes.
+    :param spike_train1: First spike train.
+    :type spike_train1: :class:`pyspike.SpikeTrain`
+    :param spike_train2: Second spike train.
+    :type spike_train2: `SpikeTrain`
     :returns: The isi-distance profile :math:`S_{isi}(t)`
     :rtype: :class:`pyspike.function.PieceWiseConstFunc`
 
     """
-    # check for auxiliary spikes - first and last spikes should be identical
-    assert spikes1[0] == spikes2[0], \
+    # check whether the spike trains are defined for the same interval
+    assert spike_train1.t_start == spike_train2.t_start, \
         "Given spike trains seems not to have auxiliary spikes!"
-    assert spikes1[-1] == spikes2[-1], \
+    assert spike_train1.t_end == spike_train2.t_end, \
         "Given spike trains seems not to have auxiliary spikes!"
 
     # load cython implementation
@@ -45,7 +47,8 @@ Falling back to slow python backend.")
         from cython.python_backend import isi_distance_python \
             as isi_distance_impl
 
-    times, values = isi_distance_impl(spikes1, spikes2)
+    times, values = isi_distance_impl(spike_train1.spikes, spike_train2.spikes,
+                                      spike_train1.t_start, spike_train1.t_end)
     return PieceWiseConstFunc(times, values)
 
 

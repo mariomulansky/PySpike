@@ -15,12 +15,13 @@ from numpy.testing import assert_equal, assert_almost_equal, \
     assert_array_almost_equal
 
 import pyspike as spk
+from pyspike import SpikeTrain
 
 
 def test_isi():
     # generate two spike trains:
-    t1 = np.array([0.2, 0.4, 0.6, 0.7])
-    t2 = np.array([0.3, 0.45, 0.8, 0.9, 0.95])
+    t1 = SpikeTrain([0.2, 0.4, 0.6, 0.7], 1.0)
+    t2 = SpikeTrain([0.3, 0.45, 0.8, 0.9, 0.95], 1.0)
 
     # pen&paper calculation of the isi distance
     expected_times = [0.0, 0.2, 0.3, 0.4, 0.45, 0.6, 0.7, 0.8, 0.9, 0.95, 1.0]
@@ -32,8 +33,6 @@ def test_isi():
     expected_isi_val = sum((expected_times[1:] - expected_times[:-1]) *
                            expected_isi)/(expected_times[-1]-expected_times[0])
 
-    t1 = spk.add_auxiliary_spikes(t1, 1.0)
-    t2 = spk.add_auxiliary_spikes(t2, 1.0)
     f = spk.isi_profile(t1, t2)
 
     # print("ISI: ", f.y)
@@ -44,8 +43,8 @@ def test_isi():
     assert_equal(spk.isi_distance(t1, t2), expected_isi_val)
 
     # check with some equal spike times
-    t1 = np.array([0.2, 0.4, 0.6])
-    t2 = np.array([0.1, 0.4, 0.5, 0.6])
+    t1 = SpikeTrain([0.2, 0.4, 0.6], [0.0, 1.0])
+    t2 = SpikeTrain([0.1, 0.4, 0.5, 0.6], [0.0, 1.0])
 
     expected_times = [0.0, 0.1, 0.2, 0.4, 0.5, 0.6, 1.0]
     expected_isi = [0.1/0.2, 0.1/0.3, 0.1/0.3, 0.1/0.2, 0.1/0.2, 0.0/0.5]
@@ -55,8 +54,6 @@ def test_isi():
     expected_isi_val = sum((expected_times[1:] - expected_times[:-1]) *
                            expected_isi)/(expected_times[-1]-expected_times[0])
 
-    t1 = spk.add_auxiliary_spikes(t1, 1.0)
-    t2 = spk.add_auxiliary_spikes(t2, 1.0)
     f = spk.isi_profile(t1, t2)
 
     assert_equal(f.x, expected_times)
@@ -318,6 +315,6 @@ def test_multi_variate_subsets():
 
 if __name__ == "__main__":
     test_isi()
-    test_spike()
-    test_multi_isi()
-    test_multi_spike()
+    # test_spike()
+    # test_multi_isi()
+    # test_multi_spike()

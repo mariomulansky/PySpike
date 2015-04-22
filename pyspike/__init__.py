@@ -5,12 +5,13 @@ Distributed under the BSD License
 """
 
 __all__ = ["isi_distance", "spike_distance", "spike_sync", "psth",
-           "spikes", "PieceWiseConstFunc", "PieceWiseLinFunc",
+           "spikes", "SpikeTrain", "PieceWiseConstFunc", "PieceWiseLinFunc",
            "DiscreteFunc"]
 
 from PieceWiseConstFunc import PieceWiseConstFunc
 from PieceWiseLinFunc import PieceWiseLinFunc
 from DiscreteFunc import DiscreteFunc
+from SpikeTrain import SpikeTrain
 
 from isi_distance import isi_profile, isi_distance, isi_profile_multi,\
     isi_distance_multi, isi_distance_matrix

@@ -42,57 +42,82 @@ ctypedef np.float_t DTYPE_t
 ############################################################
 # isi_distance_cython
 ############################################################
-def isi_distance_cython(double[:] s1, 
-                        double[:] s2):
+def isi_distance_cython(double[:] s1, double[:] s2,
+                        double t_start, double t_end):
 
     cdef double[:] spike_events
     cdef double[:] isi_values
     cdef int index1, index2, index
     cdef int N1, N2
     cdef double nu1, nu2
-    N1 = len(s1)-1
-    N2 = len(s2)-1
+    N1 = len(s1)
+    N2 = len(s2)
 
-    nu1 = s1[1]-s1[0]
-    nu2 = s2[1]-s2[0]
-    spike_events = np.empty(N1+N2)
-    spike_events[0] = s1[0]
-    # the values have one entry less - the number of intervals between events
-    isi_values = np.empty(N1+N2-1)
+    spike_events = np.empty(N1+N2+2)
+    # the values have one entry less as they are defined at the intervals
+    isi_values = np.empty(N1+N2+1)
+
+    # first x-value of the profile
+    spike_events[0] = t_start
+
+    # first interspike interval - check if a spike exists at the start time
+    if s1[0] > t_start:
+        nu1 = s1[0] - t_start
+        index1 = -1
+    else:
+        nu1 = s1[1]-s1[0]
+        index1 = 0
+
+    if s2[0] > t_start:
+        nu2 = s2[0] - t_start
+        index2 = -1
+    else:
+        nu2 = s2[1]-s2[0]
+        index2 = 0
+
+    isi_values[0] = fabs(nu1-nu2)/fmax(nu1, nu2)
+    index = 1
 
     with nogil: # release the interpreter to allow multithreading
-        isi_values[0] = fabs(nu1-nu2)/fmax(nu1, nu2)
-        index1 = 0
-        index2 = 0
-        index = 1
-        while True:
-            # check which spike is next - from s1 or s2
-            if s1[index1+1] < s2[index2+1]:
+        while index1+index2 < N1+N2-2:
+            # check which spike is next, only if there are spikes left in 1
+            # next spike in 1 is earlier, or there are no spikes left in 2
+            if (index1 < N1-1) and ((index2 == N2-1) or
+                                    (s1[index1+1] < s2[index2+1])):
                 index1 += 1
-                # break condition relies on existence of spikes at T_end
-                if index1 >= N1:
-                    break
                 spike_events[index] = s1[index1]
-                nu1 = s1[index1+1]-s1[index1]
-            elif s1[index1+1] > s2[index2+1]:
+                if index1 < N1-1:
+                    nu1 = s1[index1+1]-s1[index1]
+                else:
+                    nu1 = t_end-s1[index1]
+            elif (index2 < N2-1) and ((index1 == N1-1) or
+                                      (s1[index1+1] > s2[index2+1])):
                 index2 += 1
-                if index2 >= N2:
-                    break
                 spike_events[index] = s2[index2]
-                nu2 = s2[index2+1]-s2[index2]
+                if index2 < N2-1:
+                    nu2 = s2[index2+1]-s2[index2]
+                else:
+                    nu2 = t_end-s2[index2]
             else: # s1[index1+1] == s2[index2+1]
                 index1 += 1
                 index2 += 1
-                if (index1 >= N1) or (index2 >= N2):
-                    break
                 spike_events[index] = s1[index1]
-                nu1 = s1[index1+1]-s1[index1]
-                nu2 = s2[index2+1]-s2[index2]            
+                if index1 < N1-1:
+                    nu1 = s1[index1+1]-s1[index1]
+                else:
+                    nu1 = t_end-s1[index1]
+                if index2 < N2-1:
+                    nu2 = s2[index2+1]-s2[index2]
+                else:
+                    nu2 = t_end-s2[index2]
             # compute the corresponding isi-distance
             isi_values[index] = fabs(nu1 - nu2) / fmax(nu1, nu2)
             index += 1
         # the last event is the interval end
-        spike_events[index] = s1[N1]
+        if spike_events[index-1] == t_end:
+            index -= 1
+        else:
+            spike_events[index] = t_end
     # end nogil
 
     return spike_events[:index+1], isi_values[:index]
