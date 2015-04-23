@@ -64,13 +64,26 @@ def test_isi():
 
 def test_spike():
     # generate two spike trains:
-    t1 = np.array([0.2, 0.4, 0.6, 0.7])
-    t2 = np.array([0.3, 0.45, 0.8, 0.9, 0.95])
+    t1 = SpikeTrain([0.0, 2.0, 5.0, 8.0], 10.0)
+    t2 = SpikeTrain([0.0, 1.0, 5.0, 9.0], 10.0)
+
+    expected_times = np.array([0.0, 1.0, 2.0, 5.0, 8.0, 9.0, 10.0])
+
+    f = spk.spike_profile(t1, t2)
+
+    assert_equal(f.x, expected_times)
+
+    assert_almost_equal(f.avrg(), 0.1662415, decimal=6)
+    assert_almost_equal(f.y2[-1], 0.1394558, decimal=6)
+
+    t1 = SpikeTrain([0.2, 0.4, 0.6, 0.7], 1.0)
+    t2 = SpikeTrain([0.3, 0.45, 0.8, 0.9, 0.95], 1.0)
 
     # pen&paper calculation of the spike distance
     expected_times = [0.0, 0.2, 0.3, 0.4, 0.45, 0.6, 0.7, 0.8, 0.9, 0.95, 1.0]
     s1 = np.array([0.1, 0.1, (0.1*0.1+0.05*0.1)/0.2, 0.05, (0.05*0.15 * 2)/0.2,
-                   0.15, 0.1, 0.1*0.2/0.3, 0.1**2/0.3, 0.1*0.05/0.3, 0.1])
+                   0.15, 0.1, (0.1*0.1+0.1*0.2)/0.3, (0.1*0.2+0.1*0.1)/0.3,
+                   (0.1*0.05+0.1*0.25)/0.3, 0.1])
     s2 = np.array([0.1, 0.1*0.2/0.3, 0.1, (0.1*0.05 * 2)/.15, 0.05,
                    (0.05*0.2+0.1*0.15)/0.35, (0.05*0.1+0.1*0.25)/0.35,
                    0.1, 0.1, 0.05, 0.05])
@@ -86,19 +99,18 @@ def test_spike():
                              (expected_y1+expected_y2)/2)
     expected_spike_val /= (expected_times[-1]-expected_times[0])
 
-    t1 = spk.add_auxiliary_spikes(t1, 1.0)
-    t2 = spk.add_auxiliary_spikes(t2, 1.0)
     f = spk.spike_profile(t1, t2)
 
     assert_equal(f.x, expected_times)
     assert_array_almost_equal(f.y1, expected_y1, decimal=15)
     assert_array_almost_equal(f.y2, expected_y2, decimal=15)
-    assert_equal(f.avrg(), expected_spike_val)
-    assert_equal(spk.spike_distance(t1, t2), expected_spike_val)
+    assert_almost_equal(f.avrg(), expected_spike_val, decimal=15)
+    assert_almost_equal(spk.spike_distance(t1, t2), expected_spike_val,
+                        decimal=15)
 
     # check with some equal spike times
-    t1 = np.array([0.2, 0.4, 0.6])
-    t2 = np.array([0.1, 0.4, 0.5, 0.6])
+    t1 = SpikeTrain([0.2, 0.4, 0.6], [0.0, 1.0])
+    t2 = SpikeTrain([0.1, 0.4, 0.5, 0.6], [0.0, 1.0])
 
     expected_times = [0.0, 0.1, 0.2, 0.4, 0.5, 0.6, 1.0]
     s1 = np.array([0.1, 0.1*0.1/0.2, 0.1, 0.0, 0.0, 0.0, 0.0])
@@ -115,8 +127,6 @@ def test_spike():
                              (expected_y1+expected_y2)/2)
     expected_spike_val /= (expected_times[-1]-expected_times[0])
 
-    t1 = spk.add_auxiliary_spikes(t1, 1.0)
-    t2 = spk.add_auxiliary_spikes(t2, 1.0)
     f = spk.spike_profile(t1, t2)
 
     assert_equal(f.x, expected_times)
@@ -315,6 +325,6 @@ def test_multi_variate_subsets():
 
 if __name__ == "__main__":
     test_isi()
-    # test_spike()
+    test_spike()
     # test_multi_isi()
     # test_multi_spike()

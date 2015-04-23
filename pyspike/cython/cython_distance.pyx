@@ -131,21 +131,30 @@ cdef inline double get_min_dist_cython(double spike_time,
                                        # use memory view to ensure inlining
                                        # np.ndarray[DTYPE_t,ndim=1] spike_train,
                                        int N,
-                                       int start_index=0) nogil:
+                                       int start_index,
+                                       double t_start, double t_end) nogil:
     """ Returns the minimal distance |spike_time - spike_train[i]| 
     with i>=start_index.
     """
     cdef double d, d_temp
-    d = fabs(spike_time - spike_train[start_index])
-    start_index += 1
+    # start with the distance to the start time
+    d = fabs(spike_time - t_start)
+    if start_index < 0:
+        start_index = 0
     while start_index < N:
         d_temp = fabs(spike_time - spike_train[start_index])
         if d_temp > d:
-            break
+            return d
         else:
             d = d_temp
         start_index += 1
-    return d
+
+    # finally, check the distance to end time
+    d_temp = fabs(t_end - spike_time)
+    if d_temp > d:
+        return d
+    else:
+        return d_temp
 
 
 ############################################################
@@ -160,96 +169,162 @@ cdef inline double isi_avrg_cython(double isi1, double isi2) nogil:
 ############################################################
 # spike_distance_cython
 ############################################################
-def spike_distance_cython(double[:] t1, 
-                          double[:] t2):
+def spike_distance_cython(double[:] t1, double[:] t2,
+                          double t_start, double t_end):
 
     cdef double[:] spike_events
     cdef double[:] y_starts
     cdef double[:] y_ends
 
     cdef int N1, N2, index1, index2, index
-    cdef double dt_p1, dt_p2, dt_f1, dt_f2, isi1, isi2, s1, s2
+    cdef double t_p1, t_f1, t_p2, t_f2, dt_p1, dt_p2, dt_f1, dt_f2
+    cdef double isi1, isi2, s1, s2
 
     N1 = len(t1)
     N2 = len(t2)
 
-    spike_events = np.empty(N1+N2-2)
-    spike_events[0] = t1[0]
+    spike_events = np.empty(N1+N2+2)
+
     y_starts = np.empty(len(spike_events)-1)
     y_ends = np.empty(len(spike_events)-1)
 
     with nogil: # release the interpreter to allow multithreading
-        index1 = 0
-        index2 = 0
-        index = 1
-        dt_p1 = 0.0
-        dt_f1 = get_min_dist_cython(t1[1], t2, N2, 0)
-        dt_p2 = 0.0
-        dt_f2 = get_min_dist_cython(t2[1], t1, N1, 0)
-        isi1 = max(t1[1]-t1[0], t1[2]-t1[1])
-        isi2 = max(t2[1]-t2[0], t2[2]-t2[1])
-        s1 = dt_f1*(t1[1]-t1[0])/isi1
-        s2 = dt_f2*(t2[1]-t2[0])/isi2
+        spike_events[0] = t_start
+        t_p1 = t_start
+        t_p2 = t_start
+        if t1[0] > t_start:
+            # dt_p1 = t2[0]-t_start
+            dt_p1 = 0.0
+            t_f1 = t1[0]
+            dt_f1 = get_min_dist_cython(t_f1, t2, N2, 0, t_start, t_end)
+            isi1 = fmax(t_f1-t_start, t1[1]-t1[0])
+            s1 = dt_f1*(t_f1-t_start)/isi1
+            index1 = -1
+        else:
+            dt_p1 = 0.0
+            t_f1 = t1[1]
+            dt_f1 = get_min_dist_cython(t_f1, t2, N2, 0, t_start, t_end)
+            isi1 = t1[1]-t1[0]
+            s1 = dt_p1
+            index1 = 0
+        if t2[0] > t_start:
+            # dt_p1 = t2[0]-t_start
+            dt_p2 = 0.0
+            t_f2 = t2[0]
+            dt_f2 = get_min_dist_cython(t_f2, t1, N1, 0, t_start, t_end)
+            isi2 = fmax(t_f2-t_start, t2[1]-t2[0])
+            s2 = dt_f2*(t_f2-t_start)/isi2
+            index2 = -1
+        else:
+            dt_p2 = 0.0
+            t_f2 = t2[1]
+            dt_f2 = get_min_dist_cython(t_f2, t1, N1, 0, t_start, t_end)
+            isi2 = t2[1]-t2[0]
+            s2 = dt_p2
+            index2 = 0
+
         y_starts[0] = (s1*isi2 + s2*isi1) / isi_avrg_cython(isi1, isi2)
-        while True:
+        index = 1
+
+        while index1+index2 < N1+N2-2:
             # print(index, index1, index2)
-            if t1[index1+1] < t2[index2+1]:
+            if (index1 < N1-1) and (t_f1 < t_f2 or index2 == N2-1):
                 index1 += 1
-                # break condition relies on existence of spikes at T_end
-                if index1+1 >= N1:
-                    break
-                spike_events[index] = t1[index1]
                 # first calculate the previous interval end value
-                dt_p1 = dt_f1 # the previous time now was the following time before
+                # the previous time now was the following time before:
+                dt_p1 = dt_f1  
+                t_p1 = t_f1    # t_p1 contains the current time point
+                # get the next time 
+                if index1 < N1-1:
+                    t_f1 = t1[index1+1]
+                else:
+                    t_f1 = t_end
+                spike_events[index] = t_p1
                 s1 = dt_p1
-                s2 = (dt_p2*(t2[index2+1]-t1[index1]) + 
-                      dt_f2*(t1[index1]-t2[index2])) / isi2
-                y_ends[index-1] = (s1*isi2 + s2*isi1)/isi_avrg_cython(isi1, isi2)
+                s2 = (dt_p2*(t_f2-t_p1) + dt_f2*(t_p1-t_p2)) / isi2
+                y_ends[index-1] = (s1*isi2 + s2*isi1)/isi_avrg_cython(isi1,
+                                                                      isi2)
                 # now the next interval start value
-                dt_f1 = get_min_dist_cython(t1[index1+1], t2, N2, index2)
-                isi1 = t1[index1+1]-t1[index1]
+                if index1 < N1-1:
+                    dt_f1 = get_min_dist_cython(t_f1, t2, N2, index2,
+                                                t_start, t_end)
+                    isi1 = t_f1-t_p1
+                else:
+                    dt_f1 = dt_p1
+                    isi1 = fmax(t_end-t1[N1-1], t1[N1-1]-t1[N1-2])
+                    # s1 needs adjustment due to change of isi1
+                    s1 = dt_p1*(t_end-t1[N1-1])/isi1
                 # s2 is the same as above, thus we can compute y2 immediately
-                y_starts[index] = (s1*isi2 + s2*isi1)/isi_avrg_cython(isi1, isi2)
-            elif t1[index1+1] > t2[index2+1]:
+                y_starts[index] = (s1*isi2 + s2*isi1)/isi_avrg_cython(isi1,
+                                                                      isi2)
+            elif (index2 < N2-1) and (t_f1 > t_f2 or index1 == N1-1):
                 index2 += 1
-                if index2+1 >= N2:
-                    break
-                spike_events[index] = t2[index2]
                 # first calculate the previous interval end value
-                dt_p2 = dt_f2 # the previous time now was the following time before
-                s1 = (dt_p1*(t1[index1+1]-t2[index2]) + 
-                      dt_f1*(t2[index2]-t1[index1])) / isi1
+                # the previous time now was the following time before:
+                dt_p2 = dt_f2
+                t_p2 = t_f2    # t_p1 contains the current time point
+                # get the next time
+                if index2 < N2-1:
+                    t_f2 = t2[index2+1]
+                else:
+                    t_f2 = t_end
+                spike_events[index] = t_p2
+                s1 = (dt_p1*(t_f1-t_p2) + dt_f1*(t_p2-t_p1)) / isi1
                 s2 = dt_p2
-                y_ends[index-1] = (s1*isi2 + s2*isi1) / isi_avrg_cython(isi1, isi2)
+                y_ends[index-1] = (s1*isi2 + s2*isi1) / isi_avrg_cython(isi1,
+                                                                        isi2)
                 # now the next interval start value
-                dt_f2 = get_min_dist_cython(t2[index2+1], t1, N1, index1)
-                #s2 = dt_f2
-                isi2 = t2[index2+1]-t2[index2]
+                if index2 < N2-1:
+                    dt_f2 = get_min_dist_cython(t_f2, t1, N1, index1,
+                                                t_start, t_end)
+                    isi2 = t_f2-t_p2
+                else:
+                    dt_f2 = dt_p2
+                    isi2 = fmax(t_end-t2[N2-1], t2[N2-1]-t2[N2-2])
+                    # s2 needs adjustment due to change of isi2
+                    s2 = dt_p2*(t_end-t2[N2-1])/isi2
                 # s2 is the same as above, thus we can compute y2 immediately
                 y_starts[index] = (s1*isi2 + s2*isi1)/isi_avrg_cython(isi1, isi2)
-            else: # t1[index1+1] == t2[index2+1] - generate only one event
+            else: # t_f1 == t_f2 - generate only one event
                 index1 += 1
                 index2 += 1
-                if (index1+1 >= N1) or (index2+1 >= N2):
-                    break
-                spike_events[index] = t1[index1]
-                y_ends[index-1] = 0.0
-                y_starts[index] = 0.0
+                t_p1 = t_f1
+                t_p2 = t_f2
                 dt_p1 = 0.0
                 dt_p2 = 0.0
-                dt_f1 = get_min_dist_cython(t1[index1+1], t2, N2, index2)
-                dt_f2 = get_min_dist_cython(t2[index2+1], t1, N1, index1)
-                isi1 = t1[index1+1]-t1[index1]
-                isi2 = t2[index2+1]-t2[index2]
+                spike_events[index] = t_f1
+                y_ends[index-1] = 0.0
+                y_starts[index] = 0.0
+                if index1 < N1-1:
+                    t_f1 = t1[index1+1]
+                    dt_f1 = get_min_dist_cython(t_f1, t2, N2, index2,
+                                                t_start, t_end)
+                    isi1 = t_f1 - t_p1
+                else:
+                    t_f1 = t_end
+                    dt_f1 = dt_p1
+                    isi1 = fmax(t_end-t1[N1-1], t1[N1-1]-t1[N1-2])
+                if index2 < N2-1:
+                    t_f2 = t2[index2+1]
+                    dt_f2 = get_min_dist_cython(t_f2, t1, N1, index1,
+                                                t_start, t_end)
+                    isi2 = t_f2 - t_p2
+                else:
+                    t_f2 = t_end
+                    dt_f2 = dt_p2
+                    isi2 = fmax(t_end-t2[N2-1], t2[N2-1]-t2[N2-2])
             index += 1
         # the last event is the interval end
-        spike_events[index] = t1[N1-1]
-        # the ending value of the last interval
-        isi1 = max(t1[N1-1]-t1[N1-2], t1[N1-2]-t1[N1-3])
-        isi2 = max(t2[N2-1]-t2[N2-2], t2[N2-2]-t2[N2-3])
-        s1 = dt_p1*(t1[N1-1]-t1[N1-2])/isi1
-        s2 = dt_p2*(t2[N2-1]-t2[N2-2])/isi2
-        y_ends[index-1] = (s1*isi2 + s2*isi1) / isi_avrg_cython(isi1, isi2)
+        if spike_events[index-1] == t_end:
+            index -= 1
+        else:
+            spike_events[index] = t_end
+            # the ending value of the last interval
+            isi1 = max(t_end-t1[N1-1], t1[N1-1]-t1[N1-2])
+            isi2 = max(t_end-t2[N2-1], t2[N2-1]-t2[N2-2])
+            s1 = dt_f1*(t_end-t1[N1-1])/isi1
+            s2 = dt_f2*(t_end-t2[N2-1])/isi2
+            y_ends[index-1] = (s1*isi2 + s2*isi1) / isi_avrg_cython(isi1, isi2)
     # end nogil
 
     # use only the data added above 
