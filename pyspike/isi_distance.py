@@ -17,14 +17,12 @@ from pyspike.generic import _generic_profile_multi, _generic_distance_matrix
 def isi_profile(spike_train1, spike_train2):
     """ Computes the isi-distance profile :math:`S_{isi}(t)` of the two given
     spike trains. Retruns the profile as a PieceWiseConstFunc object. The S_isi
-    values are defined positive S_isi(t)>=0.  The spike trains are expected
-    to have auxiliary spikes at the beginning and end of the interval. Use the
-    function add_auxiliary_spikes to add those spikes to the spike train.
+    values are defined positive S_isi(t)>=0.
 
     :param spike_train1: First spike train.
     :type spike_train1: :class:`pyspike.SpikeTrain`
     :param spike_train2: Second spike train.
-    :type spike_train2: `SpikeTrain`
+    :type spike_train2: :class:`pyspike.SpikeTrain`
     :returns: The isi-distance profile :math:`S_{isi}(t)`
     :rtype: :class:`pyspike.function.PieceWiseConstFunc`
 
@@ -62,8 +60,10 @@ def isi_distance(spikes1, spikes2, interval=None):
 
     .. math:: I = \int_{T_0}^{T_1} S_{isi}(t) dt.
 
-    :param spikes1: ordered array of spike times with auxiliary spikes.
-    :param spikes2: ordered array of spike times with auxiliary spikes.
+    :param spike_train1: First spike train.
+    :type spike_train1: :class:`pyspike.SpikeTrain`
+    :param spike_train2: Second spike train.
+    :type spike_train2: :class:`pyspike.SpikeTrain`
     :param interval: averaging interval given as a pair of floats (T0, T1),
                      if None the average over the whole function is computed.
     :type interval: Pair of floats or None.
@@ -82,7 +82,7 @@ def isi_profile_multi(spike_trains, indices=None):
     S_isi(t) = 2/((N(N-1)) sum_{<i,j>} S_{isi}^{i,j},
     where the sum goes over all pairs <i,j>
 
-    :param spike_trains: list of spike trains
+    :param spike_trains: list of :class:`pyspike.SpikeTrain`
     :param indices: list of indices defining which spike trains to use,
                     if None all given spike trains are used (default=None)
     :type state: list or None
