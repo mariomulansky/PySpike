@@ -53,7 +53,7 @@ Falling back to slow python backend.")
 ############################################################
 # isi_distance
 ############################################################
-def isi_distance(spikes1, spikes2, interval=None):
+def isi_distance(spike_train1, spike_train2, interval=None):
     """ Computes the isi-distance I of the given spike trains. The
     isi-distance is the integral over the isi distance profile
     :math:`S_{isi}(t)`:
@@ -70,7 +70,7 @@ def isi_distance(spikes1, spikes2, interval=None):
     :returns: The isi-distance I.
     :rtype: double
     """
-    return isi_profile(spikes1, spikes2).avrg(interval)
+    return isi_profile(spike_train1, spike_train2).avrg(interval)
 
 
 ############################################################
