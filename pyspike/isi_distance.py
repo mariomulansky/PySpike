@@ -122,7 +122,7 @@ def isi_distance_multi(spike_trains, indices=None, interval=None):
 def isi_distance_matrix(spike_trains, indices=None, interval=None):
     """ Computes the time averaged isi-distance of all pairs of spike-trains.
 
-    :param spike_trains: list of spike trains
+    :param spike_trains: list of :class:`pyspike.SpikeTrain`
     :param indices: list of indices defining which spike trains to use,
                     if None all given spike trains are used (default=None)
     :type indices: list or None
