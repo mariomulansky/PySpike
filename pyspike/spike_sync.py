@@ -109,10 +109,10 @@ def spike_sync_profile_multi(spike_trains, indices=None, max_tau=None):
 
     """
     prof_func = partial(spike_sync_profile, max_tau=max_tau)
-    average_dist, M = _generic_profile_multi(spike_trains, prof_func,
+    average_prof, M = _generic_profile_multi(spike_trains, prof_func,
                                              indices)
     # average_dist.mul_scalar(1.0/M)  # no normalization here!
-    return average_dist
+    return average_prof
 
 
 ############################################################
@@ -122,7 +122,7 @@ def spike_sync_multi(spike_trains, indices=None, interval=None, max_tau=None):
     """ Computes the multi-variate spike synchronization value for a set of
     spike trains.
 
-    :param spike_trains: list of spike trains
+    :param spike_trains: list of :class:`pyspike.SpikeTrain`
     :param indices: list of indices defining which spike trains to use,
                     if None all given spike trains are used (default=None)
     :type indices: list or None

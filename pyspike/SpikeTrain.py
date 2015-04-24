@@ -9,7 +9,7 @@ import numpy as np
 import collections
 
 
-class SpikeTrain:
+class SpikeTrain(object):
     """ Class representing spike trains for the PySpike Module."""
 
     def __init__(self, spike_times, interval):

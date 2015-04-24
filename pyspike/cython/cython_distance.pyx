@@ -337,10 +337,10 @@ def spike_distance_cython(double[:] t1, double[:] t2,
 # coincidence_python
 ############################################################
 cdef inline double get_tau(double[:] spikes1, double[:] spikes2,
-                           int i, int j, max_tau):
+                           int i, int j, double max_tau):
     cdef double m = 1E100   # some huge number
-    cdef int N1 = len(spikes1)-1
-    cdef int N2 = len(spikes2)-1
+    cdef int N1 = spikes1.shape[0]-1  # len(spikes1)-1
+    cdef int N2 = spikes2.shape[0]-1  # len(spikes2)-1
     if i < N1 and i > -1:
         m = fmin(m, spikes1[i+1]-spikes1[i])
     if j < N2 and j > -1:
