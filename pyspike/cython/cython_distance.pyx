@@ -339,11 +339,11 @@ def spike_distance_cython(double[:] t1, double[:] t2,
 cdef inline double get_tau(double[:] spikes1, double[:] spikes2,
                            int i, int j, max_tau):
     cdef double m = 1E100   # some huge number
-    cdef int N1 = len(spikes1)-2
-    cdef int N2 = len(spikes2)-2
-    if i < N1:
+    cdef int N1 = len(spikes1)-1
+    cdef int N2 = len(spikes2)-1
+    if i < N1 and i > -1:
         m = fmin(m, spikes1[i+1]-spikes1[i])
-    if j < N2:
+    if j < N2 and j > -1:
         m = fmin(m, spikes2[j+1]-spikes2[j])
     if i > 1:
         m = fmin(m, spikes1[i]-spikes1[i-1])
@@ -358,34 +358,35 @@ cdef inline double get_tau(double[:] spikes1, double[:] spikes2,
 ############################################################
 # coincidence_cython
 ############################################################
-def coincidence_cython(double[:] spikes1, double[:] spikes2, double max_tau):
+def coincidence_cython(double[:] spikes1, double[:] spikes2,
+                       double t_start, double t_end, double max_tau):
 
     cdef int N1 = len(spikes1)
     cdef int N2 = len(spikes2)
-    cdef int i = 0
-    cdef int j = 0
+    cdef int i = -1
+    cdef int j = -1
     cdef int n = 0
-    cdef double[:] st = np.zeros(N1 + N2 - 2)  # spike times
-    cdef double[:] c = np.zeros(N1 + N2 - 2)   # coincidences
-    cdef double[:] mp = np.ones(N1 + N2 - 2)   # multiplicity
+    cdef double[:] st = np.zeros(N1 + N2 + 2)  # spike times
+    cdef double[:] c = np.zeros(N1 + N2 + 2)   # coincidences
+    cdef double[:] mp = np.ones(N1 + N2 + 2)   # multiplicity
     cdef double tau
-    while n < N1 + N2 - 2:
-        if spikes1[i+1] < spikes2[j+1]:
+    while i + j < N1 + N2 - 2:
+        if (i < N1-1) and (spikes1[i+1] < spikes2[j+1] or j == N2-1):
             i += 1
             n += 1
             tau = get_tau(spikes1, spikes2, i, j, max_tau)
             st[n] = spikes1[i]
-            if j > 0 and spikes1[i]-spikes2[j] < tau:
+            if j > -1 and spikes1[i]-spikes2[j] < tau:
                 # coincidence between the current spike and the previous spike
                 # both get marked with 1
                 c[n] = 1
                 c[n-1] = 1
-        elif spikes1[i+1] > spikes2[j+1]:
+        elif (j < N2-1) and (spikes1[i+1] > spikes2[j+1] or i == N1-1):
             j += 1
             n += 1
             tau = get_tau(spikes1, spikes2, i, j, max_tau)
             st[n] = spikes2[j]
-            if i > 0 and spikes2[j]-spikes1[i] < tau:
+            if i > -1 and spikes2[j]-spikes1[i] < tau:
                 # coincidence between the current spike and the previous spike
                 # both get marked with 1
                 c[n] = 1
@@ -394,8 +395,6 @@ def coincidence_cython(double[:] spikes1, double[:] spikes2, double max_tau):
             # advance in both spike trains
             j += 1
             i += 1
-            if i == N1-1 or j == N2-1:
-                break
             n += 1
             # add only one event, but with coincidence 2 and multiplicity 2
             st[n] = spikes1[i]
@@ -406,8 +405,8 @@ def coincidence_cython(double[:] spikes1, double[:] spikes2, double max_tau):
     c = c[:n+2]
     mp = mp[:n+2]
 
-    st[0] = spikes1[0]
-    st[len(st)-1] = spikes1[len(spikes1)-1]
+    st[0] = t_start
+    st[len(st)-1] = t_end
     c[0] = c[1]
     c[len(c)-1] = c[len(c)-2]
     mp[0] = mp[1]

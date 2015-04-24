@@ -21,14 +21,14 @@ class SpikeTrain:
         """
 
         # TODO: sanity checks
-        self.spikes = np.array(spike_times)
+        self.spikes = np.array(spike_times, dtype=float)
 
         # check if interval is as sequence
         if not isinstance(interval, collections.Sequence):
             # treat value as end time and assume t_start = 0
             self.t_start = 0.0
-            self.t_end = interval
+            self.t_end = float(interval)
         else:
             # extract times from sequence
-            self.t_start = interval[0]
-            self.t_end = interval[1]
+            self.t_start = float(interval[0])
+            self.t_end = float(interval[1])
