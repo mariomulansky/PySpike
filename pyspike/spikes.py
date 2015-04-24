@@ -14,11 +14,11 @@ from pyspike import SpikeTrain
 ############################################################
 # spike_train_from_string
 ############################################################
-def spike_train_from_string(s, interval, sep=' ', is_sorted=False):
+def spike_train_from_string(s, edges, sep=' ', is_sorted=False):
     """ Converts a string of times into a  :class:`pyspike.SpikeTrain`.
 
     :param s: the string with (ordered) spike times.
-    :param interval: interval defining the edges of the spike train.
+    :param edges: interval defining the edges of the spike train.
     Given as a pair of floats (T0, T1) or a single float T1, where T0=0 is
     assumed.
     :param sep: The separator between the time numbers, default=' '.
@@ -27,15 +27,15 @@ def spike_train_from_string(s, interval, sep=' ', is_sorted=False):
     :returns:  :class:`pyspike.SpikeTrain`
     """
     if not(is_sorted):
-        return SpikeTrain(np.sort(np.fromstring(s, sep=sep)), interval)
+        return SpikeTrain(np.sort(np.fromstring(s, sep=sep)), edges)
     else:
-        return SpikeTrain(np.fromstring(s, sep=sep), interval)
+        return SpikeTrain(np.fromstring(s, sep=sep), edges)
 
 
 ############################################################
 # load_spike_trains_txt
 ############################################################
-def load_spike_trains_from_txt(file_name, interval=None,
+def load_spike_trains_from_txt(file_name, edges,
                                separator=' ', comment='#', is_sorted=False):
     """ Loads a number of spike trains from a text file. Each line of the text
     file should contain one spike train as a sequence of spike times separated
@@ -44,10 +44,10 @@ def load_spike_trains_from_txt(file_name, interval=None,
     spike trains.
 
     :param file_name: The name of the text file.
-    :param interval: A pair (T_start, T_end) of values representing the
-                     start and end time of the spike train measurement
-                     or a single value representing the end time, the
-                     T_start is then assuemd as 0.
+    :param edges: A pair (T_start, T_end) of values representing the
+                  start and end time of the spike train measurement
+                  or a single value representing the end time, the
+                  T_start is then assuemd as 0.
     :param separator: The character used to seprate the values in the text file
     :param comment: Lines starting with this character are ignored.
     :param sort: If true, the spike times are order via `np.sort`, default=True
@@ -58,7 +58,7 @@ def load_spike_trains_from_txt(file_name, interval=None,
     for line in spike_file:
         if len(line) > 1 and not line.startswith(comment):
             # use only the lines with actual data and not commented
-            spike_train = spike_train_from_string(line, interval,
+            spike_train = spike_train_from_string(line, edges,
                                                   separator, is_sorted)
             spike_trains.append(spike_train)
     return spike_trains

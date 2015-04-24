@@ -262,7 +262,7 @@ def test_multi_spike_sync():
 
     # multivariate regression test
     spike_trains = spk.load_spike_trains_from_txt("test/SPIKE_Sync_Test.txt",
-                                                  interval=[0, 4000])
+                                                  edges=[0, 4000])
     # extract all spike times
     spike_times = np.array([])
     for st in spike_trains:
