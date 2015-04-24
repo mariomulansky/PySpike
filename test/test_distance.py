@@ -177,6 +177,18 @@ def test_spike_sync():
     assert_almost_equal(spk.spike_sync(spikes1, spikes2),
                         0.5, decimal=16)
 
+    spikes2 = SpikeTrain([3.0], 4.0)
+    assert_almost_equal(spk.spike_sync(spikes1, spikes2),
+                        0.5, decimal=16)
+
+    spikes2 = SpikeTrain([1.0], 4.0)
+    assert_almost_equal(spk.spike_sync(spikes1, spikes2),
+                        0.5, decimal=16)
+
+    spikes2 = SpikeTrain([1.5, 3.0], 4.0)
+    assert_almost_equal(spk.spike_sync(spikes1, spikes2),
+                        0.4, decimal=16)
+
 
 def check_multi_profile(profile_func, profile_func_multi):
     # generate spike trains:
@@ -250,19 +262,28 @@ def test_multi_spike_sync():
 
     # multivariate regression test
     spike_trains = spk.load_spike_trains_from_txt("test/SPIKE_Sync_Test.txt",
-                                                  interval=(0, 4000))
-    print(spike_trains[0].spikes)
+                                                  interval=[0, 4000])
+    # extract all spike times
+    spike_times = np.array([])
+    for st in spike_trains:
+        spike_times = np.append(spike_times, st.spikes)
+    spike_times = np.unique(np.sort(spike_times))
+
     f = spk.spike_sync_profile_multi(spike_trains)
+
+    assert_equal(spike_times, f.x[1:-1])
+    assert_equal(len(f.x), len(f.y))
+
     assert_equal(np.sum(f.y[1:-1]), 39932)
     assert_equal(np.sum(f.mp[1:-1]), 85554)
 
 
 def check_dist_matrix(dist_func, dist_matrix_func):
     # generate spike trains:
-    t1 = spk.add_auxiliary_spikes(np.array([0.2, 0.4, 0.6, 0.7]), 1.0)
-    t2 = spk.add_auxiliary_spikes(np.array([0.3, 0.45, 0.8, 0.9, 0.95]), 1.0)
-    t3 = spk.add_auxiliary_spikes(np.array([0.2, 0.4, 0.6]), 1.0)
-    t4 = spk.add_auxiliary_spikes(np.array([0.1, 0.4, 0.5, 0.6]), 1.0)
+    t1 = SpikeTrain([0.2, 0.4, 0.6, 0.7], 1.0)
+    t2 = SpikeTrain([0.3, 0.45, 0.8, 0.9, 0.95], 1.0)
+    t3 = SpikeTrain([0.2, 0.4, 0.6], 1.0)
+    t4 = SpikeTrain([0.1, 0.4, 0.5, 0.6], 1.0)
     spike_trains = [t1, t2, t3, t4]
 
     f12 = dist_func(t1, t2)
@@ -340,4 +361,9 @@ if __name__ == "__main__":
     test_spike_sync()
     test_multi_isi()
     test_multi_spike()
-    # test_multi_spike_sync()
+    test_multi_spike_sync()
+    test_isi_matrix()
+    test_spike_matrix()
+    test_spike_sync_matrix()
+    test_regression_spiky()
+    test_multi_variate_subsets()

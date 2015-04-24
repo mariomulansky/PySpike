@@ -345,9 +345,9 @@ cdef inline double get_tau(double[:] spikes1, double[:] spikes2,
         m = fmin(m, spikes1[i+1]-spikes1[i])
     if j < N2 and j > -1:
         m = fmin(m, spikes2[j+1]-spikes2[j])
-    if i > 1:
+    if i > 0:
         m = fmin(m, spikes1[i]-spikes1[i-1])
-    if j > 1:
+    if j > 0:
         m = fmin(m, spikes2[j]-spikes2[j-1])
     m *= 0.5
     if max_tau > 0.0:
@@ -371,7 +371,7 @@ def coincidence_cython(double[:] spikes1, double[:] spikes2,
     cdef double[:] mp = np.ones(N1 + N2 + 2)   # multiplicity
     cdef double tau
     while i + j < N1 + N2 - 2:
-        if (i < N1-1) and (spikes1[i+1] < spikes2[j+1] or j == N2-1):
+        if (i < N1-1) and (j == N2-1 or spikes1[i+1] < spikes2[j+1]):
             i += 1
             n += 1
             tau = get_tau(spikes1, spikes2, i, j, max_tau)
@@ -381,7 +381,7 @@ def coincidence_cython(double[:] spikes1, double[:] spikes2,
                 # both get marked with 1
                 c[n] = 1
                 c[n-1] = 1
-        elif (j < N2-1) and (spikes1[i+1] > spikes2[j+1] or i == N1-1):
+        elif (j < N2-1) and (i == N1-1 or spikes1[i+1] > spikes2[j+1]):
             j += 1
             n += 1
             tau = get_tau(spikes1, spikes2, i, j, max_tau)
