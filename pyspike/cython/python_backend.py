@@ -142,12 +142,11 @@ def spike_distance_python(spikes1, spikes2, t_start, t_end):
     t_p1 = t_start
     t_p2 = t_start
     if t1[0] > t_start:
-        # dt_p1 = t2[0]-t_start
-        dt_p1 = 0.0
         t_f1 = t1[0]
         dt_f1 = get_min_dist(t_f1, t2, 0, t_start, t_end)
+        dt_p1 = dt_f1
         isi1 = max(t_f1-t_start, t1[1]-t1[0])
-        s1 = dt_f1*(t_f1-t_start)/isi1
+        s1 = dt_p1*(t_f1-t_start)/isi1
         index1 = -1
     else:
         dt_p1 = 0.0
@@ -158,11 +157,11 @@ def spike_distance_python(spikes1, spikes2, t_start, t_end):
         index1 = 0
     if t2[0] > t_start:
         # dt_p1 = t2[0]-t_start
-        dt_p2 = 0.0
         t_f2 = t2[0]
         dt_f2 = get_min_dist(t_f2, t1, 0, t_start, t_end)
+        dt_p2 = dt_f2
         isi2 = max(t_f2-t_start, t2[1]-t2[0])
-        s2 = dt_f2*(t_f2-t_start)/isi2
+        s2 = dt_p2*(t_f2-t_start)/isi2
         index2 = -1
     else:
         dt_p2 = 0.0
@@ -180,6 +179,7 @@ def spike_distance_python(spikes1, spikes2, t_start, t_end):
         if (index1 < N1-1) and (t_f1 < t_f2 or index2 == N2-1):
             index1 += 1
             # first calculate the previous interval end value
+            s1 = dt_f1*(t_f1-t_p1) / isi1
             # the previous time now was the following time before:
             dt_p1 = dt_f1
             t_p1 = t_f1    # t_p1 contains the current time point
@@ -189,13 +189,13 @@ def spike_distance_python(spikes1, spikes2, t_start, t_end):
             else:
                 t_f1 = t_end
             spike_events[index] = t_p1
-            s1 = dt_p1
             s2 = (dt_p2*(t_f2-t_p1) + dt_f2*(t_p1-t_p2)) / isi2
             y_ends[index-1] = (s1*isi2 + s2*isi1) / (0.5*(isi1+isi2)**2)
             # now the next interval start value
             if index1 < N1-1:
                 dt_f1 = get_min_dist(t_f1, t2, index2, t_start, t_end)
                 isi1 = t_f1-t_p1
+                s1 = dt_p1
             else:
                 dt_f1 = dt_p1
                 isi1 = max(t_end-t1[N1-1], t1[N1-1]-t1[N1-2])
@@ -206,6 +206,7 @@ def spike_distance_python(spikes1, spikes2, t_start, t_end):
         elif (index2 < N2-1) and (t_f1 > t_f2 or index1 == N1-1):
             index2 += 1
             # first calculate the previous interval end value
+            s2 = dt_f2*(t_f2-t_p2) / isi2
             # the previous time now was the following time before:
             dt_p2 = dt_f2
             t_p2 = t_f2    # t_p1 contains the current time point
@@ -216,12 +217,12 @@ def spike_distance_python(spikes1, spikes2, t_start, t_end):
                 t_f2 = t_end
             spike_events[index] = t_p2
             s1 = (dt_p1*(t_f1-t_p2) + dt_f1*(t_p2-t_p1)) / isi1
-            s2 = dt_p2
             y_ends[index-1] = (s1*isi2 + s2*isi1) / (0.5*(isi1+isi2)**2)
             # now the next interval start value
             if index2 < N2-1:
                 dt_f2 = get_min_dist(t_f2, t1, index1, t_start, t_end)
                 isi2 = t_f2-t_p2
+                s2 = dt_p2
             else:
                 dt_f2 = dt_p2
                 isi2 = max(t_end-t2[N2-1], t2[N2-1]-t2[N2-2])

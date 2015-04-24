@@ -194,31 +194,31 @@ def spike_distance_cython(double[:] t1, double[:] t2,
         t_p2 = t_start
         if t1[0] > t_start:
             # dt_p1 = t2[0]-t_start
-            dt_p1 = 0.0
             t_f1 = t1[0]
             dt_f1 = get_min_dist_cython(t_f1, t2, N2, 0, t_start, t_end)
             isi1 = fmax(t_f1-t_start, t1[1]-t1[0])
-            s1 = dt_f1*(t_f1-t_start)/isi1
+            dt_p1 = dt_f1
+            s1 = dt_p1*(t_f1-t_start)/isi1
             index1 = -1
         else:
-            dt_p1 = 0.0
             t_f1 = t1[1]
             dt_f1 = get_min_dist_cython(t_f1, t2, N2, 0, t_start, t_end)
+            dt_p1 = 0.0
             isi1 = t1[1]-t1[0]
             s1 = dt_p1
             index1 = 0
         if t2[0] > t_start:
             # dt_p1 = t2[0]-t_start
-            dt_p2 = 0.0
             t_f2 = t2[0]
             dt_f2 = get_min_dist_cython(t_f2, t1, N1, 0, t_start, t_end)
+            dt_p2 = dt_f2
             isi2 = fmax(t_f2-t_start, t2[1]-t2[0])
-            s2 = dt_f2*(t_f2-t_start)/isi2
+            s2 = dt_p2*(t_f2-t_start)/isi2
             index2 = -1
         else:
-            dt_p2 = 0.0
             t_f2 = t2[1]
             dt_f2 = get_min_dist_cython(t_f2, t1, N1, 0, t_start, t_end)
+            dt_p2 = 0.0
             isi2 = t2[1]-t2[0]
             s2 = dt_p2
             index2 = 0
@@ -231,16 +231,16 @@ def spike_distance_cython(double[:] t1, double[:] t2,
             if (index1 < N1-1) and (t_f1 < t_f2 or index2 == N2-1):
                 index1 += 1
                 # first calculate the previous interval end value
+                s1 = dt_f1*(t_f1-t_p1) / isi1
                 # the previous time now was the following time before:
-                dt_p1 = dt_f1  
+                dt_p1 = dt_f1
                 t_p1 = t_f1    # t_p1 contains the current time point
-                # get the next time 
+                # get the next time
                 if index1 < N1-1:
                     t_f1 = t1[index1+1]
                 else:
                     t_f1 = t_end
                 spike_events[index] = t_p1
-                s1 = dt_p1
                 s2 = (dt_p2*(t_f2-t_p1) + dt_f2*(t_p1-t_p2)) / isi2
                 y_ends[index-1] = (s1*isi2 + s2*isi1)/isi_avrg_cython(isi1,
                                                                       isi2)
@@ -249,6 +249,7 @@ def spike_distance_cython(double[:] t1, double[:] t2,
                     dt_f1 = get_min_dist_cython(t_f1, t2, N2, index2,
                                                 t_start, t_end)
                     isi1 = t_f1-t_p1
+                    s1 = dt_p1
                 else:
                     dt_f1 = dt_p1
                     isi1 = fmax(t_end-t1[N1-1], t1[N1-1]-t1[N1-2])
@@ -260,9 +261,10 @@ def spike_distance_cython(double[:] t1, double[:] t2,
             elif (index2 < N2-1) and (t_f1 > t_f2 or index1 == N1-1):
                 index2 += 1
                 # first calculate the previous interval end value
+                s2 = dt_f2*(t_f2-t_p2) / isi2
                 # the previous time now was the following time before:
                 dt_p2 = dt_f2
-                t_p2 = t_f2    # t_p1 contains the current time point
+                t_p2 = t_f2    # t_p2 contains the current time point
                 # get the next time
                 if index2 < N2-1:
                     t_f2 = t2[index2+1]
@@ -270,7 +272,6 @@ def spike_distance_cython(double[:] t1, double[:] t2,
                     t_f2 = t_end
                 spike_events[index] = t_p2
                 s1 = (dt_p1*(t_f1-t_p2) + dt_f1*(t_p2-t_p1)) / isi1
-                s2 = dt_p2
                 y_ends[index-1] = (s1*isi2 + s2*isi1) / isi_avrg_cython(isi1,
                                                                         isi2)
                 # now the next interval start value
@@ -278,6 +279,7 @@ def spike_distance_cython(double[:] t1, double[:] t2,
                     dt_f2 = get_min_dist_cython(t_f2, t1, N1, index1,
                                                 t_start, t_end)
                     isi2 = t_f2-t_p2
+                    s2 = dt_p2
                 else:
                     dt_f2 = dt_p2
                     isi2 = fmax(t_end-t2[N2-1], t2[N2-1]-t2[N2-2])
