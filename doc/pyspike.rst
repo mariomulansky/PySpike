@@ -57,6 +57,14 @@ SPIKE-synchronization
     :undoc-members:
     :show-inheritance:
 
+PSTH
+........................................
+.. automodule:: pyspike.psth
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
 Helper functions
 ........................................
 .. automodule:: pyspike.spikes
