@@ -1,12 +1,11 @@
 from __future__ import print_function
 
-import numpy as np
 import matplotlib.pyplot as plt
 
 import pyspike as spk
 
 spike_trains = spk.load_spike_trains_from_txt("../test/SPIKE_Sync_Test.txt",
-                                              time_interval=(0, 4000))
+                                              edges=(0, 4000))
 
 plt.figure()
 
