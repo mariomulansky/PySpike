@@ -1,60 +1,64 @@
 pyspike package
 ===============
 
-Submodules
-----------
 
-pyspike.isi_distance module
+Classes
 ----------------------------------------
 
-.. automodule:: pyspike.isi_distance
+SpikeTrain
+........................................
+.. automodule:: pyspike.SpikeTrain
     :members:
     :undoc-members:
     :show-inheritance:
 
-pyspike.spike_distance module
-----------------------------------------
-
-.. automodule:: pyspike.spike_distance
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-pyspike.spike_sync module
-----------------------------------------
-
-.. automodule:: pyspike.spike_sync
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-pyspike.PieceWiseConstFunc module
-----------------------------------------
-
+PieceWiseConstFunc
+........................................
 .. automodule:: pyspike.PieceWiseConstFunc
     :members:
     :undoc-members:
     :show-inheritance:
 
-pyspike.PieceWiseLinFunc module
-----------------------------------------
-
+PieceWiseLinFunc
+........................................
 .. automodule:: pyspike.PieceWiseLinFunc
     :members:
     :undoc-members:
     :show-inheritance:
 
-pyspike.DiscreteFunc module
-----------------------------------------
-
+DiscreteFunc
+........................................
 .. automodule:: pyspike.DiscreteFunc
     :members:
     :undoc-members:
     :show-inheritance:
 
-pyspike.spikes module
-----------------------------------------
+Functions
+----------
 
+ISI-distance
+........................................
+.. automodule:: pyspike.isi_distance
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+SPIKE-distance
+........................................
+.. automodule:: pyspike.spike_distance
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+SPIKE-synchronization
+........................................
+.. automodule:: pyspike.spike_sync
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Helper functions
+........................................
 .. automodule:: pyspike.spikes
     :members:
     :undoc-members:

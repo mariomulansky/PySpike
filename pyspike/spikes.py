@@ -1,11 +1,6 @@
-""" spikes.py
-
-Module containing several function to load and transform spike trains
-
-Copyright 2014, Mario Mulansky <mario.mulansky@gmx.net>
-
-Distributed under the BSD License
-"""
+# Module containing several function to load and transform spike trains
+# Copyright 2014, Mario Mulansky <mario.mulansky@gmx.net>
+# Distributed under the BSD License
 
 import numpy as np
 from pyspike import SpikeTrain
@@ -15,21 +10,18 @@ from pyspike import SpikeTrain
 # spike_train_from_string
 ############################################################
 def spike_train_from_string(s, edges, sep=' ', is_sorted=False):
-    """ Converts a string of times into a  :class:`pyspike.SpikeTrain`.
+    """ Converts a string of times into a  :class:`.SpikeTrain`.
 
     :param s: the string with (ordered) spike times.
     :param edges: interval defining the edges of the spike train.
-    Given as a pair of floats (T0, T1) or a single float T1, where T0=0 is
-    assumed.
+                  Given as a pair of floats (T0, T1) or a single float T1,
+                  where T0=0 is assumed.
     :param sep: The separator between the time numbers, default=' '.
     :param is_sorted: if True, the spike times are not sorted after loading,
                       if False, spike times are sorted with `np.sort`
-    :returns:  :class:`pyspike.SpikeTrain`
+    :returns: :class:`.SpikeTrain`
     """
-    if not(is_sorted):
-        return SpikeTrain(np.sort(np.fromstring(s, sep=sep)), edges)
-    else:
-        return SpikeTrain(np.fromstring(s, sep=sep), edges)
+    return SpikeTrain(np.fromstring(s, sep=sep), edges, is_sorted)
 
 
 ############################################################
@@ -40,7 +32,7 @@ def load_spike_trains_from_txt(file_name, edges,
     """ Loads a number of spike trains from a text file. Each line of the text
     file should contain one spike train as a sequence of spike times separated
     by `separator`. Empty lines as well as lines starting with `comment` are
-    neglected. The `interval` represents the start and the end of the
+    neglected. The `edges` represents the start and the end of the
     spike trains.
 
     :param file_name: The name of the text file.
@@ -51,7 +43,7 @@ def load_spike_trains_from_txt(file_name, edges,
     :param separator: The character used to seprate the values in the text file
     :param comment: Lines starting with this character are ignored.
     :param sort: If true, the spike times are order via `np.sort`, default=True
-    :returns: list of spike trains
+    :returns: list of :class:`.SpikeTrain`
     """
     spike_trains = []
     spike_file = open(file_name, 'r')
@@ -70,7 +62,7 @@ def load_spike_trains_from_txt(file_name, edges,
 def merge_spike_trains(spike_trains):
     """ Merges a number of spike trains into a single spike train.
 
-    :param spike_trains: list of arrays of spike times
+    :param spike_trains: list of :class:`.SpikeTrain`
     :returns: spike train with the merged spike times
     """
     # get the lengths of the spike trains
@@ -110,7 +102,7 @@ def generate_poisson_spikes(rate, interval):
                      to the spike train at the beginning and end of this
                      interval, if they are not yet present.
     :type interval: pair of doubles or double
-    :returns: Poisson spike train as a :class:`pyspike.SpikeTrain`
+    :returns: Poisson spike train as a :class:`.SpikeTrain`
     """
     try:
         T_start = interval[0]

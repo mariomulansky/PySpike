@@ -1,12 +1,7 @@
-"""
-
-Module containing several functions to compute SPIKE-Synchronization profiles
-and distances
-
-Copyright 2014-2015, Mario Mulansky <mario.mulansky@gmx.net>
-
-Distributed under the BSD License
-"""
+# Module containing several functions to compute SPIKE-Synchronization profiles
+# and distances
+# Copyright 2014-2015, Mario Mulansky <mario.mulansky@gmx.net>
+# Distributed under the BSD License
 
 from functools import partial
 from pyspike import DiscreteFunc
@@ -27,7 +22,7 @@ def spike_sync_profile(spike_train1, spike_train2, max_tau=None):
     :param spike_train2: Second spike train.
     :type spike_train2: :class:`pyspike.SpikeTrain`
     :param max_tau: Maximum coincidence window size. If 0 or `None`, the
-    coincidence window has no upper bound.
+                    coincidence window has no upper bound.
     :returns: The spike-distance profile :math:`S_{sync}(t)`.
     :rtype: :class:`pyspike.function.DiscreteFunction`
 
@@ -77,12 +72,13 @@ def spike_sync(spike_train1, spike_train2, interval=None, max_tau=None):
     :param spike_train2: Second spike train.
     :type spike_train2: :class:`pyspike.SpikeTrain`
     :param interval: averaging interval given as a pair of floats (T0, T1),
-                     if None the average over the whole function is computed.
+                     if `None` the average over the whole function is computed.
     :type interval: Pair of floats or None.
     :param max_tau: Maximum coincidence window size. If 0 or `None`, the
-    coincidence window has no upper bound.
+                    coincidence window has no upper bound.
     :returns: The spike synchronization value.
-    :rtype: double
+    :rtype: `double`
+
     """
     return spike_sync_profile(spike_train1, spike_train2,
                               max_tau).avrg(interval)
@@ -103,7 +99,7 @@ def spike_sync_profile_multi(spike_trains, indices=None, max_tau=None):
                     if None all given spike trains are used (default=None)
     :type indices: list or None
     :param max_tau: Maximum coincidence window size. If 0 or `None`, the
-    coincidence window has no upper bound.
+                    coincidence window has no upper bound.
     :returns: The multi-variate spike sync profile :math:`<S_{sync}>(t)`
     :rtype: :class:`pyspike.function.DiscreteFunction`
 
@@ -130,9 +126,10 @@ def spike_sync_multi(spike_trains, indices=None, interval=None, max_tau=None):
                      the average over the whole function is computed.
     :type interval: Pair of floats or None.
     :param max_tau: Maximum coincidence window size. If 0 or `None`, the
-    coincidence window has no upper bound.
+                    coincidence window has no upper bound.
     :returns: The multi-variate spike synchronization value SYNC.
     :rtype: double
+
     """
     return spike_sync_profile_multi(spike_trains, indices,
                                     max_tau).avrg(interval)
@@ -153,10 +150,11 @@ def spike_sync_matrix(spike_trains, indices=None, interval=None, max_tau=None):
                      the average over the whole function is computed.
     :type interval: Pair of floats or None.
     :param max_tau: Maximum coincidence window size. If 0 or `None`, the
-    coincidence window has no upper bound.
+                    coincidence window has no upper bound.
     :returns: 2D array with the pair wise time spike synchronization values
               :math:`SYNC_{ij}`
     :rtype: np.array
+
     """
     dist_func = partial(spike_sync, max_tau=max_tau)
     return _generic_distance_matrix(spike_trains, dist_func,
