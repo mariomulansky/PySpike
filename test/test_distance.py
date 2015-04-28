@@ -47,7 +47,7 @@ def test_isi():
     t2 = SpikeTrain([0.1, 0.4, 0.5, 0.6], [0.0, 1.0])
 
     expected_times = [0.0, 0.1, 0.2, 0.4, 0.5, 0.6, 1.0]
-    expected_isi = [0.1/0.2, 0.1/0.3, 0.1/0.3, 0.1/0.2, 0.1/0.2, 0.0/0.5]
+    expected_isi = [0.1/0.3, 0.1/0.3, 0.1/0.3, 0.1/0.2, 0.1/0.2, 0.0/0.5]
     expected_times = np.array(expected_times)
     expected_isi = np.array(expected_isi)
 
@@ -332,7 +332,9 @@ def test_regression_spiky():
     st2 = SpikeTrain(np.arange(100, 1201, 110), 1300)
 
     isi_dist = spk.isi_distance(st1, st2)
-    assert_almost_equal(isi_dist, 7.6923076923076941e-02, decimal=15)
+    assert_almost_equal(isi_dist, 9.0909090909090939e-02, decimal=15)
+    isi_profile = spk.isi_profile(st1, st2)
+    assert_equal(isi_profile.y, 0.1/1.1 * np.ones_like(isi_profile.y))
 
     spike_dist = spk.spike_distance(st1, st2)
     assert_equal(spike_dist, 2.1105878248735391e-01)
@@ -346,7 +348,7 @@ def test_regression_spiky():
                                                   (0.0, 4000.0))
     isi_dist = spk.isi_distance_multi(spike_trains)
     # get the full precision from SPIKY
-    assert_almost_equal(isi_dist, 1.8318789829845508e-01, decimal=15)
+    assert_almost_equal(isi_dist, 0.17051816816999129656, decimal=15)
 
     spike_profile = spk.spike_profile_multi(spike_trains)
     assert_equal(len(spike_profile.y1)+len(spike_profile.y2), 1252)

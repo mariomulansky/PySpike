@@ -62,14 +62,16 @@ def isi_distance_cython(double[:] s1, double[:] s2,
 
     # first interspike interval - check if a spike exists at the start time
     if s1[0] > t_start:
-        nu1 = s1[0] - t_start
+        # edge correction
+        nu1 = fmax(s1[0]-t_start, s1[1]-s1[0])
         index1 = -1
     else:
         nu1 = s1[1]-s1[0]
         index1 = 0
 
     if s2[0] > t_start:
-        nu2 = s2[0] - t_start
+        # edge correction
+        nu2 = fmax(s2[0]-t_start, s2[1]-s2[0])
         index2 = -1
     else:
         nu2 = s2[1]-s2[0]
@@ -89,7 +91,8 @@ def isi_distance_cython(double[:] s1, double[:] s2,
                 if index1 < N1-1:
                     nu1 = s1[index1+1]-s1[index1]
                 else:
-                    nu1 = t_end-s1[index1]
+                    # edge correction
+                    nu1 = fmax(t_end-s1[index1], nu1)
             elif (index2 < N2-1) and ((index1 == N1-1) or
                                       (s1[index1+1] > s2[index2+1])):
                 index2 += 1
@@ -97,7 +100,8 @@ def isi_distance_cython(double[:] s1, double[:] s2,
                 if index2 < N2-1:
                     nu2 = s2[index2+1]-s2[index2]
                 else:
-                    nu2 = t_end-s2[index2]
+                    # edge correction
+                    nu2 = fmax(t_end-s2[index2], nu2)
             else: # s1[index1+1] == s2[index2+1]
                 index1 += 1
                 index2 += 1
@@ -105,11 +109,13 @@ def isi_distance_cython(double[:] s1, double[:] s2,
                 if index1 < N1-1:
                     nu1 = s1[index1+1]-s1[index1]
                 else:
-                    nu1 = t_end-s1[index1]
+                    # edge correction
+                    nu1 = fmax(t_end-s1[index1], nu1)
                 if index2 < N2-1:
                     nu2 = s2[index2+1]-s2[index2]
                 else:
-                    nu2 = t_end-s2[index2]
+                    # edge correction
+                    nu2 = fmax(t_end-s2[index2], nu2)
             # compute the corresponding isi-distance
             isi_values[index] = fabs(nu1 - nu2) / fmax(nu1, nu2)
             index += 1

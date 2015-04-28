@@ -27,13 +27,15 @@ def isi_distance_python(s1, s2, t_start, t_end):
     # the values have one entry less - the number of intervals between events
     isi_values = np.empty(len(spike_events) - 1)
     if s1[0] > t_start:
-        nu1 = s1[0] - t_start
+        # edge correction
+        nu1 = max(s1[0] - t_start, s1[1] - s1[0])
         index1 = -1
     else:
         nu1 = s1[1] - s1[0]
         index1 = 0
     if s2[0] > t_start:
-        nu2 = s2[0] - t_start
+        # edge correction
+        nu2 = max(s2[0] - t_start, s2[1] - s2[0])
         index2 = -1
     else:
         nu2 = s2[1] - s2[0]
@@ -49,7 +51,8 @@ def isi_distance_python(s1, s2, t_start, t_end):
             if index1 < N1-1:
                 nu1 = s1[index1+1]-s1[index1]
             else:
-                nu1 = t_end-s1[index1]
+                # edge correction
+                nu1 = max(t_end-s1[N1-1], s1[N1-1]-s1[N1-2])
 
         elif (index2 < N2-1) and (index1 == N1-1 or
                                   s1[index1+1] > s2[index2+1]):
@@ -58,7 +61,8 @@ def isi_distance_python(s1, s2, t_start, t_end):
             if index2 < N2-1:
                 nu2 = s2[index2+1]-s2[index2]
             else:
-                nu2 = t_end-s2[index2]
+                # edge correction
+                nu2 = max(t_end-s2[N2-1], s2[N2-1]-s2[N2-2])
 
         else:  # s1[index1 + 1] == s2[index2 + 1]
             index1 += 1
@@ -67,11 +71,13 @@ def isi_distance_python(s1, s2, t_start, t_end):
             if index1 < N1-1:
                 nu1 = s1[index1+1]-s1[index1]
             else:
-                nu1 = t_end-s1[index1]
+                # edge correction
+                nu1 = max(t_end-s1[N1-1], s1[N1-1]-s1[N1-2])
             if index2 < N2-1:
                 nu2 = s2[index2+1]-s2[index2]
             else:
-                nu2 = t_end-s2[index2]
+                # edge correction
+                nu2 = max(t_end-s2[N2-1], s2[N2-1]-s2[N2-2])
         # compute the corresponding isi-distance
         isi_values[index] = abs(nu1 - nu2) / \
             max(nu1, nu2)
