@@ -17,11 +17,11 @@ import matplotlib.pyplot as plt
 import pyspike as spk
 
 spike_trains = spk.load_spike_trains_from_txt("PySpike_testdata.txt",
-                                              time_interval=(0, 4000))
+                                              edges=(0, 4000))
 
 # plot the spike time
-for (i, spikes) in enumerate(spike_trains):
-    plt.plot(spikes, i*np.ones_like(spikes), 'o')
+for (i, spike_train) in enumerate(spike_trains):
+    plt.plot(spike_train.spikes, i*np.ones_like(spike_train.spikes), 'o')
 
 f = spk.isi_profile(spike_trains[0], spike_trains[1])
 x, y = f.get_plottable_data()

@@ -1,11 +1,7 @@
-"""
-Class representing piece-wise constant functions.
+# Class representing piece-wise constant functions.
+# Copyright 2014-2015, Mario Mulansky <mario.mulansky@gmx.net>
+# Distributed under the BSD License
 
-Copyright 2014-2015, Mario Mulansky <mario.mulansky@gmx.net>
-
-Distributed under the BSD License
-
-"""
 from __future__ import print_function
 
 import numpy as np
@@ -103,7 +99,7 @@ class PieceWiseConstFunc(object):
 
     def avrg(self, interval=None):
         """ Computes the average of the piece-wise const function:
-        :math:`a = 1/T int_0^T f(x) dx` where T is the length of the interval.
+        :math:`a = 1/T \int_0^T f(x) dx` where T is the length of the interval.
 
         :param interval: averaging interval given as a pair of floats, a
                          sequence of pairs for averaging multiple intervals, or

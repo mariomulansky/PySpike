@@ -19,6 +19,14 @@ All source codes are available on `Github <https://github.com/mariomulansky/PySp
 
 .. [#] Kreuz T, Mulansky M and Bozanic N, *SPIKY: A graphical user interface for monitoring spike train synchrony*, tbp (2015)
 
+Important Changelog
+-----------------------------
+
+With version 0.2.0, the :class:`.SpikeTrain` class has been introduced to represent spike trains.
+This is a breaking change in the function interfaces.
+Hence, programs written for older versions of PySpike (0.1.x) will not run with newer versions.
+
+
 Requirements and Installation
 -----------------------------
 
@@ -65,14 +73,16 @@ Therefore, add your :code:`/path/to/PySpike` to the :code:`$PYTHONPATH` environm
 Spike trains
 ------------
 
-In PySpike, spike trains are represented by one-dimensional numpy arrays containing the sequence of spike times as double values.
+In PySpike, spike trains are represented by :class:`.SpikeTrain` objects.
+A :class:`.SpikeTrain` object consists of the spike times given as `numpy` arrays as well as the edges of the spike train as :code:`[t_start, t_end]`.
 The following code creates such a spike train with some arbitrary spike times:
     
 .. code:: python
 
     import numpy as np
+    from pyspike import SpikeTrain
 
-    spike_train = np.array([0.1, 0.3, 0.45, 0.6, 0.9])
+    spike_train = SpikeTrain(np.array([0.1, 0.3, 0.45, 0.6, 0.9], [0.0, 1.0]))
 
 Loading from text files
 .......................
@@ -80,7 +90,7 @@ Loading from text files
 Typically, spike train data is loaded into PySpike from data files.
 The most straight-forward data files are text files where each line represents one spike train given as an sequence of spike times.
 An exemplary file with several spike trains is `PySpike_testdata.txt <https://github.com/mariomulansky/PySpike/blob/master/examples/PySpike_testdata.txt>`_.
-To quickly obtain spike trains from such files, PySpike provides the function :code:`load_spike_trains_from_txt`.
+To quickly obtain spike trains from such files, PySpike provides the function :func:`.load_spike_trains_from_txt`.
 
 .. code:: python
 
@@ -88,22 +98,13 @@ To quickly obtain spike trains from such files, PySpike provides the function :c
     import pyspike as spk
     
     spike_trains = spk.load_spike_trains_from_txt("SPIKY_testdata.txt", 
-                                                  time_interval=(0, 4000))
+                                                  edges=(0, 4000))
 
 This function expects the name of the data file as first parameter.
-Additionally, the time interval of the spike train measurement can be provided as a pair of start- and end-time values.
-If the time interval is provided (:code:`time_interval is not None`), auxiliary spikes at the start- and end-time of the interval are added to the spike trains.
+Furthermore, the time interval of the spike train measurement (edges of the spike trains) should be provided as a pair of start- and end-time values.
 Furthermore, the spike trains are sorted via :code:`np.sort` (disable this feature by providing :code:`is_sorted=True` as a parameter to the load function).
-As result, :code:`load_spike_trains_from_txt` returns a *list of arrays* containing the spike trains in the text file.
+As result, :func:`.load_spike_trains_from_txt` returns a *list of arrays* containing the spike trains in the text file.
 
-If you load spike trains yourself, i.e. from data files with different structure, you can use the helper function :code:`add_auxiliary_spikes` to add the auxiliary spikes at the beginning and end of the observation interval.
-Both the ISI and the SPIKE distance computation require the presence of auxiliary spikes, so make sure you have those in your spike trains:
-
-.. code:: python
-
-    spike_train = spk.add_auxiliary_spikes(spike_train, (T_start, T_end))
-    # if you provide only a single value, it is interpreted as T_end, while T_start=0
-    spike_train = spk.add_auxiliary_spikes(spike_train, T_end)
 
 Computing bivariate distances profiles
 ---------------------------------------
@@ -114,19 +115,18 @@ Computing bivariate distances profiles
 
     Spike trains are expected to be *sorted*! 
     For performance reasons, the PySpike distance functions do not check if the spike trains provided are indeed sorted.
-    Make sure that all your spike trains are sorted, which is ensured if you use the `load_spike_trains_from_txt` function with the parameter `is_sorted=False`.
-    If in doubt, use :code:`spike_train = np.sort(spike_train)` to obtain a correctly sorted spike train.
-    
-    Furthermore, the spike trains should have auxiliary spikes at the beginning and end of the observation interval.
-    You can ensure this by providing the :code:`time_interval` in the :code:`load_spike_trains_from_txt` function, or calling :code:`add_auxiliary_spikes` for your spike trains.
-    The spike trains must have *the same* observation interval!
+    Make sure that all your spike trains are sorted, which is ensured if you use the :func:`.load_spike_trains_from_txt` function with the parameter `is_sorted=False` (default).
+    If in doubt, use :meth:`.SpikeTrain.sort()` to ensure a correctly sorted spike train.
 
-----------------------
+    If you need to copy a spike train, use the :meth:`.SpikeTrain.copy()` method.
+    Simple assignment `t2 = t1` does not create a copy of the spike train data, but a reference as `numpy.array` is used for storing the data.
+    
+------------------------------
 
 ISI-distance
 ............
 
-The following code loads some exemplary spike trains, computes the dissimilarity profile of the ISI-distance of the first two spike trains, and plots it with matplotlib:
+The following code loads some exemplary spike trains, computes the dissimilarity profile of the ISI-distance of the first two :class:`.SpikeTrain` s, and plots it with matplotlib:
 
 .. code:: python
 
@@ -134,18 +134,18 @@ The following code loads some exemplary spike trains, computes the dissimilarity
     import pyspike as spk
     
     spike_trains = spk.load_spike_trains_from_txt("PySpike_testdata.txt",
-                                                  time_interval=(0, 4000))
+                                                  edges=(0, 4000))
     isi_profile = spk.isi_profile(spike_trains[0], spike_trains[1])
     x, y = isi_profile.get_plottable_data()
     plt.plot(x, y, '--k')
     print("ISI distance: %.8f" % isi_profile.avrg())
     plt.show()
 
-The ISI-profile is a piece-wise constant function, and hence the function :code:`isi_profile` returns an instance of the :code:`PieceWiseConstFunc` class.
+The ISI-profile is a piece-wise constant function, and hence the function :func:`.isi_profile` returns an instance of the :class:`.PieceWiseConstFunc` class.
 As shown above, this class allows you to obtain arrays that can be used to plot the function with :code:`plt.plt`, but also to compute the time average, which amounts to the final scalar ISI-distance.
-By default, the time average is computed for the whole :code:`PieceWiseConstFunc` function.
+By default, the time average is computed for the whole :class:`.PieceWiseConstFunc` function.
 However, it is also possible to obtain the average of a specific interval by providing a pair of floats defining the start and end of the interval.
-In the above example, the following code computes the ISI-distances obtained from averaging the ISI-profile over four different intervals:
+For the above example, the following code computes the ISI-distances obtained from averaging the ISI-profile over four different intervals:
 
 .. code:: python
 
@@ -168,7 +168,7 @@ where :code:`interval` is optional, as above, and if omitted the ISI-distance is
 SPIKE-distance
 ..............
 
-To compute for the spike distance profile you use the function :code:`spike_profile` instead of :code:`isi_profile` above. 
+To compute for the spike distance profile you use the function :func:`.spike_profile` instead of :code:`isi_profile` above. 
 But the general approach is very similar:
 
 .. code:: python
@@ -177,7 +177,7 @@ But the general approach is very similar:
     import pyspike as spk
     
     spike_trains = spk.load_spike_trains_from_txt("PySpike_testdata.txt",
-                                                  time_interval=(0, 4000))
+                                                  edges=(0, 4000))
     spike_profile = spk.spike_profile(spike_trains[0], spike_trains[1])
     x, y = spike_profile.get_plottable_data()
     plt.plot(x, y, '--k')
@@ -185,9 +185,9 @@ But the general approach is very similar:
     plt.show()
 
 This short example computes and plots the SPIKE-profile of the first two spike trains in the file :code:`PySpike_testdata.txt`.
-In contrast to the ISI-profile, a SPIKE-profile is a piece-wise *linear* function and is therefore represented by a :code:`PieceWiseLinFunc` object.
-Just like the :code:`PieceWiseConstFunc` for the ISI-profile, the :code:`PieceWiseLinFunc` provides a :code:`get_plottable_data` member function that returns arrays that can be used directly to plot the function.
-Furthermore, the :code:`avrg` member function returns the average of the profile defined as the overall SPIKE distance.
+In contrast to the ISI-profile, a SPIKE-profile is a piece-wise *linear* function and is therefore represented by a :class:`.PieceWiseLinFunc` object.
+Just like the :class:`.PieceWiseConstFunc` for the ISI-profile, the :class:`.PieceWiseLinFunc` provides a :meth:`.PieceWiseLinFunc.get_plottable_data` member function that returns arrays that can be used directly to plot the function.
+Furthermore, the :meth:`.PieceWiseLinFunc.avrg` member function returns the average of the profile defined as the overall SPIKE distance.
 As above, you can provide an interval as a pair of floats as well as a sequence of such pairs to :code:`avrg` to specify the averaging interval if required.
 
 Again, you can use
@@ -217,9 +217,9 @@ SPIKE synchronization
 SPIKE synchronization is another approach to measure spike synchrony.
 In contrast to the SPIKE- and ISI-distance, it measures similarity instead of dissimilarity, i.e. higher values represent larger synchrony.
 Another difference is that the SPIKE synchronization profile is only defined exactly at the spike times, not for the whole interval of the spike trains.
-Therefore, it is represented by a :code:`DiscreteFunction`.
+Therefore, it is represented by a :class:`.DiscreteFunction`.
 
-To compute for the spike synchronization profile, PySpike provides the function :code:`spike_sync_profile`.
+To compute for the spike synchronization profile, PySpike provides the function :func:`.spike_sync_profile`.
 The general handling of the profile, however, is similar to the other profiles above:
 
 .. code:: python
@@ -228,11 +228,11 @@ The general handling of the profile, however, is similar to the other profiles a
     import pyspike as spk
     
     spike_trains = spk.load_spike_trains_from_txt("PySpike_testdata.txt",
-                                                  time_interval=(0, 4000))
+                                                  edges=(0, 4000))
     spike_profile = spk.spike_sync_profile(spike_trains[0], spike_trains[1])
     x, y = spike_profile.get_plottable_data()
 
-For the direct computation of the overall spike synchronization value within some interval, the :code:`spike_sync` function can be used:
+For the direct computation of the overall spike synchronization value within some interval, the :func:`.spike_sync` function can be used:
 
 .. code:: python
    
@@ -243,23 +243,23 @@ Computing multivariate profiles and distances
 ----------------------------------------------
 
 To compute the multivariate ISI-profile, SPIKE-profile or SPIKE-Synchronization profile f a set of spike trains, PySpike provides multi-variate version of the profile function.
-The following example computes the multivariate ISI-, SPIKE- and SPIKE-Sync-profile for a list of spike trains:
+The following example computes the multivariate ISI-, SPIKE- and SPIKE-Sync-profile for a list of spike trains using the :func:`.isi_profile_multi`, :func:`.spike_profile_multi`, :func:`.spike_sync_profile_multi` functions:
 
 .. code:: python
 
     spike_trains = spk.load_spike_trains_from_txt("PySpike_testdata.txt",
-                                                  time_interval=(0, 4000))
+                                                  edges=(0, 4000))
     avrg_isi_profile = spk.isi_profile_multi(spike_trains)
     avrg_spike_profile = spk.spike_profile_multi(spike_trains)
     avrg_spike_sync_profile = spk.spike_sync_profile_multi(spike_trains)
 
 All functions take an optional parameter :code:`indices`, a list of indices that allows to define the spike trains that should be used for the multivariate profile.
-As before, if you are only interested in the distance values, and not in the profile, PySpike offers the functions: :code:`isi_distance_multi`, :code:`spike_distance_multi` and :code:`spike_sync_multi`, that return the scalar overall multivariate ISI- and SPIKE-distance as well as the SPIKE-Synchronization value.
+As before, if you are only interested in the distance values, and not in the profile, PySpike offers the functions: :func:`.isi_distance_multi`, :func:`.spike_distance_multi` and :func:`.spike_sync_multi`, that return the scalar overall multivariate ISI- and SPIKE-distance as well as the SPIKE-Synchronization value.
 Those functions also accept an :code:`interval` parameter that can be used to specify the begin and end of the averaging interval as a pair of floats, if neglected the complete interval is used.
 
 Another option to characterize large sets of spike trains are distance matrices.
 Each entry in the distance matrix represents a bivariate distance (similarity for SPIKE-Synchronization) of two spike trains.
-The distance matrix is symmetric and has zero values (ones) at the diagonal.
+The distance matrix is symmetric and has zero values (ones) at the diagonal and is computed with the functions :func:`.isi_distance_matrix`, :func:`.spike_distance_matrix` and :func:`.spike_sync_matrix`.
 The following example computes and plots the ISI- and SPIKE-distance matrix as well as the SPIKE-Synchronization-matrix, with different intervals.
 
 .. code:: python

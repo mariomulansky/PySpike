@@ -17,12 +17,13 @@ import pyspike as spk
 # first load the data, ending time = 4000
 spike_trains = spk.load_spike_trains_from_txt("PySpike_testdata.txt", 4000)
 
-spikes = spk.merge_spike_trains([spike_trains[0], spike_trains[1]])
+merged_spike_train = spk.merge_spike_trains([spike_trains[0], spike_trains[1]])
 
-print(spikes)
+print(merged_spike_train.spikes)
 
-plt.plot(spike_trains[0], np.ones_like(spike_trains[0]), 'o')
-plt.plot(spike_trains[1], np.ones_like(spike_trains[1]), 'x')
-plt.plot(spikes, 2*np.ones_like(spikes), 'o')
+plt.plot(spike_trains[0].spikes, np.ones_like(spike_trains[0].spikes), 'o')
+plt.plot(spike_trains[1].spikes, np.ones_like(spike_trains[1].spikes), 'x')
+plt.plot(merged_spike_train.spikes,
+         2*np.ones_like(merged_spike_train.spikes), 'o')
 
 plt.show()

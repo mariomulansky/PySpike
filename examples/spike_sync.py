@@ -1,12 +1,11 @@
 from __future__ import print_function
 
-import numpy as np
 import matplotlib.pyplot as plt
 
 import pyspike as spk
 
 spike_trains = spk.load_spike_trains_from_txt("../test/SPIKE_Sync_Test.txt",
-                                              time_interval=(0, 4000))
+                                              edges=(0, 4000))
 
 plt.figure()
 
@@ -41,7 +40,7 @@ plt.plot(x1, y1, '-k', lw=2.5, label="averaged SPIKE-Sync profile")
 
 plt.subplot(212)
 
-f_psth = spk.psth(spike_trains, bin_size=5.0)
+f_psth = spk.psth(spike_trains, bin_size=50.0)
 x, y = f_psth.get_plottable_data()
 plt.plot(x, y, '-k', alpha=1.0, label="PSTH")
 

@@ -1,11 +1,7 @@
-"""
-Class representing discrete functions.
+# Class representing discrete functions.
+# Copyright 2014-2015, Mario Mulansky <mario.mulansky@gmx.net>
+# Distributed under the BSD License
 
-Copyright 2014-2015, Mario Mulansky <mario.mulansky@gmx.net>
-
-Distributed under the BSD License
-
-"""
 from __future__ import print_function
 
 import numpy as np
@@ -174,7 +170,7 @@ class DiscreteFunc(object):
 
     def avrg(self, interval=None):
         """ Computes the average of the interval sequence:
-        :math:`a = 1/N sum f_n` where N is the number of intervals.
+        :math:`a = 1/N \\sum f_n` where N is the number of intervals.
 
         :param interval: averaging interval given as a pair of floats, a
                          sequence of pairs for averaging multiple intervals, or

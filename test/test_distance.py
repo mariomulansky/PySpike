@@ -15,12 +15,13 @@ from numpy.testing import assert_equal, assert_almost_equal, \
     assert_array_almost_equal
 
 import pyspike as spk
+from pyspike import SpikeTrain
 
 
 def test_isi():
     # generate two spike trains:
-    t1 = np.array([0.2, 0.4, 0.6, 0.7])
-    t2 = np.array([0.3, 0.45, 0.8, 0.9, 0.95])
+    t1 = SpikeTrain([0.2, 0.4, 0.6, 0.7], 1.0)
+    t2 = SpikeTrain([0.3, 0.45, 0.8, 0.9, 0.95], 1.0)
 
     # pen&paper calculation of the isi distance
     expected_times = [0.0, 0.2, 0.3, 0.4, 0.45, 0.6, 0.7, 0.8, 0.9, 0.95, 1.0]
@@ -32,8 +33,6 @@ def test_isi():
     expected_isi_val = sum((expected_times[1:] - expected_times[:-1]) *
                            expected_isi)/(expected_times[-1]-expected_times[0])
 
-    t1 = spk.add_auxiliary_spikes(t1, 1.0)
-    t2 = spk.add_auxiliary_spikes(t2, 1.0)
     f = spk.isi_profile(t1, t2)
 
     # print("ISI: ", f.y)
@@ -44,19 +43,17 @@ def test_isi():
     assert_equal(spk.isi_distance(t1, t2), expected_isi_val)
 
     # check with some equal spike times
-    t1 = np.array([0.2, 0.4, 0.6])
-    t2 = np.array([0.1, 0.4, 0.5, 0.6])
+    t1 = SpikeTrain([0.2, 0.4, 0.6], [0.0, 1.0])
+    t2 = SpikeTrain([0.1, 0.4, 0.5, 0.6], [0.0, 1.0])
 
     expected_times = [0.0, 0.1, 0.2, 0.4, 0.5, 0.6, 1.0]
-    expected_isi = [0.1/0.2, 0.1/0.3, 0.1/0.3, 0.1/0.2, 0.1/0.2, 0.0/0.5]
+    expected_isi = [0.1/0.3, 0.1/0.3, 0.1/0.3, 0.1/0.2, 0.1/0.2, 0.0/0.5]
     expected_times = np.array(expected_times)
     expected_isi = np.array(expected_isi)
 
     expected_isi_val = sum((expected_times[1:] - expected_times[:-1]) *
                            expected_isi)/(expected_times[-1]-expected_times[0])
 
-    t1 = spk.add_auxiliary_spikes(t1, 1.0)
-    t2 = spk.add_auxiliary_spikes(t2, 1.0)
     f = spk.isi_profile(t1, t2)
 
     assert_equal(f.x, expected_times)
@@ -67,14 +64,27 @@ def test_isi():
 
 def test_spike():
     # generate two spike trains:
-    t1 = np.array([0.2, 0.4, 0.6, 0.7])
-    t2 = np.array([0.3, 0.45, 0.8, 0.9, 0.95])
+    t1 = SpikeTrain([0.0, 2.0, 5.0, 8.0], 10.0)
+    t2 = SpikeTrain([0.0, 1.0, 5.0, 9.0], 10.0)
+
+    expected_times = np.array([0.0, 1.0, 2.0, 5.0, 8.0, 9.0, 10.0])
+
+    f = spk.spike_profile(t1, t2)
+
+    assert_equal(f.x, expected_times)
+
+    assert_almost_equal(f.avrg(), 1.6624149659863946e-01, decimal=15)
+    assert_almost_equal(f.y2[-1], 0.1394558, decimal=6)
+
+    t1 = SpikeTrain([0.2, 0.4, 0.6, 0.7], 1.0)
+    t2 = SpikeTrain([0.3, 0.45, 0.8, 0.9, 0.95], 1.0)
 
     # pen&paper calculation of the spike distance
     expected_times = [0.0, 0.2, 0.3, 0.4, 0.45, 0.6, 0.7, 0.8, 0.9, 0.95, 1.0]
     s1 = np.array([0.1, 0.1, (0.1*0.1+0.05*0.1)/0.2, 0.05, (0.05*0.15 * 2)/0.2,
-                   0.15, 0.1, 0.1*0.2/0.3, 0.1**2/0.3, 0.1*0.05/0.3, 0.1])
-    s2 = np.array([0.1, 0.1*0.2/0.3, 0.1, (0.1*0.05 * 2)/.15, 0.05,
+                   0.15, 0.1, (0.1*0.1+0.1*0.2)/0.3, (0.1*0.2+0.1*0.1)/0.3,
+                   (0.1*0.05+0.1*0.25)/0.3, 0.1])
+    s2 = np.array([0.1, (0.1*0.2+0.1*0.1)/0.3, 0.1, (0.1*0.05 * 2)/.15, 0.05,
                    (0.05*0.2+0.1*0.15)/0.35, (0.05*0.1+0.1*0.25)/0.35,
                    0.1, 0.1, 0.05, 0.05])
     isi1 = np.array([0.2, 0.2, 0.2, 0.2, 0.2, 0.1, 0.3, 0.3, 0.3, 0.3])
@@ -89,27 +99,32 @@ def test_spike():
                              (expected_y1+expected_y2)/2)
     expected_spike_val /= (expected_times[-1]-expected_times[0])
 
-    t1 = spk.add_auxiliary_spikes(t1, 1.0)
-    t2 = spk.add_auxiliary_spikes(t2, 1.0)
     f = spk.spike_profile(t1, t2)
 
     assert_equal(f.x, expected_times)
     assert_array_almost_equal(f.y1, expected_y1, decimal=15)
     assert_array_almost_equal(f.y2, expected_y2, decimal=15)
-    assert_equal(f.avrg(), expected_spike_val)
-    assert_equal(spk.spike_distance(t1, t2), expected_spike_val)
+    assert_almost_equal(f.avrg(), expected_spike_val, decimal=15)
+    assert_almost_equal(spk.spike_distance(t1, t2), expected_spike_val,
+                        decimal=15)
 
     # check with some equal spike times
-    t1 = np.array([0.2, 0.4, 0.6])
-    t2 = np.array([0.1, 0.4, 0.5, 0.6])
+    t1 = SpikeTrain([0.2, 0.4, 0.6], [0.0, 1.0])
+    t2 = SpikeTrain([0.1, 0.4, 0.5, 0.6], [0.0, 1.0])
 
     expected_times = [0.0, 0.1, 0.2, 0.4, 0.5, 0.6, 1.0]
-    s1 = np.array([0.1, 0.1*0.1/0.2, 0.1, 0.0, 0.0, 0.0, 0.0])
-    s2 = np.array([0.1*0.1/0.3, 0.1, 0.1*0.2/0.3, 0.0, 0.1, 0.0, 0.0])
+    # due to the edge correction in the beginning, s1 and s2 are different
+    # for left and right values
+    s1_r = np.array([0.1, (0.1*0.1+0.1*0.1)/0.2, 0.1, 0.0, 0.0, 0.0, 0.0])
+    s1_l = np.array([0.1, (0.1*0.1+0.1*0.1)/0.2, 0.1, 0.0, 0.0, 0.0, 0.0])
+    s2_r = np.array([0.1*0.1/0.3, 0.1*0.3/0.3, 0.1*0.2/0.3,
+                     0.0, 0.1, 0.0, 0.0])
+    s2_l = np.array([0.1*0.1/0.3, 0.1*0.1/0.3, 0.1*0.2/0.3, 0.0,
+                     0.1, 0.0, 0.0])
     isi1 = np.array([0.2, 0.2, 0.2, 0.2, 0.2, 0.4])
     isi2 = np.array([0.3, 0.3, 0.3, 0.1, 0.1, 0.4])
-    expected_y1 = (s1[:-1]*isi2+s2[:-1]*isi1) / (0.5*(isi1+isi2)**2)
-    expected_y2 = (s1[1:]*isi2+s2[1:]*isi1) / (0.5*(isi1+isi2)**2)
+    expected_y1 = (s1_r[:-1]*isi2+s2_r[:-1]*isi1) / (0.5*(isi1+isi2)**2)
+    expected_y2 = (s1_l[1:]*isi2+s2_l[1:]*isi1) / (0.5*(isi1+isi2)**2)
 
     expected_times = np.array(expected_times)
     expected_y1 = np.array(expected_y1)
@@ -118,8 +133,6 @@ def test_spike():
                              (expected_y1+expected_y2)/2)
     expected_spike_val /= (expected_times[-1]-expected_times[0])
 
-    t1 = spk.add_auxiliary_spikes(t1, 1.0)
-    t2 = spk.add_auxiliary_spikes(t2, 1.0)
     f = spk.spike_profile(t1, t2)
 
     assert_equal(f.x, expected_times)
@@ -131,10 +144,17 @@ def test_spike():
 
 
 def test_spike_sync():
-    spikes1 = np.array([1.0, 2.0, 3.0])
-    spikes2 = np.array([2.1])
-    spikes1 = spk.add_auxiliary_spikes(spikes1, 4.0)
-    spikes2 = spk.add_auxiliary_spikes(spikes2, 4.0)
+    spikes1 = SpikeTrain([1.0, 2.0, 3.0], 4.0)
+    spikes2 = SpikeTrain([2.1], 4.0)
+
+    expected_x = np.array([0.0, 1.0, 2.0, 2.1, 3.0, 4.0])
+    expected_y = np.array([0.0, 0.0, 1.0, 1.0, 0.0, 0.0])
+
+    f = spk.spike_sync_profile(spikes1, spikes2)
+
+    assert_array_almost_equal(f.x, expected_x, decimal=16)
+    assert_array_almost_equal(f.y, expected_y, decimal=16)
+
     assert_almost_equal(spk.spike_sync(spikes1, spikes2),
                         0.5, decimal=16)
 
@@ -142,28 +162,46 @@ def test_spike_sync():
     assert_almost_equal(spk.spike_sync(spikes1, spikes2, max_tau=0.05),
                         0.0, decimal=16)
 
-    spikes2 = np.array([3.1])
-    spikes2 = spk.add_auxiliary_spikes(spikes2, 4.0)
+    spikes2 = SpikeTrain([3.1], 4.0)
     assert_almost_equal(spk.spike_sync(spikes1, spikes2),
                         0.5, decimal=16)
 
-    spikes2 = np.array([1.1])
-    spikes2 = spk.add_auxiliary_spikes(spikes2, 4.0)
+    spikes2 = SpikeTrain([1.1], 4.0)
+
+    expected_x = np.array([0.0, 1.0, 1.1, 2.0, 3.0, 4.0])
+    expected_y = np.array([1.0, 1.0, 1.0, 0.0, 0.0, 0.0])
+
+    f = spk.spike_sync_profile(spikes1, spikes2)
+
+    assert_array_almost_equal(f.x, expected_x, decimal=16)
+    assert_array_almost_equal(f.y, expected_y, decimal=16)
+
     assert_almost_equal(spk.spike_sync(spikes1, spikes2),
                         0.5, decimal=16)
 
-    spikes2 = np.array([0.9])
-    spikes2 = spk.add_auxiliary_spikes(spikes2, 4.0)
+    spikes2 = SpikeTrain([0.9], 4.0)
     assert_almost_equal(spk.spike_sync(spikes1, spikes2),
                         0.5, decimal=16)
+
+    spikes2 = SpikeTrain([3.0], 4.0)
+    assert_almost_equal(spk.spike_sync(spikes1, spikes2),
+                        0.5, decimal=16)
+
+    spikes2 = SpikeTrain([1.0], 4.0)
+    assert_almost_equal(spk.spike_sync(spikes1, spikes2),
+                        0.5, decimal=16)
+
+    spikes2 = SpikeTrain([1.5, 3.0], 4.0)
+    assert_almost_equal(spk.spike_sync(spikes1, spikes2),
+                        0.4, decimal=16)
 
 
 def check_multi_profile(profile_func, profile_func_multi):
     # generate spike trains:
-    t1 = spk.add_auxiliary_spikes(np.array([0.2, 0.4, 0.6, 0.7]), 1.0)
-    t2 = spk.add_auxiliary_spikes(np.array([0.3, 0.45, 0.8, 0.9, 0.95]), 1.0)
-    t3 = spk.add_auxiliary_spikes(np.array([0.2, 0.4, 0.6]), 1.0)
-    t4 = spk.add_auxiliary_spikes(np.array([0.1, 0.4, 0.5, 0.6]), 1.0)
+    t1 = SpikeTrain([0.2, 0.4, 0.6, 0.7], 1.0)
+    t2 = SpikeTrain([0.3, 0.45, 0.8, 0.9, 0.95], 1.0)
+    t3 = SpikeTrain([0.2, 0.4, 0.6], 1.0)
+    t4 = SpikeTrain([0.1, 0.4, 0.5, 0.6], 1.0)
     spike_trains = [t1, t2, t3, t4]
 
     f12 = profile_func(t1, t2)
@@ -206,15 +244,12 @@ def test_multi_spike():
 
 def test_multi_spike_sync():
     # some basic multivariate check
-    spikes1 = np.array([100, 300, 400, 405, 410, 500, 700, 800,
-                        805, 810, 815, 900], dtype=float)
-    spikes2 = np.array([100, 200, 205, 210, 295, 350, 400, 510,
-                        600, 605, 700, 910], dtype=float)
-    spikes3 = np.array([100, 180, 198, 295, 412, 420, 510, 640,
-                        695, 795, 820, 920], dtype=float)
-    spikes1 = spk.add_auxiliary_spikes(spikes1, 1000)
-    spikes2 = spk.add_auxiliary_spikes(spikes2, 1000)
-    spikes3 = spk.add_auxiliary_spikes(spikes3, 1000)
+    spikes1 = SpikeTrain([100, 300, 400, 405, 410, 500, 700, 800,
+                          805, 810, 815, 900], 1000)
+    spikes2 = SpikeTrain([100, 200, 205, 210, 295, 350, 400, 510,
+                          600, 605, 700, 910], 1000)
+    spikes3 = SpikeTrain([100, 180, 198, 295, 412, 420, 510, 640,
+                          695, 795, 820, 920], 1000)
     assert_almost_equal(spk.spike_sync(spikes1, spikes2),
                         0.5, decimal=15)
     assert_almost_equal(spk.spike_sync(spikes1, spikes3),
@@ -233,18 +268,28 @@ def test_multi_spike_sync():
 
     # multivariate regression test
     spike_trains = spk.load_spike_trains_from_txt("test/SPIKE_Sync_Test.txt",
-                                                  time_interval=(0, 4000))
+                                                  edges=[0, 4000])
+    # extract all spike times
+    spike_times = np.array([])
+    for st in spike_trains:
+        spike_times = np.append(spike_times, st.spikes)
+    spike_times = np.unique(np.sort(spike_times))
+
     f = spk.spike_sync_profile_multi(spike_trains)
+
+    assert_equal(spike_times, f.x[1:-1])
+    assert_equal(len(f.x), len(f.y))
+
     assert_equal(np.sum(f.y[1:-1]), 39932)
     assert_equal(np.sum(f.mp[1:-1]), 85554)
 
 
 def check_dist_matrix(dist_func, dist_matrix_func):
     # generate spike trains:
-    t1 = spk.add_auxiliary_spikes(np.array([0.2, 0.4, 0.6, 0.7]), 1.0)
-    t2 = spk.add_auxiliary_spikes(np.array([0.3, 0.45, 0.8, 0.9, 0.95]), 1.0)
-    t3 = spk.add_auxiliary_spikes(np.array([0.2, 0.4, 0.6]), 1.0)
-    t4 = spk.add_auxiliary_spikes(np.array([0.1, 0.4, 0.5, 0.6]), 1.0)
+    t1 = SpikeTrain([0.2, 0.4, 0.6, 0.7], 1.0)
+    t2 = SpikeTrain([0.3, 0.45, 0.8, 0.9, 0.95], 1.0)
+    t3 = SpikeTrain([0.2, 0.4, 0.6], 1.0)
+    t4 = SpikeTrain([0.1, 0.4, 0.5, 0.6], 1.0)
     spike_trains = [t1, t2, t3, t4]
 
     f12 = dist_func(t1, t2)
@@ -282,19 +327,39 @@ def test_spike_sync_matrix():
 
 
 def test_regression_spiky():
+    # standard example
+    st1 = SpikeTrain(np.arange(100, 1201, 100), 1300)
+    st2 = SpikeTrain(np.arange(100, 1201, 110), 1300)
+
+    isi_dist = spk.isi_distance(st1, st2)
+    assert_almost_equal(isi_dist, 9.0909090909090939e-02, decimal=15)
+    isi_profile = spk.isi_profile(st1, st2)
+    assert_equal(isi_profile.y, 0.1/1.1 * np.ones_like(isi_profile.y))
+
+    spike_dist = spk.spike_distance(st1, st2)
+    assert_equal(spike_dist, 2.1105878248735391e-01)
+
+    spike_sync = spk.spike_sync(st1, st2)
+    assert_equal(spike_sync, 8.6956521739130432e-01)
+
+    # multivariate check
+
     spike_trains = spk.load_spike_trains_from_txt("test/PySpike_testdata.txt",
                                                   (0.0, 4000.0))
-    isi_profile = spk.isi_profile_multi(spike_trains)
-    isi_dist = isi_profile.avrg()
-    print(isi_dist)
+    isi_dist = spk.isi_distance_multi(spike_trains)
     # get the full precision from SPIKY
-    # assert_equal(isi_dist, 0.1832)
+    assert_almost_equal(isi_dist, 0.17051816816999129656, decimal=15)
 
     spike_profile = spk.spike_profile_multi(spike_trains)
-    spike_dist = spike_profile.avrg()
-    print(spike_dist)
+    assert_equal(len(spike_profile.y1)+len(spike_profile.y2), 1252)
+
+    spike_dist = spk.spike_distance_multi(spike_trains)
     # get the full precision from SPIKY
-    # assert_equal(spike_dist, 0.2445)
+    assert_almost_equal(spike_dist, 2.4432433330596512e-01, decimal=15)
+
+    spike_sync = spk.spike_sync_multi(spike_trains)
+    # get the full precision from SPIKY
+    assert_equal(spike_sync, 0.7183531505298066)
 
 
 def test_multi_variate_subsets():
@@ -319,5 +384,12 @@ def test_multi_variate_subsets():
 if __name__ == "__main__":
     test_isi()
     test_spike()
+    test_spike_sync()
     test_multi_isi()
     test_multi_spike()
+    test_multi_spike_sync()
+    test_isi_matrix()
+    test_spike_matrix()
+    test_spike_sync_matrix()
+    test_regression_spiky()
+    test_multi_variate_subsets()
