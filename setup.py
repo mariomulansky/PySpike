@@ -4,7 +4,7 @@ to compile cython files:
 python setup.py build_ext --inplace
 
 
-Copyright 2014, Mario Mulansky <mario.mulansky@gmx.net>
+Copyright 2014-2015, Mario Mulansky <mario.mulansky@gmx.net>
 
 Distributed under the BSD License
 
@@ -46,7 +46,7 @@ elif use_c:  # c files are there, compile to binaries
 setup(
     name='pyspike',
     packages=find_packages(exclude=['doc']),
-    version='0.1.3',
+    version='0.2.0',
     cmdclass=cmdclass,
     ext_modules=ext_modules,
     include_dirs=[numpy.get_include()],
