@@ -1,0 +1,9 @@
+PySpike v0.2:
+
+	* introduction of SpikeTrain class. Breaking interface change of
+	distance functions
+	* added max_tau parameter to SPIKE-Synchronization
+	* added psth function
+	* restructured modules, separate files for different distance measures
+	* Bugfix for selective multivariate distance
+	* added spike generation function
