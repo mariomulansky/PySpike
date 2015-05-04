@@ -22,7 +22,7 @@ All source codes are available on `Github <https://github.com/mariomulansky/PySp
 Important Changelog
 -----------------------------
 
-With version 0.2.0, the :class:`.SpikeTrain` class has been introduced to represent spike trains.
+With version 0.2.0, the :code:`SpikeTrain` class has been introduced to represent spike trains.
 This is a breaking change in the function interfaces.
 Hence, programs written for older versions of PySpike (0.1.x) will not run with newer versions.
 
