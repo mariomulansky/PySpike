@@ -5,6 +5,11 @@
 
 .. include:: ../Readme.rst
 
+Tutorial
+===================================
+
+.. include:: tutorial.rst
+
 Reference
 ===================================
 
@@ -14,9 +19,8 @@ Reference
    pyspike
 
 Indices and tables
-==================
+===================================
 
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-

@@ -1,3 +1,7 @@
+PySpike v0.2.1:
+	* addition of __version__ attribute
+	* restructured docs, Readme now only contains basic examples
+
 PySpike v0.2:
 
 	* introduction of SpikeTrain class. Breaking interface change of
