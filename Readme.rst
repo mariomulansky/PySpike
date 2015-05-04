@@ -1,6 +1,8 @@
 PySpike
 =======
 
+.. image:: https://badge.fury.io/py/pyspike.png
+    :target: http://badge.fury.io/py/pyspike
 .. image:: https://travis-ci.org/mariomulansky/PySpike.svg?branch=master
     :target: https://travis-ci.org/mariomulansky/PySpike
 
