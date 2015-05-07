@@ -3,7 +3,8 @@
 # Distributed under the BSD License
 
 from pyspike import PieceWiseLinFunc
-from pyspike.generic import _generic_profile_multi, _generic_distance_matrix
+from pyspike.generic import _generic_profile_multi, _generic_distance_multi, \
+    _generic_distance_matrix
 
 
 ############################################################
@@ -117,7 +118,8 @@ def spike_distance_multi(spike_trains, indices=None, interval=None):
     :returns: The averaged multi-variate spike distance :math:`D_S`.
     :rtype: double
     """
-    return spike_profile_multi(spike_trains, indices).avrg(interval)
+    return _generic_distance_multi(spike_trains, spike_distance, indices,
+                                   interval)
 
 
 ############################################################

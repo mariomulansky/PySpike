@@ -3,7 +3,8 @@
 # Distributed under the BSD License
 
 from pyspike import PieceWiseConstFunc
-from pyspike.generic import _generic_profile_multi, _generic_distance_matrix
+from pyspike.generic import _generic_profile_multi, _generic_distance_multi, \
+    _generic_distance_matrix
 
 
 ############################################################
@@ -112,7 +113,8 @@ def isi_distance_multi(spike_trains, indices=None, interval=None):
     :returns: The time-averaged multivariate ISI distance :math:`D_I`
     :rtype: double
     """
-    return isi_profile_multi(spike_trains, indices).avrg(interval)
+    return _generic_distance_multi(spike_trains, isi_distance, indices,
+                                   interval)
 
 
 ############################################################
