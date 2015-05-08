@@ -25,9 +25,9 @@ def isi_profile(spike_train1, spike_train2):
     """
     # check whether the spike trains are defined for the same interval
     assert spike_train1.t_start == spike_train2.t_start, \
-        "Given spike trains seems not to have auxiliary spikes!"
+        "Given spike trains are not defined on the same interval!"
     assert spike_train1.t_end == spike_train2.t_end, \
-        "Given spike trains seems not to have auxiliary spikes!"
+        "Given spike trains are not defined on the same interval!"
 
     # load cython implementation
     try:
