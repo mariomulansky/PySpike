@@ -3,6 +3,7 @@
 # Copyright 2014-2015, Mario Mulansky <mario.mulansky@gmx.net>
 # Distributed under the BSD License
 
+import numpy as np
 from functools import partial
 from pyspike import DiscreteFunc
 from pyspike.generic import _generic_profile_multi, _generic_distance_matrix
@@ -131,8 +132,25 @@ def spike_sync_multi(spike_trains, indices=None, interval=None, max_tau=None):
     :rtype: double
 
     """
-    return spike_sync_profile_multi(spike_trains, indices,
-                                    max_tau).avrg(interval)
+    if indices is None:
+        indices = np.arange(len(spike_trains))
+    indices = np.array(indices)
+    # check validity of indices
+    assert (indices < len(spike_trains)).all() and (indices >= 0).all(), \
+        "Invalid index list."
+    # generate a list of possible index pairs
+    pairs = [(indices[i], j) for i in range(len(indices))
+             for j in indices[i+1:]]
+
+    coincidence = 0.0
+    mp = 0.0
+    for (i, j) in pairs:
+        profile = spike_sync_profile(spike_trains[i], spike_trains[j])
+        summed_vals = profile.integral(interval)
+        coincidence += summed_vals[0]
+        mp += summed_vals[1]
+
+    return coincidence/mp
 
 
 ############################################################
