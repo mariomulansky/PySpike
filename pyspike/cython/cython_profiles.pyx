@@ -3,9 +3,9 @@
 #cython: cdivision=True
 
 """
-cython_distances.pyx
+cython_profiles.pyx
 
-cython implementation of the isi- and spike-distance
+cython implementation of the isi-, spike- and spike-sync profiles
 
 Note: using cython memoryviews (e.g. double[:]) instead of ndarray objects
 improves the performance of spike_distance by a factor of 10!
@@ -20,11 +20,11 @@ Distributed under the BSD License
 To test whether things can be optimized: remove all yellow stuff
 in the html output::
 
-  cython -a cython_distance.pyx
+  cython -a cython_profiles.pyx
 
 which gives::
 
-  cython_distance.html
+  cython_profiles.html
 
 """
 
@@ -40,10 +40,10 @@ ctypedef np.float_t DTYPE_t
 
 
 ############################################################
-# isi_distance_cython
+# isi_profile_cython
 ############################################################
-def isi_distance_cython(double[:] s1, double[:] s2,
-                        double t_start, double t_end):
+def isi_profile_cython(double[:] s1, double[:] s2,
+                       double t_start, double t_end):
 
     cdef double[:] spike_events
     cdef double[:] isi_values
@@ -173,10 +173,10 @@ cdef inline double isi_avrg_cython(double isi1, double isi2) nogil:
 
 
 ############################################################
-# spike_distance_cython
+# spike_profile_cython
 ############################################################
-def spike_distance_cython(double[:] t1, double[:] t2,
-                          double t_start, double t_end):
+def spike_profile_cython(double[:] t1, double[:] t2,
+                         double t_start, double t_end):
 
     cdef double[:] spike_events
     cdef double[:] y_starts
@@ -342,7 +342,7 @@ def spike_distance_cython(double[:] t1, double[:] t2,
 
 
 ############################################################
-# coincidence_python
+# get_tau
 ############################################################
 cdef inline double get_tau(double[:] spikes1, double[:] spikes2,
                            int i, int j, double max_tau):
@@ -364,10 +364,10 @@ cdef inline double get_tau(double[:] spikes1, double[:] spikes2,
     
 
 ############################################################
-# coincidence_cython
+# coincidence_profile_cython
 ############################################################
-def coincidence_cython(double[:] spikes1, double[:] spikes2,
-                       double t_start, double t_end, double max_tau):
+def coincidence_profile_cython(double[:] spikes1, double[:] spikes2,
+                               double t_start, double t_end, double max_tau):
 
     cdef int N1 = len(spikes1)
     cdef int N2 = len(spikes2)

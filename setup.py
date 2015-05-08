@@ -22,7 +22,7 @@ else:
     use_cython = True
 
 if os.path.isfile("pyspike/cython/cython_add.c") and \
-   os.path.isfile("pyspike/cython/cython_distance.c"):
+   os.path.isfile("pyspike/cython/cython_profiles.c"):
     use_c = True
 else:
     use_c = False
@@ -33,13 +33,13 @@ ext_modules = []
 if use_cython:  # Cython is available, compile .pyx -> .c
     ext_modules += [
         Extension("pyspike.cython.cython_add", ["pyspike/cython/cython_add.pyx"]),
-        Extension("pyspike.cython.cython_distance", ["pyspike/cython/cython_distance.pyx"]),
+        Extension("pyspike.cython.cython_profiles", ["pyspike/cython/cython_profiles.pyx"]),
     ]
     cmdclass.update({'build_ext': build_ext})
 elif use_c:  # c files are there, compile to binaries
     ext_modules += [
         Extension("pyspike.cython.cython_add", ["pyspike/cython/cython_add.c"]),
-        Extension("pyspike.cython.cython_distance", ["pyspike/cython/cython_distance.c"]),
+        Extension("pyspike.cython.cython_profiles", ["pyspike/cython/cython_profiles.c"]),
     ]
 # neither cython nor c files available -> automatic fall-back to python backend
 
@@ -78,7 +78,7 @@ train similarity',
         'Programming Language :: Python :: 2.7',
     ],
     package_data={
-        'pyspike': ['cython/cython_add.c', 'cython/cython_distance.c'],
+        'pyspike': ['cython/cython_add.c', 'cython/cython_profiles.c'],
         'test': ['Spike_testdata.txt']
     }
 )

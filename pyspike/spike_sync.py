@@ -36,24 +36,23 @@ def spike_sync_profile(spike_train1, spike_train2, max_tau=None):
 
     # cython implementation
     try:
-        from cython.cython_distance import coincidence_cython \
-            as coincidence_impl
+        from cython.cython_profiles import coincidence_profile_cython \
+            as coincidence_profile_impl
     except ImportError:
         print("Warning: spike_distance_cython not found. Make sure that \
 PySpike is installed by running\n 'python setup.py build_ext --inplace'!\n \
 Falling back to slow python backend.")
         # use python backend
         from cython.python_backend import coincidence_python \
-            as coincidence_impl
+            as coincidence_profile_impl
 
     if max_tau is None:
         max_tau = 0.0
 
-    times, coincidences, multiplicity = coincidence_impl(spike_train1.spikes,
-                                                         spike_train2.spikes,
-                                                         spike_train1.t_start,
-                                                         spike_train1.t_end,
-                                                         max_tau)
+    times, coincidences, multiplicity \
+        = coincidence_profile_impl(spike_train1.spikes, spike_train2.spikes,
+                                   spike_train1.t_start, spike_train1.t_end,
+                                   max_tau)
 
     return DiscreteFunc(times, coincidences, multiplicity)
 
