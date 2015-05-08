@@ -66,7 +66,21 @@ def isi_distance(spike_train1, spike_train2, interval=None):
     :returns: The isi-distance :math:`D_I`.
     :rtype: double
     """
-    return isi_profile(spike_train1, spike_train2).avrg(interval)
+
+    if interval is None:
+        # distance over the whole interval is requested: use specific function
+        # for optimal performance
+        try:
+            from cython.cython_distances import isi_distance_cython \
+                as isi_distance_impl
+            return isi_distance_impl(spike_train1.spikes, spike_train2.spikes,
+                                     spike_train1.t_start, spike_train1.t_end)
+        except ImportError:
+            # Cython backend not available: fall back to profile averaging
+            return isi_profile(spike_train1, spike_train2).avrg(interval)
+    else:
+        # some specific interval is provided: use profile
+        return isi_profile(spike_train1, spike_train2).avrg(interval)
 
 
 ############################################################

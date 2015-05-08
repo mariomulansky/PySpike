@@ -1,4 +1,10 @@
-""" Compute distances of large sets of spike trains for performance tests
+"""
+Compute distances of large sets of spike trains for performance tests
+
+Copyright 2015, Mario Mulansky <mario.mulansky@gmx.net>
+
+Distributed under the BSD License
+
 """
 
 from __future__ import print_function

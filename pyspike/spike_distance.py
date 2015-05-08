@@ -68,7 +68,22 @@ def spike_distance(spike_train1, spike_train2, interval=None):
     :rtype: double
 
     """
-    return spike_profile(spike_train1, spike_train2).avrg(interval)
+    if interval is None:
+        # distance over the whole interval is requested: use specific function
+        # for optimal performance
+        try:
+            from cython.cython_distances import spike_distance_cython \
+                as spike_distance_impl
+            return spike_distance_impl(spike_train1.spikes,
+                                       spike_train2.spikes,
+                                       spike_train1.t_start,
+                                       spike_train1.t_end)
+        except ImportError:
+            # Cython backend not available: fall back to average profile
+            return spike_profile(spike_train1, spike_train2).avrg(interval)
+    else:
+        # some specific interval is provided: compute the whole profile
+        return spike_profile(spike_train1, spike_train2).avrg(interval)
 
 
 ############################################################
