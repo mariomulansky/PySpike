@@ -2,7 +2,7 @@
 
 Tests the distance measure for empty spike trains
 
-Copyright 2014, Mario Mulansky <mario.mulansky@gmx.net>
+Copyright 2015, Mario Mulansky <mario.mulansky@gmx.net>
 
 Distributed under the BSD License
 
