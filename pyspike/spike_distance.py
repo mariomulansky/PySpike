@@ -41,10 +41,11 @@ Falling back to slow python backend.")
         from cython.python_backend import spike_distance_python \
             as spike_profile_impl
 
-    times, y_starts, y_ends = spike_profile_impl(spike_train1.spikes,
-                                                 spike_train2.spikes,
-                                                 spike_train1.t_start,
-                                                 spike_train1.t_end)
+    times, y_starts, y_ends = spike_profile_impl(
+        spike_train1.get_spikes_non_empty(),
+        spike_train2.get_spikes_non_empty(),
+        spike_train1.t_start, spike_train1.t_end)
+
     return PieceWiseLinFunc(times, y_starts, y_ends)
 
 
@@ -74,8 +75,8 @@ def spike_distance(spike_train1, spike_train2, interval=None):
         try:
             from cython.cython_distances import spike_distance_cython \
                 as spike_distance_impl
-            return spike_distance_impl(spike_train1.spikes,
-                                       spike_train2.spikes,
+            return spike_distance_impl(spike_train1.get_spikes_non_empty(),
+                                       spike_train2.get_spikes_non_empty(),
                                        spike_train1.t_start,
                                        spike_train1.t_end)
         except ImportError:
