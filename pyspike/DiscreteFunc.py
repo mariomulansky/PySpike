@@ -136,6 +136,10 @@ class DiscreteFunc(object):
         :rtype: pair of float
         """
 
+        if len(self.y) <= 2:
+            # no actual values in the profile, return spike sync of 0
+            return 0.0, 1.0
+
         def get_indices(ival):
             """ Retuns the indeces surrounding the given interval"""
             start_ind = np.searchsorted(self.x, ival[0], side='right')

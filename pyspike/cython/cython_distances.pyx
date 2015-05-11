@@ -333,8 +333,8 @@ def spike_distance_cython(double[:] t1, double[:] t2,
 # get_tau
 ############################################################
 cdef inline double get_tau(double[:] spikes1, double[:] spikes2,
-                           int i, int j, double max_tau):
-    cdef double m = 1E100   # some huge number
+                           int i, int j, double interval, double max_tau):
+    cdef double m = interval   # use interval length as initial tau
     cdef int N1 = spikes1.shape[0]-1  # len(spikes1)-1
     cdef int N2 = spikes2.shape[0]-1  # len(spikes2)-1
     if i < N1 and i > -1:
@@ -363,12 +363,13 @@ def coincidence_value_cython(double[:] spikes1, double[:] spikes2,
     cdef int j = -1
     cdef double coinc = 0.0
     cdef double mp = 0.0
+    cdef double interval = t_end - t_start
     cdef double tau
     while i + j < N1 + N2 - 2:
         if (i < N1-1) and (j == N2-1 or spikes1[i+1] < spikes2[j+1]):
             i += 1
             mp += 1
-            tau = get_tau(spikes1, spikes2, i, j, max_tau)
+            tau = get_tau(spikes1, spikes2, i, j, interval, max_tau)
             if j > -1 and spikes1[i]-spikes2[j] < tau:
                 # coincidence between the current spike and the previous spike
                 # both get marked with 1
@@ -376,7 +377,7 @@ def coincidence_value_cython(double[:] spikes1, double[:] spikes2,
         elif (j < N2-1) and (i == N1-1 or spikes1[i+1] > spikes2[j+1]):
             j += 1
             mp += 1
-            tau = get_tau(spikes1, spikes2, i, j, max_tau)
+            tau = get_tau(spikes1, spikes2, i, j, interval, max_tau)
             if i > -1 and spikes2[j]-spikes1[i] < tau:
                 # coincidence between the current spike and the previous spike
                 # both get marked with 1
@@ -388,5 +389,9 @@ def coincidence_value_cython(double[:] spikes1, double[:] spikes2,
             # add only one event, but with coincidence 2 and multiplicity 2
             mp += 2
             coinc += 2
+
+    if coinc == 0 and mp == 0:
+        # empty spike trains -> set mp to one to avoid 0/0
+        mp = 1
 
     return coinc, mp
