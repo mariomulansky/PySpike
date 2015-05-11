@@ -1,6 +1,9 @@
 PySpike v0.2.1:
 	* addition of __version__ attribute
 	* restructured docs, Readme now only contains basic examples
+	* performance improvements by introducing specific distance functions
+	* performance improvements for multivariate profiles by using recursive
+	approach
 
 PySpike v0.2:
 
