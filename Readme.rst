@@ -17,7 +17,7 @@ All source codes are available on `Github <https://github.com/mariomulansky/PySp
 
 .. [#] Kreuz T, Chicharro D, Houghton C, Andrzejak RG, Mormann F, *Monitoring spike train synchrony.* J Neurophysiol 109, 1457 (2013) `[pdf] <http://wwwold.fi.isc.cnr.it/users/thomas.kreuz/images/Kreuz_JNeurophysiol_2013_SPIKE-distance.pdf>`_
 
-.. [#] Kreuz T, Mulansky M and Bozanic N, *SPIKY: A graphical user interface for monitoring spike train synchrony*, tbp (2015)
+.. [#] Kreuz T, Mulansky M and Bozanic N, *SPIKY: A graphical user interface for monitoring spike train synchrony*, J Neurophysiol, in press (2015)
 
 Important Changelog
 -----------------------------
@@ -114,10 +114,10 @@ Curie Initial Training Network* `Neural Engineering Transformative Technologies
 
 **Scientific Methods:**
  - Thomas Kreuz
- - Nebojsa D. Bozanic
- - Mario Mulansky
- - Conor Houghton
  - Daniel Chicharro
+ - Conor Houghton
+ - Nebojsa Bozanic
+ - Mario Mulansky
 
 .. _ISI: http://www.scholarpedia.org/article/Measures_of_spike_train_synchrony#ISI-distance
 .. _SPIKE: http://www.scholarpedia.org/article/SPIKE-distance

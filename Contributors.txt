@@ -3,10 +3,10 @@ Python/C Programming:
 
 Scientific Methods:
 - Thomas Kreuz
-- Nebojsa D. Bozanic
-- Mario Mulansky
-- Conor Houghton
 - Daniel Chicharro
+- Conor Houghton
+- Nebojsa Bozanic
+- Mario Mulansky
 
 
 The work on PySpike was supported by the European Comission through the Marie
