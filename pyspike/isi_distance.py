@@ -41,7 +41,8 @@ Falling back to slow python backend.")
         from cython.python_backend import isi_distance_python \
             as isi_profile_impl
 
-    times, values = isi_profile_impl(spike_train1.spikes, spike_train2.spikes,
+    times, values = isi_profile_impl(spike_train1.get_spikes_non_empty(),
+                                     spike_train2.get_spikes_non_empty(),
                                      spike_train1.t_start, spike_train1.t_end)
     return PieceWiseConstFunc(times, values)
 
@@ -73,7 +74,9 @@ def isi_distance(spike_train1, spike_train2, interval=None):
         try:
             from cython.cython_distances import isi_distance_cython \
                 as isi_distance_impl
-            return isi_distance_impl(spike_train1.spikes, spike_train2.spikes,
+
+            return isi_distance_impl(spike_train1.get_spikes_non_empty(),
+                                     spike_train2.get_spikes_non_empty(),
                                      spike_train1.t_start, spike_train1.t_end)
         except ImportError:
             # Cython backend not available: fall back to profile averaging
