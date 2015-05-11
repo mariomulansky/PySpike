@@ -106,11 +106,11 @@ def test_spike_sync_empty():
     st1 = SpikeTrain([], edges=(0.0, 1.0))
     st2 = SpikeTrain([], edges=(0.0, 1.0))
     d = spk.spike_sync(st1, st2)
-    assert_equal(d, 0.0)
+    assert_equal(d, 1.0)
     prof = spk.spike_sync_profile(st1, st2)
     assert_equal(d, prof.avrg())
     assert_array_equal(prof.x, [0.0, 1.0])
-    assert_array_equal(prof.y, [0.0, 0.0])
+    assert_array_equal(prof.y, [1.0, 1.0])
 
     st1 = SpikeTrain([], edges=(0.0, 1.0))
     st2 = SpikeTrain([0.4, ], edges=(0.0, 1.0))

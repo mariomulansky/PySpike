@@ -137,8 +137,8 @@ class DiscreteFunc(object):
         """
 
         if len(self.y) <= 2:
-            # no actual values in the profile, return spike sync of 0
-            return 0.0, 1.0
+            # no actual values in the profile, return spike sync of 1
+            return 1.0, 1.0
 
         def get_indices(ival):
             """ Retuns the indeces surrounding the given interval"""

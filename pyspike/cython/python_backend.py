@@ -399,10 +399,14 @@ def coincidence_python(spikes1, spikes2, t_start, t_end, max_tau):
 
     st[0] = t_start
     st[len(st)-1] = t_end
-    c[0] = c[1]
-    c[len(c)-1] = c[len(c)-2]
-    mp[0] = mp[1]
-    mp[len(mp)-1] = mp[len(mp)-2]
+    if N1 + N2 > 0:
+        c[0] = c[1]
+        c[len(c)-1] = c[len(c)-2]
+        mp[0] = mp[1]
+        mp[len(mp)-1] = mp[len(mp)-2]
+    else:
+        c[0] = 1
+        c[1] = 1
 
     return st, c, mp
 
