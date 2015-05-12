@@ -10,7 +10,8 @@ Distributed under the BSD License
 from __future__ import print_function
 import numpy as np
 from copy import copy
-from numpy.testing import assert_almost_equal, assert_array_almost_equal
+from numpy.testing import assert_equal, assert_almost_equal, \
+    assert_array_equal, assert_array_almost_equal
 
 import pyspike as spk
 
@@ -20,6 +21,17 @@ def test_pwc():
     x = [0.0, 1.0, 2.0, 2.5, 4.0]
     y = [1.0, -0.5, 1.5, 0.75]
     f = spk.PieceWiseConstFunc(x, y)
+
+    # function values
+    assert_equal(f(0.0), 1.0)
+    assert_equal(f(0.5), 1.0)
+    assert_equal(f(2.25), 1.5)
+    assert_equal(f(3.5), 0.75)
+    assert_equal(f(4.0), 0.75)
+
+    assert_array_equal(f([0.0, 0.5, 2.25, 3.5, 4.0]),
+                       [1.0, 1.0, 1.5, 0.75, 0.75])
+
     xp, yp = f.get_plottable_data()
 
     xp_expected = [0.0, 1.0, 1.0, 2.0, 2.0, 2.5, 2.5, 4.0]
@@ -38,10 +50,16 @@ def test_pwc():
     assert_almost_equal(a, (-0.5*1.0+0.5*1.5+1.0*0.75)/2.5, decimal=16)
     a = f.avrg([1.0, 4.0])
     assert_almost_equal(a, (-0.5*1.0+0.5*1.5+1.5*0.75)/3.0, decimal=16)
+    a = f.avrg([0.0, 2.2])
+    assert_almost_equal(a, (1.0*1.0-0.5*1.0+0.2*1.5)/2.2, decimal=15)
 
     # averaging over multiple intervals
     a = f.avrg([(0.5, 1.5), (1.5, 3.5)])
     assert_almost_equal(a, (0.5-0.5+0.5*1.5+1.0*0.75)/3.0, decimal=16)
+
+    # averaging over multiple intervals
+    a = f.avrg([(0.5, 1.5), (2.2, 3.5)])
+    assert_almost_equal(a, (0.5*1.0-0.5*0.5+0.3*1.5+1.0*0.75)/2.3, decimal=15)
 
 
 def test_pwc_add():
@@ -105,6 +123,18 @@ def test_pwl():
     y1 = [1.0, -0.5, 1.5, 0.75]
     y2 = [1.5, -0.4, 1.5, 0.25]
     f = spk.PieceWiseLinFunc(x, y1, y2)
+
+    # function values
+    assert_equal(f(0.0), 1.0)
+    assert_equal(f(0.5), 1.25)
+    assert_equal(f(2.25), 1.5)
+    assert_equal(f(2.5), 0.75)
+    assert_equal(f(3.5), 0.75-0.5*1.0/1.5)
+    assert_equal(f(4.0), 0.25)
+
+    assert_array_equal(f([0.0, 0.5, 2.25, 2.5, 3.5, 4.0]),
+                       [1.0, 1.25, 1.5, 0.75, 0.75-0.5*1.0/1.5, 0.25])
+
     xp, yp = f.get_plottable_data()
 
     xp_expected = [0.0, 1.0, 1.0, 2.0, 2.0, 2.5, 2.5, 4.0]

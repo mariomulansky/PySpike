@@ -29,6 +29,36 @@ class PieceWiseLinFunc:
         self.y1 = np.array(y1)
         self.y2 = np.array(y2)
 
+    def __call__(self, t):
+        """ Returns the function value for the given time t. If t is a list of
+        times, the corresponding list of values is returned.
+
+        :param: time t, or list of times
+        :returns: function value(s) at that time(s).
+        """
+        def intermediate_value(x0, x1, y0, y1, x):
+            """ computes the intermediate value of a linear function """
+            return y0 + (y1-y0)*(x-x0)/(x1-x0)
+
+        assert np.all(t >= self.x[0]) and np.all(t <= self.x[-1]), \
+            "Invalid time: " + str(t)
+
+        ind = np.searchsorted(self.x, t, side='right')
+        # correct the cases t == x[0], t == x[-1]
+        try:
+            ind[ind == 0] = 1
+            ind[ind == len(self.x)] = len(self.x)-1
+        except TypeError:
+            if ind == 0:
+                ind = 1
+            if ind == len(self.x):
+                ind = len(self.x)-1
+        return intermediate_value(self.x[ind-1],
+                                  self.x[ind],
+                                  self.y1[ind-1],
+                                  self.y2[ind-1],
+                                  t)
+
     def copy(self):
         """ Returns a copy of itself
 

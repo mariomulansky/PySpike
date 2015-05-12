@@ -26,6 +26,28 @@ class PieceWiseConstFunc(object):
         self.x = np.array(x)
         self.y = np.array(y)
 
+    def __call__(self, t):
+        """ Returns the function value for the given time t. If t is a list of
+        times, the corresponding list of values is returned.
+
+        :param: time t, or list of times
+        :returns: function value(s) at that time(s).
+        """
+        assert np.all(t >= self.x[0]) and np.all(t <= self.x[-1]), \
+            "Invalid time: " + str(t)
+
+        ind = np.searchsorted(self.x, t, side='right')
+        # correct the cases t == x[0], t == x[-1]
+        try:
+            ind[ind == 0] = 1
+            ind[ind == len(self.x)] = len(self.x)-1
+        except TypeError:
+            if ind == 0:
+                ind = 1
+            if ind == len(self.x):
+                ind = len(self.x)-1
+        return self.y[ind-1]
+
     def copy(self):
         """ Returns a copy of itself
 
