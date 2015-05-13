@@ -4,6 +4,9 @@ PySpike v0.2.1:
 	* performance improvements by introducing specific distance functions
 	* performance improvements for multivariate profiles by using recursive
 	approach
+	* new example: performance.py
+	* consistent treatment of empty spike trains
+	* new example: profiles.py
 
 PySpike v0.2:
 
