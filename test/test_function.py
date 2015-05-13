@@ -25,12 +25,14 @@ def test_pwc():
     # function values
     assert_equal(f(0.0), 1.0)
     assert_equal(f(0.5), 1.0)
+    assert_equal(f(1.0), 0.25)
     assert_equal(f(2.25), 1.5)
+    assert_equal(f(2.5), 2.25/2)
     assert_equal(f(3.5), 0.75)
     assert_equal(f(4.0), 0.75)
 
-    assert_array_equal(f([0.0, 0.5, 2.25, 3.5, 4.0]),
-                       [1.0, 1.0, 1.5, 0.75, 0.75])
+    assert_array_equal(f([0.0, 0.5, 1.0, 2.25, 2.5, 3.5, 4.0]),
+                       [1.0, 1.0, 0.25, 1.5, 2.25/2, 0.75, 0.75])
 
     xp, yp = f.get_plottable_data()
 

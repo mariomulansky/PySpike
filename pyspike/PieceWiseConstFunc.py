@@ -37,16 +37,35 @@ class PieceWiseConstFunc(object):
             "Invalid time: " + str(t)
 
         ind = np.searchsorted(self.x, t, side='right')
-        # correct the cases t == x[0], t == x[-1]
-        try:
+        if isinstance(t, collections.Sequence):
+            # t is a sequence of values
+            # correct the cases t == x[0], t == x[-1]
             ind[ind == 0] = 1
             ind[ind == len(self.x)] = len(self.x)-1
-        except TypeError:
-            if ind == 0:
-                ind = 1
-            if ind == len(self.x):
-                ind = len(self.x)-1
-        return self.y[ind-1]
+            value = self.y[ind-1]
+            # correct the values at exact spike times: there the value should
+            # be the at half of the step
+            # obtain the 'left' side indices for t
+            ind_l = np.searchsorted(self.x, t, side='left')
+            # if left and right side indices differ, the time t has to appear
+            # in self.x
+            ind_at_spike = ind[np.logical_and(np.logical_and(ind != ind_l,
+                                                             ind > 1),
+                                              ind < len(self.x))]
+            value[ind_at_spike] = 0.5 * (self.y[ind_at_spike-1] +
+                                         self.y[ind_at_spike-2])
+            return value
+        else:
+            # specific check for interval edges
+            if t == self.x[0]:
+                return self.y[0]
+            if t == self.x[-1]:
+                return self.y[-1]
+            # check if we are on any other exact spike time
+            if sum(self.x == t) > 0:
+                # use the middle of the left and right ISI value
+                return 0.5 * (self.y[ind-1] + self.y[ind-2])
+            return self.y[ind-1]
 
     def copy(self):
         """ Returns a copy of itself
