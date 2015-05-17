@@ -49,13 +49,16 @@ class PieceWiseConstFunc(object):
             ind_l = np.searchsorted(self.x, t, side='left')
             # if left and right side indices differ, the time t has to appear
             # in self.x
-            ind_at_spike = ind[np.logical_and(np.logical_and(ind != ind_l,
-                                                             ind > 1),
-                                              ind < len(self.x))]
-            value[ind_at_spike] = 0.5 * (self.y[ind_at_spike-1] +
-                                         self.y[ind_at_spike-2])
+            ind_at_spike = np.logical_and(np.logical_and(ind != ind_l,
+                                                         ind > 1),
+                                          ind < len(self.x))
+            # get the corresponding indices for the resulting value array
+            val_ind = np.arange(len(ind))[ind_at_spike]
+            # and for the arrays self.x, y1, y2
+            xy_ind = ind[ind_at_spike]
+            value[val_ind] = 0.5 * (self.y[xy_ind-1] + self.y[xy_ind-2])
             return value
-        else:
+        else:  # t is a single value
             # specific check for interval edges
             if t == self.x[0]:
                 return self.y[0]
