@@ -22,7 +22,8 @@ else:
     use_cython = True
 
 if os.path.isfile("pyspike/cython/cython_add.c") and \
-   os.path.isfile("pyspike/cython/cython_distance.c"):
+   os.path.isfile("pyspike/cython/cython_profiles.c") and \
+   os.path.isfile("pyspike/cython/cython_distances.c"):
     use_c = True
 else:
     use_c = False
@@ -33,20 +34,22 @@ ext_modules = []
 if use_cython:  # Cython is available, compile .pyx -> .c
     ext_modules += [
         Extension("pyspike.cython.cython_add", ["pyspike/cython/cython_add.pyx"]),
-        Extension("pyspike.cython.cython_distance", ["pyspike/cython/cython_distance.pyx"]),
+        Extension("pyspike.cython.cython_profiles", ["pyspike/cython/cython_profiles.pyx"]),
+        Extension("pyspike.cython.cython_distances", ["pyspike/cython/cython_distances.pyx"]),
     ]
     cmdclass.update({'build_ext': build_ext})
 elif use_c:  # c files are there, compile to binaries
     ext_modules += [
         Extension("pyspike.cython.cython_add", ["pyspike/cython/cython_add.c"]),
-        Extension("pyspike.cython.cython_distance", ["pyspike/cython/cython_distance.c"]),
+        Extension("pyspike.cython.cython_profiles", ["pyspike/cython/cython_profiles.c"]),
+        Extension("pyspike.cython.cython_distances", ["pyspike/cython/cython_distances.c"]),
     ]
 # neither cython nor c files available -> automatic fall-back to python backend
 
 setup(
     name='pyspike',
     packages=find_packages(exclude=['doc']),
-    version='0.2.0',
+    version='0.3.0',
     cmdclass=cmdclass,
     ext_modules=ext_modules,
     include_dirs=[numpy.get_include()],
@@ -56,7 +59,6 @@ train similarity',
     author_email='mario.mulanskygmx.net',
     license='BSD',
     url='https://github.com/mariomulansky/PySpike',
-    # download_url='https://github.com/mariomulansky/PySpike/tarball/0.1',
     install_requires=['numpy'],
     keywords=['data analysis', 'spike', 'neuroscience'],  # arbitrary keywords
     classifiers=[
@@ -78,7 +80,8 @@ train similarity',
         'Programming Language :: Python :: 2.7',
     ],
     package_data={
-        'pyspike': ['cython/cython_add.c', 'cython/cython_distance.c'],
+        'pyspike': ['cython/cython_add.c', 'cython/cython_profiles.c',
+                    'cython_distances.c'],
         'test': ['Spike_testdata.txt']
     }
 )

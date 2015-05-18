@@ -26,6 +26,52 @@ class PieceWiseConstFunc(object):
         self.x = np.array(x)
         self.y = np.array(y)
 
+    def __call__(self, t):
+        """ Returns the function value for the given time t. If t is a list of
+        times, the corresponding list of values is returned.
+
+        :param: time t, or list of times
+        :returns: function value(s) at that time(s).
+        """
+        assert np.all(t >= self.x[0]) and np.all(t <= self.x[-1]), \
+            "Invalid time: " + str(t)
+
+        ind = np.searchsorted(self.x, t, side='right')
+
+        if isinstance(t, collections.Sequence):
+            # t is a sequence of values
+            # correct the cases t == x[0], t == x[-1]
+            ind[ind == 0] = 1
+            ind[ind == len(self.x)] = len(self.x)-1
+            value = self.y[ind-1]
+            # correct the values at exact spike times: there the value should
+            # be the at half of the step
+            # obtain the 'left' side indices for t
+            ind_l = np.searchsorted(self.x, t, side='left')
+            # if left and right side indices differ, the time t has to appear
+            # in self.x
+            ind_at_spike = np.logical_and(np.logical_and(ind != ind_l,
+                                                         ind > 1),
+                                          ind < len(self.x))
+            # get the corresponding indices for the resulting value array
+            val_ind = np.arange(len(ind))[ind_at_spike]
+            # and for the arrays self.x, y1, y2
+            xy_ind = ind[ind_at_spike]
+            # use the middle of the left and right ISI value
+            value[val_ind] = 0.5 * (self.y[xy_ind-1] + self.y[xy_ind-2])
+            return value
+        else:  # t is a single value
+            # specific check for interval edges
+            if t == self.x[0]:
+                return self.y[0]
+            if t == self.x[-1]:
+                return self.y[-1]
+            # check if we are on any other exact spike time
+            if sum(self.x == t) > 0:
+                # use the middle of the left and right ISI value
+                return 0.5 * (self.y[ind-1] + self.y[ind-2])
+            return self.y[ind-1]
+
     def copy(self):
         """ Returns a copy of itself
 

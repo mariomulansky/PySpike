@@ -125,16 +125,20 @@ class DiscreteFunc(object):
 
     def integral(self, interval=None):
         """ Returns the integral over the given interval. For the discrete
-        function, this amounts to the sum over all values divided by the total
-        multiplicity.
+        function, this amounts to two values: the sum over all values and the
+        sum over all multiplicities.
 
         :param interval: integration interval given as a pair of floats, or a
                          sequence of pairs in case of multiple intervals, if
                          None the integral over the whole function is computed.
         :type interval: Pair, sequence of pairs, or None.
-        :returns: the integral
-        :rtype: float
+        :returns: the summed values and the summed multiplicity
+        :rtype: pair of float
         """
+
+        if len(self.y) <= 2:
+            # no actual values in the profile, return spike sync of 1
+            return 1.0, 1.0
 
         def get_indices(ival):
             """ Retuns the indeces surrounding the given interval"""
@@ -147,7 +151,7 @@ class DiscreteFunc(object):
         if interval is None:
             # no interval given, integrate over the whole spike train
             # don't count the first value, which is zero by definition
-            return 1.0 * np.sum(self.y[1:-1]) / np.sum(self.mp[1:-1])
+            return (1.0 * np.sum(self.y[1:-1]), np.sum(self.mp[1:-1]))
 
         # check if interval is as sequence
         assert isinstance(interval, collections.Sequence), \
@@ -156,7 +160,7 @@ class DiscreteFunc(object):
         if not isinstance(interval[0], collections.Sequence):
             # find the indices corresponding to the interval
             start_ind, end_ind = get_indices(interval)
-            return (np.sum(self.y[start_ind:end_ind]) /
+            return (np.sum(self.y[start_ind:end_ind]),
                     np.sum(self.mp[start_ind:end_ind]))
         else:
             value = 0.0
@@ -166,7 +170,7 @@ class DiscreteFunc(object):
                 start_ind, end_ind = get_indices(ival)
                 value += np.sum(self.y[start_ind:end_ind])
                 multiplicity += np.sum(self.mp[start_ind:end_ind])
-        return value/multiplicity
+        return (value, multiplicity)
 
     def avrg(self, interval=None):
         """ Computes the average of the interval sequence:
@@ -180,7 +184,8 @@ class DiscreteFunc(object):
         :returns: the average a.
         :rtype: float
         """
-        return self.integral(interval)
+        val, mp = self.integral(interval)
+        return val/mp
 
     def add(self, f):
         """ Adds another `DiscreteFunc` function to this function.

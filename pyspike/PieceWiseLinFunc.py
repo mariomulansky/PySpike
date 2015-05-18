@@ -29,6 +29,64 @@ class PieceWiseLinFunc:
         self.y1 = np.array(y1)
         self.y2 = np.array(y2)
 
+    def __call__(self, t):
+        """ Returns the function value for the given time t. If t is a list of
+        times, the corresponding list of values is returned.
+
+        :param: time t, or list of times
+        :returns: function value(s) at that time(s).
+        """
+        def intermediate_value(x0, x1, y0, y1, x):
+            """ computes the intermediate value of a linear function """
+            return y0 + (y1-y0)*(x-x0)/(x1-x0)
+
+        assert np.all(t >= self.x[0]) and np.all(t <= self.x[-1]), \
+            "Invalid time: " + str(t)
+
+        ind = np.searchsorted(self.x, t, side='right')
+
+        if isinstance(t, collections.Sequence):
+            # t is a sequence of values
+            # correct the cases t == x[0], t == x[-1]
+            ind[ind == 0] = 1
+            ind[ind == len(self.x)] = len(self.x)-1
+            value = intermediate_value(self.x[ind-1],
+                                       self.x[ind],
+                                       self.y1[ind-1],
+                                       self.y2[ind-1],
+                                       t)
+            # correct the values at exact spike times: there the value should
+            # be the at half of the step
+            # obtain the 'left' side indices for t
+            ind_l = np.searchsorted(self.x, t, side='left')
+            # if left and right side indices differ, the time t has to appear
+            # in self.x
+            ind_at_spike = np.logical_and(np.logical_and(ind != ind_l,
+                                                         ind > 1),
+                                          ind < len(self.x))
+            # get the corresponding indices for the resulting value array
+            val_ind = np.arange(len(ind))[ind_at_spike]
+            # and for the values in self.x, y1, y2
+            xy_ind = ind[ind_at_spike]
+            # the values are defined as the average of the left and right limit
+            value[val_ind] = 0.5 * (self.y1[xy_ind-1] + self.y2[xy_ind-2])
+            return value
+        else:  # t is a single value
+            # specific check for interval edges
+            if t == self.x[0]:
+                return self.y1[0]
+            if t == self.x[-1]:
+                return self.y2[-1]
+            # check if we are on any other exact spike time
+            if sum(self.x == t) > 0:
+                # use the middle of the left and right Spike value
+                return 0.5 * (self.y1[ind-1] + self.y2[ind-2])
+            return intermediate_value(self.x[ind-1],
+                                      self.x[ind],
+                                      self.y1[ind-1],
+                                      self.y2[ind-1],
+                                      t)
+
     def copy(self):
         """ Returns a copy of itself
 

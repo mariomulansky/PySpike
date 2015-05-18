@@ -340,7 +340,7 @@ def cumulative_sync_python(spikes1, spikes2):
 def coincidence_python(spikes1, spikes2, t_start, t_end, max_tau):
 
     def get_tau(spikes1, spikes2, i, j, max_tau):
-        m = 1E100   # some huge number
+        m = t_end - t_start   # use interval as initial tau
         if i < len(spikes1)-1 and i > -1:
             m = min(m, spikes1[i+1]-spikes1[i])
         if j < len(spikes2)-1 and j > -1:
@@ -399,10 +399,14 @@ def coincidence_python(spikes1, spikes2, t_start, t_end, max_tau):
 
     st[0] = t_start
     st[len(st)-1] = t_end
-    c[0] = c[1]
-    c[len(c)-1] = c[len(c)-2]
-    mp[0] = mp[1]
-    mp[len(mp)-1] = mp[len(mp)-2]
+    if N1 + N2 > 0:
+        c[0] = c[1]
+        c[len(c)-1] = c[len(c)-2]
+        mp[0] = mp[1]
+        mp[len(mp)-1] = mp[len(mp)-2]
+    else:
+        c[0] = 1
+        c[1] = 1
 
     return st, c, mp
 

@@ -3,7 +3,8 @@
 # Distributed under the BSD License
 
 from pyspike import PieceWiseConstFunc
-from pyspike.generic import _generic_profile_multi, _generic_distance_matrix
+from pyspike.generic import _generic_profile_multi, _generic_distance_multi, \
+    _generic_distance_matrix
 
 
 ############################################################
@@ -24,24 +25,25 @@ def isi_profile(spike_train1, spike_train2):
     """
     # check whether the spike trains are defined for the same interval
     assert spike_train1.t_start == spike_train2.t_start, \
-        "Given spike trains seems not to have auxiliary spikes!"
+        "Given spike trains are not defined on the same interval!"
     assert spike_train1.t_end == spike_train2.t_end, \
-        "Given spike trains seems not to have auxiliary spikes!"
+        "Given spike trains are not defined on the same interval!"
 
     # load cython implementation
     try:
-        from cython.cython_distance import isi_distance_cython \
-            as isi_distance_impl
+        from cython.cython_profiles import isi_profile_cython \
+            as isi_profile_impl
     except ImportError:
         print("Warning: isi_distance_cython not found. Make sure that PySpike \
 is installed by running\n 'python setup.py build_ext --inplace'!\n \
 Falling back to slow python backend.")
         # use python backend
         from cython.python_backend import isi_distance_python \
-            as isi_distance_impl
+            as isi_profile_impl
 
-    times, values = isi_distance_impl(spike_train1.spikes, spike_train2.spikes,
-                                      spike_train1.t_start, spike_train1.t_end)
+    times, values = isi_profile_impl(spike_train1.get_spikes_non_empty(),
+                                     spike_train2.get_spikes_non_empty(),
+                                     spike_train1.t_start, spike_train1.t_end)
     return PieceWiseConstFunc(times, values)
 
 
@@ -65,7 +67,23 @@ def isi_distance(spike_train1, spike_train2, interval=None):
     :returns: The isi-distance :math:`D_I`.
     :rtype: double
     """
-    return isi_profile(spike_train1, spike_train2).avrg(interval)
+
+    if interval is None:
+        # distance over the whole interval is requested: use specific function
+        # for optimal performance
+        try:
+            from cython.cython_distances import isi_distance_cython \
+                as isi_distance_impl
+
+            return isi_distance_impl(spike_train1.get_spikes_non_empty(),
+                                     spike_train2.get_spikes_non_empty(),
+                                     spike_train1.t_start, spike_train1.t_end)
+        except ImportError:
+            # Cython backend not available: fall back to profile averaging
+            return isi_profile(spike_train1, spike_train2).avrg(interval)
+    else:
+        # some specific interval is provided: use profile
+        return isi_profile(spike_train1, spike_train2).avrg(interval)
 
 
 ############################################################
@@ -112,7 +130,8 @@ def isi_distance_multi(spike_trains, indices=None, interval=None):
     :returns: The time-averaged multivariate ISI distance :math:`D_I`
     :rtype: double
     """
-    return isi_profile_multi(spike_trains, indices).avrg(interval)
+    return _generic_distance_multi(spike_trains, isi_distance, indices,
+                                   interval)
 
 
 ############################################################

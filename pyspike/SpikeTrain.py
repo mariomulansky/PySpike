@@ -48,3 +48,13 @@ class SpikeTrain(object):
 
         """
         return SpikeTrain(self.spikes.copy(), [self.t_start, self.t_end])
+
+    def get_spikes_non_empty(self):
+        """Returns the spikes of this spike train with auxiliary spikes in case
+        of empty spike trains.
+        """
+        if len(self.spikes) < 2:
+            return np.unique(np.insert([self.t_start, self.t_end], 1,
+                                       self.spikes))
+        else:
+            return self.spikes

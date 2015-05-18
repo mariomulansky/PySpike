@@ -1,3 +1,15 @@
+PySpike v0.3:
+	* addition of __version__ attribute
+	* restructured docs, Readme now only contains basic examples
+	* performance improvements by introducing specific distance functions
+	* performance improvements for multivariate profiles by using recursive
+	approach
+	* new example: performance.py
+	* consistent treatment of empty spike trains
+	* new example: profiles.py
+	* additional functionality: pwc and pwl function classes can now return
+	function values at given time(s)
+
 PySpike v0.2:
 
 	* introduction of SpikeTrain class. Breaking interface change of

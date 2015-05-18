@@ -83,13 +83,9 @@ def add_piece_wise_const_cython(double[:] x1, double[:] y1,
         else: # both arrays reached the end simultaneously
             # only the last x-value missing
             x_new[index+1] = x1[N1-1]
-        # the last value is again the end of the interval
-        # x_new[index+1] = x1[-1]
-        # only use the data that was actually filled
-        x1 = x_new[:index+2]
-        y1 = y_new[:index+1]
     # end nogil
-    return np.array(x_new[:index+2]), np.array(y_new[:index+1])
+    # return np.asarray(x_new[:index+2]), np.asarray(y_new[:index+1])
+    return np.asarray(x_new[:index+2]), np.asarray(y_new[:index+1])
 
 
 ############################################################
@@ -169,9 +165,9 @@ def add_piece_wise_lin_cython(double[:] x1, double[:] y11, double[:] y12,
         y2_new[index] = y12[N1-2]+y22[N2-2]
         # only use the data that was actually filled
     # end nogil
-    return (np.array(x_new[:index+2]),
-            np.array(y1_new[:index+1]), 
-            np.array(y2_new[:index+1]))
+    return (np.asarray(x_new[:index+2]),
+            np.asarray(y1_new[:index+1]), 
+            np.asarray(y2_new[:index+1]))
 
 
 ############################################################
@@ -230,6 +226,6 @@ def add_discrete_function_cython(double[:] x1, double[:] y1, double[:] mp1,
 
     # the last value is again the end of the interval
     # only use the data that was actually filled
-    return (np.array(x_new[:index+1]), 
-            np.array(y_new[:index+1]), 
-            np.array(mp_new[:index+1]))
+    return (np.asarray(x_new[:index+1]), 
+            np.asarray(y_new[:index+1]), 
+            np.asarray(mp_new[:index+1]))
