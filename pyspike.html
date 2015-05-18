@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pyspike package &mdash; PySpike 0.1 documentation</title>
+    <title>pyspike package &mdash; PySpike 0.3.0 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1',
+        VERSION:     '0.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="PySpike 0.1 documentation" href="index.html" />
+    <link rel="top" title="PySpike 0.3.0 documentation" href="index.html" />
     <link rel="prev" title="PySpike" href="index.html" /> 
   </head>
   <body>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="index.html" title="PySpike"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PySpike 0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">PySpike 0.3.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -97,6 +97,13 @@ the data.</p>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyspike.SpikeTrain.SpikeTrain.get_spikes_non_empty">
+<tt class="descname">get_spikes_non_empty</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pyspike/SpikeTrain.html#SpikeTrain.get_spikes_non_empty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.SpikeTrain.SpikeTrain.get_spikes_non_empty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the spikes of this spike train with auxiliary spikes in case
+of empty spike trains.</p>
 </dd></dl>
 
 <dl class="method">
@@ -560,8 +567,8 @@ this value is 0, no averaging is performed.</p>
 <dt id="pyspike.DiscreteFunc.DiscreteFunc.integral">
 <tt class="descname">integral</tt><big>(</big><em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/DiscreteFunc.html#DiscreteFunc.integral"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.DiscreteFunc.DiscreteFunc.integral" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the integral over the given interval. For the discrete
-function, this amounts to the sum over all values divided by the total
-multiplicity.</p>
+function, this amounts to two values: the sum over all values and the
+sum over all multiplicities.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -570,9 +577,9 @@ multiplicity.</p>
 sequence of pairs in case of multiple intervals, if
 None the integral over the whole function is computed.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the integral</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the summed values and the summed multiplicity</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">pair of float</td>
 </tr>
 </tbody>
 </table>
@@ -1267,7 +1274,7 @@ if False, spike times are sorted with <cite>np.sort</cite></li>
         <li class="right" >
           <a href="index.html" title="PySpike"
              >previous</a> |</li>
-        <li><a href="index.html">PySpike 0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">PySpike 0.3.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
