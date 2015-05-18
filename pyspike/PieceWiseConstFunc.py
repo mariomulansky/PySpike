@@ -37,6 +37,7 @@ class PieceWiseConstFunc(object):
             "Invalid time: " + str(t)
 
         ind = np.searchsorted(self.x, t, side='right')
+
         if isinstance(t, collections.Sequence):
             # t is a sequence of values
             # correct the cases t == x[0], t == x[-1]
@@ -56,6 +57,7 @@ class PieceWiseConstFunc(object):
             val_ind = np.arange(len(ind))[ind_at_spike]
             # and for the arrays self.x, y1, y2
             xy_ind = ind[ind_at_spike]
+            # use the middle of the left and right ISI value
             value[val_ind] = 0.5 * (self.y[xy_ind-1] + self.y[xy_ind-2])
             return value
         else:  # t is a single value
