@@ -32,6 +32,21 @@ class SpikeTrain(object):
             self.t_start = 0.0
             self.t_end = float(edges)
 
+    def __getitem__(self, index):
+        """ Returns the time of the spike given by index.
+
+        :param index: Index of the spike.
+        :return: spike time.
+        """
+        return self.spikes[index]
+
+    def __len__(self):
+        """ Returns the number of spikes.
+        
+        :return: Number of spikes.
+        """
+        return len(self.spikes)
+
     def sort(self):
         """ Sorts the spike times of this spike train using `np.sort`
         """
