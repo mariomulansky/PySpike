@@ -23,7 +23,7 @@ spike_trains = spk.load_spike_trains_from_txt("PySpike_testdata.txt",
 t_loading = time.clock()
 
 print("Number of spike trains: %d" % len(spike_trains))
-num_of_spikes = sum([len(spike_trains[i].spikes)
+num_of_spikes = sum([len(spike_trains[i])
                      for i in xrange(len(spike_trains))])
 print("Number of spikes: %d" % num_of_spikes)
 
