@@ -54,7 +54,8 @@ Falling back to slow python backend.")
 ############################################################
 def spike_distance(spike_train1, spike_train2, interval=None):
     """ Computes the spike-distance :math:`D_S` of the given spike trains. The
-    spike-distance is the integral over the isi distance profile :math:`S(t)`:
+    spike-distance is the integral over the spike distance profile
+    :math:`S(t)`:
 
     .. math:: D_S = \int_{T_0}^{T_1} S(t) dt.
 
