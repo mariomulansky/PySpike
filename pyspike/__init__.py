@@ -42,3 +42,5 @@ except DistributionNotFound:
     __version__ = 'Please install this project with setup.py'
 else:
     __version__ = _dist.version
+
+disable_backend_warning = False

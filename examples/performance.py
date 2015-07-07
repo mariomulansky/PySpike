@@ -14,6 +14,9 @@ from datetime import datetime
 import cProfile
 import pstats
 
+# in case you dont have the cython backends, disable the warnings as follows:
+# spk.disable_backend_warning = True
+
 M = 100    # number of spike trains
 r = 1.0    # rate of Poisson spike times
 T = 1E3    # length of spike trains

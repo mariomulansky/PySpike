@@ -2,6 +2,7 @@
 # Copyright 2014-2015, Mario Mulansky <mario.mulansky@gmx.net>
 # Distributed under the BSD License
 
+import pyspike
 from pyspike import PieceWiseConstFunc
 from pyspike.generic import _generic_profile_multi, _generic_distance_multi, \
     _generic_distance_matrix
@@ -34,8 +35,9 @@ def isi_profile(spike_train1, spike_train2):
         from cython.cython_profiles import isi_profile_cython \
             as isi_profile_impl
     except ImportError:
-        print("Warning: isi_distance_cython not found. Make sure that PySpike \
-is installed by running\n 'python setup.py build_ext --inplace'!\n \
+        if not(pyspike.disable_backend_warning):
+            print("Warning: isi_profile_cython not found. Make sure that \
+PySpike is installed by running\n 'python setup.py build_ext --inplace'!\n \
 Falling back to slow python backend.")
         # use python backend
         from cython.python_backend import isi_distance_python \

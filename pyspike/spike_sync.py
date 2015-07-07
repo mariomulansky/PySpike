@@ -5,6 +5,7 @@
 
 import numpy as np
 from functools import partial
+import pyspike
 from pyspike import DiscreteFunc
 from pyspike.generic import _generic_profile_multi, _generic_distance_matrix
 
@@ -39,7 +40,8 @@ def spike_sync_profile(spike_train1, spike_train2, max_tau=None):
         from cython.cython_profiles import coincidence_profile_cython \
             as coincidence_profile_impl
     except ImportError:
-        print("Warning: spike_distance_cython not found. Make sure that \
+        if not(pyspike.disable_backend_warning):
+            print("Warning: spike_distance_cython not found. Make sure that \
 PySpike is installed by running\n 'python setup.py build_ext --inplace'!\n \
 Falling back to slow python backend.")
         # use python backend

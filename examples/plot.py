@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 
 import pyspike as spk
 
+
 spike_trains = spk.load_spike_trains_from_txt("PySpike_testdata.txt",
                                               edges=(0, 4000))
 

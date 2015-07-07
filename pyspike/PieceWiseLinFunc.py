@@ -6,6 +6,7 @@ from __future__ import print_function
 
 import numpy as np
 import collections
+import pyspike
 
 
 ##############################################################
@@ -230,9 +231,11 @@ class PieceWiseLinFunc:
             from cython.cython_add import add_piece_wise_lin_cython as \
                 add_piece_wise_lin_impl
         except ImportError:
-            print("Warning: add_piece_wise_lin_cython not found. Make sure \
-that PySpike is installed by running\n 'python setup.py build_ext --inplace'! \
-\n Falling back to slow python backend.")
+            if not(pyspike.disable_backend_warning):
+                print("Warning: add_piece_wise_lin_cython not found. Make \
+sure that PySpike is installed by running\n \
+'python setup.py build_ext --inplace'! \n \
+Falling back to slow python backend.")
             # use python backend
             from cython.python_backend import add_piece_wise_lin_python as \
                 add_piece_wise_lin_impl
