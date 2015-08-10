@@ -63,7 +63,7 @@ def _generic_profile_multi(spike_trains, pair_distance_func, indices=None):
     L = len(pairs)
     if L > 1:
         # recursive iteration through the list of pairs to get average profile
-        avrg_dist = divide_and_conquer(pairs[:int(len(pairs)/2]),
+        avrg_dist = divide_and_conquer(pairs[:int(len(pairs)/2)],
                                        pairs[int(len(pairs)/2):])
     else:
         avrg_dist = pair_distance_func(spike_trains[pairs[0][0]],
