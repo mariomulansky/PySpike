@@ -37,13 +37,15 @@ def _generic_profile_multi(spike_trains, pair_distance_func, indices=None):
         """
         L1 = len(pairs1)
         if L1 > 1:
-            dist_prof1 = divide_and_conquer(pairs1[:L1//2], pairs1[int(L1//2):])
+            dist_prof1 = divide_and_conquer(pairs1[:L1//2],
+                                            pairs1[int(L1//2):])
         else:
             dist_prof1 = pair_distance_func(spike_trains[pairs1[0][0]],
                                             spike_trains[pairs1[0][1]])
         L2 = len(pairs2)
         if L2 > 1:
-            dist_prof2 = divide_and_conquer(pairs2[:L2//2], pairs2[int(L2//2):])
+            dist_prof2 = divide_and_conquer(pairs2[:L2//2],
+                                            pairs2[int(L2//2):])
         else:
             dist_prof2 = pair_distance_func(spike_trains[pairs2[0][0]],
                                             spike_trains[pairs2[0][1]])
