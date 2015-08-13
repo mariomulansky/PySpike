@@ -147,6 +147,57 @@ def spike_delay_asymmetry_matrix(spike_trains, indices=None,
 
 
 ############################################################
+# spike_delay_asymmetry_full
+############################################################
+def spike_delay_asymmetry_full(spike_trains, indices=None,
+                               interval=None, max_tau=None):
+    """ Computes the spike train symmetry value for each spike in each spike
+    train.
+    """
+    if indices is None:
+        indices = np.arange(len(spike_trains))
+    indices = np.array(indices)
+    # check validity of indices
+    assert (indices < len(spike_trains)).all() and (indices >= 0).all(), \
+        "Invalid index list."
+    # list of arrays for reulting asymmetry values
+    asymmetry_list = [np.zeros_like(st.spikes) for st in spike_trains]
+    # generate a list of possible index pairs
+    pairs = [(indices[i], j) for i in range(len(indices))
+             for j in indices[i+1:]]
+
+    # cython implementation
+    try:
+        from cython.cython_directionality import \
+            spike_delay_dual_profile_cython as \
+            sda_dual_profile_impl
+    except ImportError:
+        raise NotImplementedError()
+#         if not(pyspike.disable_backend_warning):
+#             print("Warning: spike_distance_cython not found. Make sure that \
+# PySpike is installed by running\n 'python setup.py build_ext --inplace'!\n \
+# Falling back to slow python backend.")
+#         # use python backend
+#         from cython.python_backend import coincidence_python \
+#             as coincidence_profile_impl
+
+    if max_tau is None:
+        max_tau = 0.0
+
+    for i, j in pairs:
+        a1, a2 = sda_dual_profile_impl(spike_trains[i].spikes,
+                                       spike_trains[j].spikes,
+                                       spike_trains[i].t_start,
+                                       spike_trains[i].t_end,
+                                       max_tau)
+        asymmetry_list[i] += a1
+        asymmetry_list[j] += a2
+    for a in asymmetry_list:
+        a /= len(spike_trains)-1
+    return asymmetry_list
+
+
+############################################################
 # optimal_asymmetry_order_from_D
 ############################################################
 def optimal_asymmetry_order_from_D(D, full_output=False):
@@ -188,7 +239,7 @@ def optimal_asymmetry_order_from_D(D, full_output=False):
 
 
 ############################################################
-# _optimal_asymmetry_order
+# optimal_asymmetry_order
 ############################################################
 def optimal_asymmetry_order(spike_trains,  indices=None, interval=None,
                             max_tau=None, full_output=False):
@@ -203,7 +254,7 @@ def optimal_asymmetry_order(spike_trains,  indices=None, interval=None,
 ############################################################
 # reorder_asymmetry_matrix
 ############################################################
-def reorder_asymmetry_matrix(D, p):
+def permutate_asymmetry_matrix(D, p):
     N = len(D)
     D_p = np.empty_like(D)
     for n in xrange(N):

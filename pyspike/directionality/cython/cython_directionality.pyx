@@ -130,6 +130,52 @@ def spike_delay_asymmetry_profile_cython(double[:] spikes1, double[:] spikes2,
 
 
 ############################################################
+# spike_delay_dual_profile_cython
+############################################################
+def spike_delay_dual_profile_cython(double[:] spikes1,
+                                    double[:] spikes2,
+                                    double t_start, double t_end,
+                                    double max_tau):
+
+    cdef int N1 = len(spikes1)
+    cdef int N2 = len(spikes2)
+    cdef int i = -1
+    cdef int j = -1
+    cdef double[:] a1 = np.zeros(N1)  # asymmetry values
+    cdef double[:] a2 = np.zeros(N2)  # asymmetry values
+    cdef double interval = t_end - t_start
+    cdef double tau
+    while i + j < N1 + N2 - 2:
+        if (i < N1-1) and (j == N2-1 or spikes1[i+1] < spikes2[j+1]):
+            i += 1
+            tau = get_tau(spikes1, spikes2, i, j, interval, max_tau)
+            if j > -1 and spikes1[i]-spikes2[j] < tau:
+                # coincidence between the current spike and the previous spike
+                # spike from spike train 1 after spike train 2
+                # leading spike gets +1, following spike -1
+                a1[i] = -1
+                a2[j] = +1
+        elif (j < N2-1) and (i == N1-1 or spikes1[i+1] > spikes2[j+1]):
+            j += 1
+            tau = get_tau(spikes1, spikes2, i, j, interval, max_tau)
+            if i > -1 and spikes2[j]-spikes1[i] < tau:
+                # coincidence between the current spike and the previous spike
+                # spike from spike train 1 before spike train 2
+                # leading spike gets +1, following spike -1
+                a1[i] = +1
+                a2[j] = -1
+        else:   # spikes1[i+1] = spikes2[j+1]
+            # advance in both spike trains
+            j += 1
+            i += 1
+            # equal spike times: zero asymmetry value
+            a1[i] = 0
+            a2[j] = 0
+
+    return a1, a2
+
+
+############################################################
 # spike_delay_asymmetry_cython
 ############################################################
 def spike_delay_asymmetry_cython(double[:] spikes1, double[:] spikes2,
