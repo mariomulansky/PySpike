@@ -139,6 +139,18 @@ def test_spike_sync_empty():
     assert_array_almost_equal(prof.x, [0.0, 0.2, 0.8, 1.0], decimal=15)
     assert_array_almost_equal(prof.y, [0.0, 0.0, 0.0, 0.0], decimal=15)
 
+    # test with empty intervals
+    st1 = SpikeTrain([2.0, 5.0], [0, 10.0])
+    st2 = SpikeTrain([2.1, 7.0], [0, 10.0])
+    st3 = SpikeTrain([5.1, 6.0], [0, 10.0])
+    res = spk.spike_sync_profile(st1, st2).avrg(interval=[3.0, 4.0])
+    assert_equal(res, 1.0)
+    res = spk.spike_sync(st1, st2, interval=[3.0, 4.0])
+    assert_equal(res, 1.0)
+
+    sync_matrix = spk.spike_sync_matrix([st1, st2, st3], interval=[3.0, 4.0])
+    assert_array_equal(sync_matrix, np.ones((3, 3)) - np.diag(np.ones(3)))
+
 
 if __name__ == "__main__":
     test_get_non_empty()

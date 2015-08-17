@@ -137,9 +137,8 @@ class DiscreteFunc(object):
         :rtype: pair of float
         """
 
-        if len(self.y) <= 2:
-            # no actual values in the profile, return spike sync of 1
-            return 1.0, 1.0
+        value = 0.0
+        multiplicity = 0.0
 
         def get_indices(ival):
             """ Retuns the indeces surrounding the given interval"""
@@ -152,25 +151,29 @@ class DiscreteFunc(object):
         if interval is None:
             # no interval given, integrate over the whole spike train
             # don't count the first value, which is zero by definition
-            return (1.0 * np.sum(self.y[1:-1]), np.sum(self.mp[1:-1]))
-
-        # check if interval is as sequence
-        assert isinstance(interval, collections.Sequence), \
-            "Invalid value for `interval`. None, Sequence or Tuple expected."
-        # check if interval is a sequence of intervals
-        if not isinstance(interval[0], collections.Sequence):
-            # find the indices corresponding to the interval
-            start_ind, end_ind = get_indices(interval)
-            return (np.sum(self.y[start_ind:end_ind]),
-                    np.sum(self.mp[start_ind:end_ind]))
+            value = 1.0 * np.sum(self.y[1:-1])
+            multiplicity = np.sum(self.mp[1:-1])
         else:
-            value = 0.0
-            multiplicity = 0.0
-            for ival in interval:
+            # check if interval is as sequence
+            assert isinstance(interval, collections.Sequence), \
+                "Invalid value for `interval`. None, Sequence or Tuple \
+expected."
+            # check if interval is a sequence of intervals
+            if not isinstance(interval[0], collections.Sequence):
                 # find the indices corresponding to the interval
-                start_ind, end_ind = get_indices(ival)
-                value += np.sum(self.y[start_ind:end_ind])
-                multiplicity += np.sum(self.mp[start_ind:end_ind])
+                start_ind, end_ind = get_indices(interval)
+                value = np.sum(self.y[start_ind:end_ind])
+                multiplicity = np.sum(self.mp[start_ind:end_ind])
+            else:
+                for ival in interval:
+                    # find the indices corresponding to the interval
+                    start_ind, end_ind = get_indices(ival)
+                    value += np.sum(self.y[start_ind:end_ind])
+                    multiplicity += np.sum(self.mp[start_ind:end_ind])
+        if multiplicity == 0.0:
+            # empty profile, return spike sync of 1
+            value = 1.0
+            multiplicity = 1.0
         return (value, multiplicity)
 
     def avrg(self, interval=None):
