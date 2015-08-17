@@ -5,7 +5,7 @@
 import numpy as np
 from math import exp
 from functools import partial
-# import pyspike
+import pyspike
 from pyspike import DiscreteFunc
 from pyspike.generic import _generic_profile_multi
 
@@ -39,14 +39,14 @@ def spike_train_order_profile(spike_train1, spike_train2, max_tau=None):
             spike_train_order_profile_cython as \
             spike_train_order_profile_impl
     except ImportError:
-        raise NotImplementedError()
-#         if not(pyspike.disable_backend_warning):
-#             print("Warning: spike_distance_cython not found. Make sure that \
-# PySpike is installed by running\n 'python setup.py build_ext --inplace'!\n \
-# Falling back to slow python backend.")
-#         # use python backend
-#         from cython.python_backend import coincidence_python \
-#             as coincidence_profile_impl
+        # raise NotImplementedError()
+        if not(pyspike.disable_backend_warning):
+            print("Warning: spike_distance_cython not found. Make sure that \
+PySpike is installed by running\n 'python setup.py build_ext --inplace'!\n \
+Falling back to slow python backend.")
+        # use python backend
+        from cython.directionality_python_backend import \
+            spike_train_order_python as spike_train_order_profile_impl
 
     if max_tau is None:
         max_tau = 0.0
@@ -81,15 +81,14 @@ def spike_train_order(spike_train1, spike_train2, normalize=True,
                                            spike_train1.t_start,
                                            spike_train1.t_end,
                                            max_tau)
-            if normalize:
-                return 1.0*c/mp
-            else:
-                return c
         except ImportError:
             # Cython backend not available: fall back to profile averaging
-            raise NotImplementedError()
-            # return spike_sync_profile(spike_train1, spike_train2,
-            #                           max_tau).integral(interval)
+            c, mp = spike_train_order_profile(spike_train1, spike_train2,
+                                              max_tau).integral(interval)
+        if normalize:
+            return 1.0*c/mp
+        else:
+            return c
     else:
         # some specific interval is provided: not yet implemented
         raise NotImplementedError()
@@ -250,7 +249,7 @@ def optimal_spike_train_order(spike_trains,  indices=None, interval=None,
     Returns the optimal permutation p and A value.
     """
     D = spike_train_order_matrix(spike_trains, indices, interval, max_tau)
-    return optimal_asymmetry_order_from_matrix(D, full_output)
+    return optimal_spike_train_order_from_matrix(D, full_output)
 
 
 ############################################################
