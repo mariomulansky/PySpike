@@ -1,4 +1,4 @@
-# Module containing functions to compute multivariate spike delay asymmetry
+# Module containing functions to compute multivariate spike train order
 # Copyright 2015, Mario Mulansky <mario.mulansky@gmx.net>
 # Distributed under the BSD License
 
@@ -11,9 +11,9 @@ from pyspike.generic import _generic_profile_multi
 
 
 ############################################################
-# spike_delay_asymmetry_profile
+# spike_train_order_profile
 ############################################################
-def spike_delay_asymmetry_profile(spike_train1, spike_train2, max_tau=None):
+def spike_train_order_profile(spike_train1, spike_train2, max_tau=None):
     """ Computes the spike delay asymmetry profile A(t) of the two given
     spike trains. Returns the profile as a DiscreteFunction object.
 
@@ -36,8 +36,8 @@ def spike_delay_asymmetry_profile(spike_train1, spike_train2, max_tau=None):
     # cython implementation
     try:
         from cython.cython_directionality import \
-            spike_delay_asymmetry_profile_cython as \
-            spike_delay_asymmetry_profile_impl
+            spike_train_order_profile_cython as \
+            spike_train_order_profile_impl
     except ImportError:
         raise NotImplementedError()
 #         if not(pyspike.disable_backend_warning):
@@ -52,20 +52,20 @@ def spike_delay_asymmetry_profile(spike_train1, spike_train2, max_tau=None):
         max_tau = 0.0
 
     times, coincidences, multiplicity \
-        = spike_delay_asymmetry_profile_impl(spike_train1.spikes,
-                                             spike_train2.spikes,
-                                             spike_train1.t_start,
-                                             spike_train1.t_end,
-                                             max_tau)
+        = spike_train_order_profile_impl(spike_train1.spikes,
+                                         spike_train2.spikes,
+                                         spike_train1.t_start,
+                                         spike_train1.t_end,
+                                         max_tau)
 
     return DiscreteFunc(times, coincidences, multiplicity)
 
 
 ############################################################
-# spike_delay_asymmetry
+# spike_train_order
 ############################################################
-def spike_delay_asymmetry(spike_train1, spike_train2, normalize=True,
-                          interval=None, max_tau=None):
+def spike_train_order(spike_train1, spike_train2, normalize=True,
+                      interval=None, max_tau=None):
     """ Computes the overall spike delay asymmetry value for two spike trains.
     """
     if interval is None:
@@ -73,14 +73,14 @@ def spike_delay_asymmetry(spike_train1, spike_train2, normalize=True,
         # for optimal performance
         try:
             from cython.cython_directionality import \
-                spike_delay_asymmetry_cython as spike_delay_impl
+                spike_train_order_cython as spike_train_order_impl
             if max_tau is None:
                 max_tau = 0.0
-            c, mp = spike_delay_impl(spike_train1.spikes,
-                                     spike_train2.spikes,
-                                     spike_train1.t_start,
-                                     spike_train1.t_end,
-                                     max_tau)
+            c, mp = spike_train_order_impl(spike_train1.spikes,
+                                           spike_train2.spikes,
+                                           spike_train1.t_start,
+                                           spike_train1.t_end,
+                                           max_tau)
             if normalize:
                 return 1.0*c/mp
             else:
@@ -96,10 +96,10 @@ def spike_delay_asymmetry(spike_train1, spike_train2, normalize=True,
 
 
 ############################################################
-# spike_delay_asymmetry_profile_multi
+# spike_train_order_profile_multi
 ############################################################
-def spike_delay_asymmetry_profile_multi(spike_trains, indices=None,
-                                        max_tau=None):
+def spike_train_order_profile_multi(spike_trains, indices=None,
+                                    max_tau=None):
     """ Computes the multi-variate spike delay asymmetry profile for a set of
     spike trains. For each spike in the set of spike trains, the multi-variate
     profile is defined as the sum of asymmetry values divided by the number of
@@ -116,7 +116,7 @@ def spike_delay_asymmetry_profile_multi(spike_trains, indices=None,
     :rtype: :class:`pyspike.function.DiscreteFunction`
 
     """
-    prof_func = partial(spike_delay_asymmetry_profile, max_tau=max_tau)
+    prof_func = partial(spike_train_order_profile, max_tau=max_tau)
     average_prof, M = _generic_profile_multi(spike_trains, prof_func,
                                              indices)
     # average_dist.mul_scalar(1.0/M)  # no normalization here!
@@ -124,10 +124,10 @@ def spike_delay_asymmetry_profile_multi(spike_trains, indices=None,
 
 
 ############################################################
-# spike_delay_asymmetry_matrix
+# spike_train_order_matrix
 ############################################################
-def spike_delay_asymmetry_matrix(spike_trains, normalize=True, indices=None,
-                                 interval=None, max_tau=None):
+def spike_train_order_matrix(spike_trains, normalize=True, indices=None,
+                             interval=None, max_tau=None):
     """ Computes the spike delay asymmetry matrix for the given spike trains.
     """
     if indices is None:
@@ -142,18 +142,18 @@ def spike_delay_asymmetry_matrix(spike_trains, normalize=True, indices=None,
 
     distance_matrix = np.zeros((len(indices), len(indices)))
     for i, j in pairs:
-        d = spike_delay_asymmetry(spike_trains[i], spike_trains[j], normalize,
-                                  interval, max_tau=max_tau)
+        d = spike_train_order(spike_trains[i], spike_trains[j], normalize,
+                              interval, max_tau=max_tau)
         distance_matrix[i, j] = d
         distance_matrix[j, i] = -d
     return distance_matrix
 
 
 ############################################################
-# spike_delay_asymmetry_full
+# spike_order_values
 ############################################################
-def spike_delay_asymmetry_full(spike_trains, indices=None,
-                               interval=None, max_tau=None):
+def spike_order_values(spike_trains, indices=None,
+                       interval=None, max_tau=None):
     """ Computes the spike train symmetry value for each spike in each spike
     train.
     """
@@ -172,8 +172,7 @@ def spike_delay_asymmetry_full(spike_trains, indices=None,
     # cython implementation
     try:
         from cython.cython_directionality import \
-            spike_delay_dual_profile_cython as \
-            sda_dual_profile_impl
+            spike_order_values_cython as spike_order_values_impl
     except ImportError:
         raise NotImplementedError()
 #         if not(pyspike.disable_backend_warning):
@@ -188,11 +187,11 @@ def spike_delay_asymmetry_full(spike_trains, indices=None,
         max_tau = 0.0
 
     for i, j in pairs:
-        a1, a2 = sda_dual_profile_impl(spike_trains[i].spikes,
-                                       spike_trains[j].spikes,
-                                       spike_trains[i].t_start,
-                                       spike_trains[i].t_end,
-                                       max_tau)
+        a1, a2 = spike_order_values_impl(spike_trains[i].spikes,
+                                         spike_trains[j].spikes,
+                                         spike_trains[i].t_start,
+                                         spike_trains[i].t_end,
+                                         max_tau)
         asymmetry_list[i] += a1
         asymmetry_list[j] += a2
     for a in asymmetry_list:
@@ -201,9 +200,9 @@ def spike_delay_asymmetry_full(spike_trains, indices=None,
 
 
 ############################################################
-# optimal_asymmetry_order_from_D
+# optimal_asymmetry_order_from_matrix
 ############################################################
-def optimal_asymmetry_order_from_D(D, full_output=False):
+def optimal_spike_train_order_from_matrix(D, full_output=False):
     """ finds the best sorting via simulated annealing.
     Returns the optimal permutation p and A value.
     Internal function, don't call directly! Use optimal_asymmetry_order
@@ -242,22 +241,22 @@ def optimal_asymmetry_order_from_D(D, full_output=False):
 
 
 ############################################################
-# optimal_asymmetry_order
+# optimal_spike_train_order
 ############################################################
-def optimal_asymmetry_order(spike_trains,  indices=None, interval=None,
-                            max_tau=None, full_output=False):
+def optimal_spike_train_order(spike_trains,  indices=None, interval=None,
+                              max_tau=None, full_output=False):
     """ finds the best sorting of the given spike trains via simulated
     annealing.
     Returns the optimal permutation p and A value.
     """
-    D = spike_delay_asymmetry_matrix(spike_trains, indices, interval, max_tau)
-    return optimal_asymmetry_order_from_D(D, full_output)
+    D = spike_train_order_matrix(spike_trains, indices, interval, max_tau)
+    return optimal_asymmetry_order_from_matrix(D, full_output)
 
 
 ############################################################
-# reorder_asymmetry_matrix
+# permutate_matrix
 ############################################################
-def permutate_asymmetry_matrix(D, p):
+def permutate_matrix(D, p):
     N = len(D)
     D_p = np.empty_like(D)
     for n in xrange(N):

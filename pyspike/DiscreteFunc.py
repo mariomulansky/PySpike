@@ -176,7 +176,7 @@ expected."
             multiplicity = 1.0
         return (value, multiplicity)
 
-    def avrg(self, interval=None):
+    def avrg(self, interval=None, normalize=True):
         """ Computes the average of the interval sequence:
         :math:`a = 1/N \\sum f_n` where N is the number of intervals.
 
@@ -189,7 +189,10 @@ expected."
         :rtype: float
         """
         val, mp = self.integral(interval)
-        return val/mp
+        if normalize:
+            return val/mp
+        else:
+            return val
 
     def add(self, f):
         """ Adds another `DiscreteFunc` function to this function.

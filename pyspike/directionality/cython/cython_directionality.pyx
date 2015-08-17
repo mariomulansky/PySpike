@@ -61,11 +61,11 @@ cdef inline double get_tau(double[:] spikes1, double[:] spikes2,
 
 
 ############################################################
-# spike_delay_asymmetry_profile_cython
+# spike_train_order_profile_cython
 ############################################################
-def spike_delay_asymmetry_profile_cython(double[:] spikes1, double[:] spikes2,
-                                         double t_start, double t_end,
-                                         double max_tau):
+def spike_train_order_profile_cython(double[:] spikes1, double[:] spikes2,
+                                     double t_start, double t_end,
+                                     double max_tau):
 
     cdef int N1 = len(spikes1)
     cdef int N2 = len(spikes2)
@@ -130,12 +130,12 @@ def spike_delay_asymmetry_profile_cython(double[:] spikes1, double[:] spikes2,
 
 
 ############################################################
-# spike_delay_dual_profile_cython
+# spike_order_values_cython
 ############################################################
-def spike_delay_dual_profile_cython(double[:] spikes1,
-                                    double[:] spikes2,
-                                    double t_start, double t_end,
-                                    double max_tau):
+def spike_order_values_cython(double[:] spikes1,
+                              double[:] spikes2,
+                              double t_start, double t_end,
+                              double max_tau):
 
     cdef int N1 = len(spikes1)
     cdef int N2 = len(spikes2)
@@ -176,10 +176,10 @@ def spike_delay_dual_profile_cython(double[:] spikes1,
 
 
 ############################################################
-# spike_delay_asymmetry_cython
+# spike_train_order_cython
 ############################################################
-def spike_delay_asymmetry_cython(double[:] spikes1, double[:] spikes2,
-                                 double t_start, double t_end, double max_tau):
+def spike_train_order_cython(double[:] spikes1, double[:] spikes2,
+                             double t_start, double t_end, double max_tau):
 
     cdef int N1 = len(spikes1)
     cdef int N2 = len(spikes2)
