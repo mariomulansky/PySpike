@@ -198,7 +198,7 @@ def spike_delay_asymmetry_cython(double[:] spikes1, double[:] spikes2,
                 # coincidence between the current spike and the previous spike
                 # spike in spike train 2 appeared before spike in spike train 1
                 # mark with -1
-                asym -= 1
+                asym -= 2
         elif (j < N2-1) and (i == N1-1 or spikes1[i+1] > spikes2[j+1]):
             j += 1
             mp += 1
@@ -207,7 +207,7 @@ def spike_delay_asymmetry_cython(double[:] spikes1, double[:] spikes2,
                 # coincidence between the current spike and the previous spike
                 # spike in spike train 1 appeared before spike in spike train 2
                 # mark with +1
-                asym += 1
+                asym += 2
         else:   # spikes1[i+1] = spikes2[j+1]
             # advance in both spike trains
             j += 1

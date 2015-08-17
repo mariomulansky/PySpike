@@ -64,7 +64,7 @@ def spike_delay_asymmetry_profile(spike_train1, spike_train2, max_tau=None):
 ############################################################
 # spike_delay_asymmetry
 ############################################################
-def spike_delay_asymmetry(spike_train1, spike_train2,
+def spike_delay_asymmetry(spike_train1, spike_train2, normalize=True,
                           interval=None, max_tau=None):
     """ Computes the overall spike delay asymmetry value for two spike trains.
     """
@@ -81,7 +81,10 @@ def spike_delay_asymmetry(spike_train1, spike_train2,
                                      spike_train1.t_start,
                                      spike_train1.t_end,
                                      max_tau)
-            return c
+            if normalize:
+                return 1.0*c/mp
+            else:
+                return c
         except ImportError:
             # Cython backend not available: fall back to profile averaging
             raise NotImplementedError()
@@ -123,7 +126,7 @@ def spike_delay_asymmetry_profile_multi(spike_trains, indices=None,
 ############################################################
 # spike_delay_asymmetry_matrix
 ############################################################
-def spike_delay_asymmetry_matrix(spike_trains, indices=None,
+def spike_delay_asymmetry_matrix(spike_trains, normalize=True, indices=None,
                                  interval=None, max_tau=None):
     """ Computes the spike delay asymmetry matrix for the given spike trains.
     """
@@ -139,7 +142,7 @@ def spike_delay_asymmetry_matrix(spike_trains, indices=None,
 
     distance_matrix = np.zeros((len(indices), len(indices)))
     for i, j in pairs:
-        d = spike_delay_asymmetry(spike_trains[i], spike_trains[j],
+        d = spike_delay_asymmetry(spike_trains[i], spike_trains[j], normalize,
                                   interval, max_tau=max_tau)
         distance_matrix[i, j] = d
         distance_matrix[j, i] = -d
