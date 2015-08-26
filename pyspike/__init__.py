@@ -7,8 +7,8 @@ Distributed under the BSD License
 from __future__ import absolute_import
 
 __all__ = ["isi_distance", "spike_distance", "spike_sync", "psth",
-           "spikes", "SpikeTrain", "PieceWiseConstFunc", "PieceWiseLinFunc",
-           "DiscreteFunc", "directionality"]
+           "spikes", "spike_directionality", "SpikeTrain",
+           "PieceWiseConstFunc", "PieceWiseLinFunc", "DiscreteFunc"]
 
 from .PieceWiseConstFunc import PieceWiseConstFunc
 from .PieceWiseLinFunc import PieceWiseLinFunc
@@ -26,6 +26,11 @@ from .psth import psth
 from .spikes import load_spike_trains_from_txt, save_spike_trains_to_txt, \
     spike_train_from_string, import_spike_trains_from_time_series, \
     merge_spike_trains, generate_poisson_spikes
+
+from spike_directionality import spike_directionality, \
+    spike_directionality_matrix, spike_train_order_profile, \
+    optimal_spike_train_order_from_matrix, optimal_spike_train_order, \
+    permutate_matrix
 
 # define the __version__ following
 # http://stackoverflow.com/questions/17583443
