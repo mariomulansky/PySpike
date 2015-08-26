@@ -33,7 +33,11 @@ def spike_directionality(spike_train1, spike_train2, normalize=True,
                                           max_tau)
             c = len(spike_train1.spikes)
         except ImportError:
-            raise NotImplementedError()
+            d1, x = spike_directionality_profiles([spike_train1, spike_train2],
+                                                  interval=interval,
+                                                  max_tau=max_tau)
+            d = np.sum(d1)
+            c = len(spike_train1.spikes)
         if normalize:
             return 1.0*d/c
         else:
@@ -94,24 +98,23 @@ def spike_directionality_profiles(spike_trains, indices=None,
         from cython.cython_directionality import \
             spike_directionality_profiles_cython as profile_impl
     except ImportError:
-        raise NotImplementedError()
-#         if not(pyspike.disable_backend_warning):
-#             print("Warning: spike_distance_cython not found. Make sure that \
-# PySpike is installed by running\n 'python setup.py build_ext --inplace'!\n \
-# Falling back to slow python backend.")
-#         # use python backend
-#         from cython.python_backend import coincidence_python \
-#             as coincidence_profile_impl
+        if not(pyspike.disable_backend_warning):
+            print("Warning: spike_distance_cython not found. Make sure that \
+PySpike is installed by running\n 'python setup.py build_ext --inplace'!\n \
+Falling back to slow python backend.")
+        # use python backend
+        from cython.directionality_python_backend import \
+            spike_directionality_profile_python as profile_impl
 
     if max_tau is None:
         max_tau = 0.0
 
     for i, j in pairs:
-        a1, a2 = profile_impl(spike_trains[i].spikes, spike_trains[j].spikes,
+        d1, d2 = profile_impl(spike_trains[i].spikes, spike_trains[j].spikes,
                               spike_trains[i].t_start, spike_trains[i].t_end,
                               max_tau)
-        asymmetry_list[i] += a1
-        asymmetry_list[j] += a2
+        asymmetry_list[i] += d1
+        asymmetry_list[j] += d2
     for a in asymmetry_list:
         a /= len(spike_trains)-1
     return asymmetry_list
@@ -151,7 +154,7 @@ PySpike is installed by running\n 'python setup.py build_ext --inplace'!\n \
 Falling back to slow python backend.")
         # use python backend
         from cython.directionality_python_backend import \
-            spike_train_order_python as spike_train_order_profile_impl
+            spike_train_order_profile_python as spike_train_order_profile_impl
 
     if max_tau is None:
         max_tau = 0.0
