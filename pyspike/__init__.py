@@ -28,9 +28,10 @@ from .spikes import load_spike_trains_from_txt, save_spike_trains_to_txt, \
     merge_spike_trains, generate_poisson_spikes
 
 from spike_directionality import spike_directionality, \
-    spike_directionality_matrix, spike_train_order_profile, \
-    optimal_spike_train_order_from_matrix, optimal_spike_train_order, \
-    permutate_matrix
+    spike_directionality_profiles, spike_directionality_matrix, \
+    spike_train_order_profile, spike_train_order, \
+    spike_train_order_profile_multi, optimal_spike_train_order_from_matrix, \
+    optimal_spike_train_order, permutate_matrix
 
 # define the __version__ following
 # http://stackoverflow.com/questions/17583443
