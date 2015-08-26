@@ -1,72 +1,20 @@
-# Module containing functions to compute multivariate spike train order
+# Module containing functions to compute the SPIKE directionality and the
+# spike train order profile
 # Copyright 2015, Mario Mulansky <mario.mulansky@gmx.net>
 # Distributed under the BSD License
 
 import numpy as np
 from math import exp
-from functools import partial
 import pyspike
 from pyspike import DiscreteFunc
-from pyspike.generic import _generic_profile_multi
 
 
 ############################################################
-# spike_train_order_profile
+# spike_directionality
 ############################################################
-def spike_train_order_profile(spike_train1, spike_train2, max_tau=None):
-    """ Computes the spike delay asymmetry profile A(t) of the two given
-    spike trains. Returns the profile as a DiscreteFunction object.
-
-    :param spike_train1: First spike train.
-    :type spike_train1: :class:`pyspike.SpikeTrain`
-    :param spike_train2: Second spike train.
-    :type spike_train2: :class:`pyspike.SpikeTrain`
-    :param max_tau: Maximum coincidence window size. If 0 or `None`, the
-                    coincidence window has no upper bound.
-    :returns: The spike-distance profile :math:`S_{sync}(t)`.
-    :rtype: :class:`pyspike.function.DiscreteFunction`
-
-    """
-    # check whether the spike trains are defined for the same interval
-    assert spike_train1.t_start == spike_train2.t_start, \
-        "Given spike trains are not defined on the same interval!"
-    assert spike_train1.t_end == spike_train2.t_end, \
-        "Given spike trains are not defined on the same interval!"
-
-    # cython implementation
-    try:
-        from cython.cython_directionality import \
-            spike_train_order_profile_cython as \
-            spike_train_order_profile_impl
-    except ImportError:
-        # raise NotImplementedError()
-        if not(pyspike.disable_backend_warning):
-            print("Warning: spike_distance_cython not found. Make sure that \
-PySpike is installed by running\n 'python setup.py build_ext --inplace'!\n \
-Falling back to slow python backend.")
-        # use python backend
-        from cython.directionality_python_backend import \
-            spike_train_order_python as spike_train_order_profile_impl
-
-    if max_tau is None:
-        max_tau = 0.0
-
-    times, coincidences, multiplicity \
-        = spike_train_order_profile_impl(spike_train1.spikes,
-                                         spike_train2.spikes,
-                                         spike_train1.t_start,
-                                         spike_train1.t_end,
-                                         max_tau)
-
-    return DiscreteFunc(times, coincidences, multiplicity)
-
-
-############################################################
-# spike_train_order
-############################################################
-def spike_train_order(spike_train1, spike_train2, normalize=True,
-                      interval=None, max_tau=None):
-    """ Computes the overall spike delay asymmetry value for two spike trains.
+def spike_directionality(spike_train1, spike_train2, normalize=True,
+                         interval=None, max_tau=None):
+    """ Computes the overall spike directionality for two spike trains.
     """
     if interval is None:
         # distance over the whole interval is requested: use specific function
@@ -83,8 +31,9 @@ def spike_train_order(spike_train1, spike_train2, normalize=True,
                                            max_tau)
         except ImportError:
             # Cython backend not available: fall back to profile averaging
-            c, mp = spike_train_order_profile(spike_train1, spike_train2,
-                                              max_tau).integral(interval)
+            c, mp = _spike_directionality_profile(spike_train1,
+                                                  spike_train2,
+                                                  max_tau).integral(interval)
         if normalize:
             return 1.0*c/mp
         else:
@@ -95,39 +44,11 @@ def spike_train_order(spike_train1, spike_train2, normalize=True,
 
 
 ############################################################
-# spike_train_order_profile_multi
+# spike_directionality_matrix
 ############################################################
-def spike_train_order_profile_multi(spike_trains, indices=None,
-                                    max_tau=None):
-    """ Computes the multi-variate spike delay asymmetry profile for a set of
-    spike trains. For each spike in the set of spike trains, the multi-variate
-    profile is defined as the sum of asymmetry values divided by the number of
-    spike trains pairs involving the spike train of containing this spike,
-    which is the number of spike trains minus one (N-1).
-
-    :param spike_trains: list of :class:`pyspike.SpikeTrain`
-    :param indices: list of indices defining which spike trains to use,
-                    if None all given spike trains are used (default=None)
-    :type indices: list or None
-    :param max_tau: Maximum coincidence window size. If 0 or `None`, the
-                    coincidence window has no upper bound.
-    :returns: The multi-variate spike sync profile :math:`<S_{sync}>(t)`
-    :rtype: :class:`pyspike.function.DiscreteFunction`
-
-    """
-    prof_func = partial(spike_train_order_profile, max_tau=max_tau)
-    average_prof, M = _generic_profile_multi(spike_trains, prof_func,
-                                             indices)
-    # average_dist.mul_scalar(1.0/M)  # no normalization here!
-    return average_prof
-
-
-############################################################
-# spike_train_order_matrix
-############################################################
-def spike_train_order_matrix(spike_trains, normalize=True, indices=None,
-                             interval=None, max_tau=None):
-    """ Computes the spike delay asymmetry matrix for the given spike trains.
+def spike_directionality_matrix(spike_trains, normalize=True, indices=None,
+                                interval=None, max_tau=None):
+    """ Computes the spike directionaity matrix for the given spike trains.
     """
     if indices is None:
         indices = np.arange(len(spike_trains))
@@ -141,18 +62,18 @@ def spike_train_order_matrix(spike_trains, normalize=True, indices=None,
 
     distance_matrix = np.zeros((len(indices), len(indices)))
     for i, j in pairs:
-        d = spike_train_order(spike_trains[i], spike_trains[j], normalize,
-                              interval, max_tau=max_tau)
+        d = spike_directionality(spike_trains[i], spike_trains[j], normalize,
+                                 interval, max_tau=max_tau)
         distance_matrix[i, j] = d
         distance_matrix[j, i] = -d
     return distance_matrix
 
 
 ############################################################
-# spike_order_values
+# spike_train_order_profile
 ############################################################
-def spike_order_values(spike_trains, indices=None,
-                       interval=None, max_tau=None):
+def spike_train_order_profile(spike_trains, indices=None,
+                              interval=None, max_tau=None):
     """ Computes the spike train symmetry value for each spike in each spike
     train.
     """
@@ -199,7 +120,7 @@ def spike_order_values(spike_trains, indices=None,
 
 
 ############################################################
-# optimal_asymmetry_order_from_matrix
+# optimal_spike_train_order_from_matrix
 ############################################################
 def optimal_spike_train_order_from_matrix(D, full_output=False):
     """ finds the best sorting via simulated annealing.
@@ -248,7 +169,9 @@ def optimal_spike_train_order(spike_trains,  indices=None, interval=None,
     annealing.
     Returns the optimal permutation p and A value.
     """
-    D = spike_train_order_matrix(spike_trains, indices, interval, max_tau)
+    D = spike_directionality_matrix(spike_trains, normalize=False,
+                                    indices=indices, interval=interval,
+                                    max_tau=max_tau)
     return optimal_spike_train_order_from_matrix(D, full_output)
 
 
@@ -256,9 +179,66 @@ def optimal_spike_train_order(spike_trains,  indices=None, interval=None,
 # permutate_matrix
 ############################################################
 def permutate_matrix(D, p):
+    """ Applies the permutation p to the columns and rows of matrix D.
+    Return the new permutated matrix.
+    """
     N = len(D)
     D_p = np.empty_like(D)
     for n in xrange(N):
         for m in xrange(N):
             D_p[n, m] = D[p[n], p[m]]
     return D_p
+
+
+# internal helper functions
+
+############################################################
+# _spike_directionality_profile
+############################################################
+def _spike_directionality_profile(spike_train1, spike_train2,
+                                  max_tau=None):
+    """ Computes the spike delay asymmetry profile A(t) of the two given
+    spike trains. Returns the profile as a DiscreteFunction object.
+
+    :param spike_train1: First spike train.
+    :type spike_train1: :class:`pyspike.SpikeTrain`
+    :param spike_train2: Second spike train.
+    :type spike_train2: :class:`pyspike.SpikeTrain`
+    :param max_tau: Maximum coincidence window size. If 0 or `None`, the
+                    coincidence window has no upper bound.
+    :returns: The spike-distance profile :math:`S_{sync}(t)`.
+    :rtype: :class:`pyspike.function.DiscreteFunction`
+
+    """
+    # check whether the spike trains are defined for the same interval
+    assert spike_train1.t_start == spike_train2.t_start, \
+        "Given spike trains are not defined on the same interval!"
+    assert spike_train1.t_end == spike_train2.t_end, \
+        "Given spike trains are not defined on the same interval!"
+
+    # cython implementation
+    try:
+        from cython.cython_directionality import \
+            spike_train_order_profile_cython as \
+            spike_train_order_profile_impl
+    except ImportError:
+        # raise NotImplementedError()
+        if not(pyspike.disable_backend_warning):
+            print("Warning: spike_distance_cython not found. Make sure that \
+PySpike is installed by running\n 'python setup.py build_ext --inplace'!\n \
+Falling back to slow python backend.")
+        # use python backend
+        from cython.directionality_python_backend import \
+            spike_train_order_python as spike_train_order_profile_impl
+
+    if max_tau is None:
+        max_tau = 0.0
+
+    times, coincidences, multiplicity \
+        = spike_train_order_profile_impl(spike_train1.spikes,
+                                         spike_train2.spikes,
+                                         spike_train1.t_start,
+                                         spike_train1.t_end,
+                                         max_tau)
+
+    return DiscreteFunc(times, coincidences, multiplicity)

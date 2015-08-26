@@ -24,7 +24,7 @@ else:
 if os.path.isfile("pyspike/cython/cython_add.c") and \
    os.path.isfile("pyspike/cython/cython_profiles.c") and \
    os.path.isfile("pyspike/cython/cython_distances.c") and \
-   os.path.isfile("pyspike/directionality/cython/cython_directionality.c"):
+   os.path.isfile("pyspike/cython/cython_directionality.c"):
     use_c = True
 else:
     use_c = False
@@ -40,8 +40,8 @@ if use_cython:  # Cython is available, compile .pyx -> .c
                   ["pyspike/cython/cython_profiles.pyx"]),
         Extension("pyspike.cython.cython_distances",
                   ["pyspike/cython/cython_distances.pyx"]),
-        Extension("pyspike.directionality.cython.cython_directionality",
-                  ["pyspike/directionality/cython/cython_directionality.pyx"])
+        Extension("pyspike.cython.cython_directionality",
+                  ["pyspike/cython/cython_directionality.pyx"])
     ]
     cmdclass.update({'build_ext': build_ext})
 elif use_c:  # c files are there, compile to binaries
@@ -52,8 +52,8 @@ elif use_c:  # c files are there, compile to binaries
                   ["pyspike/cython/cython_profiles.c"]),
         Extension("pyspike.cython.cython_distances",
                   ["pyspike/cython/cython_distances.c"]),
-        Extension("pyspike.directionality.cython.cython_directionality",
-                  ["pyspike/directionality/cython/cython_directionality.c"])
+        Extension("pyspike.cython.cython_directionality",
+                  ["pyspike/cython/cython_directionality.c"])
     ]
 # neither cython nor c files available -> automatic fall-back to python backend
 
@@ -93,7 +93,7 @@ train similarity',
     package_data={
         'pyspike': ['cython/cython_add.c', 'cython/cython_profiles.c',
                     'cython/cython_distances.c',
-                    'directionality/cython/cython_directionality.c'],
+                    'cython/cython_directionality.c'],
         'test': ['Spike_testdata.txt']
     }
 )

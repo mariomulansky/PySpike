@@ -14,6 +14,7 @@ from numpy.testing import assert_equal, assert_almost_equal, \
 
 import pyspike as spk
 from pyspike import SpikeTrain, DiscreteFunc
+from pyspike.spike_directionality import _spike_directionality_profile
 
 
 def test_profile():
@@ -23,12 +24,12 @@ def test_profile():
     expected_y = np.array([1, 1, 1, 1, 1, 0, 0])
     expected_mp = np.array([1, 1, 1, 1, 1, 2, 2])
 
-    f = spk.drct.spike_train_order_profile(st1, st2)
+    f = _spike_directionality_profile(st1, st2)
 
     assert f.almost_equal(DiscreteFunc(expected_x, expected_y, expected_mp))
     assert_almost_equal(f.avrg(), 2.0/3.0)
-    assert_almost_equal(spk.drct.spike_train_order(st1, st2), 2.0/3.0)
-    assert_almost_equal(spk.drct.spike_train_order(st1, st2, normalize=False),
+    assert_almost_equal(spk.spike_directionality(st1, st2), 2.0/3.0)
+    assert_almost_equal(spk.spike_directionality(st1, st2, normalize=False),
                         4.0)
 
     st3 = SpikeTrain([105, 195, 500], [0, 1000])
@@ -36,5 +37,5 @@ def test_profile():
     expected_y = np.array([1, 1, 1, -1, -1, 0, 0, 0])
     expected_mp = np.array([1, 1, 1, 1, 1, 1, 1, 1])
 
-    f = spk.drct.spike_train_order_profile(st1, st3)
+    f = _spike_directionality_profile(st1, st3)
     assert f.almost_equal(DiscreteFunc(expected_x, expected_y, expected_mp))
