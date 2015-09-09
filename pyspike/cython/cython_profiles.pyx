@@ -426,3 +426,34 @@ def coincidence_profile_cython(double[:] spikes1, double[:] spikes2,
         c[1] = 1
 
     return st, c, mp
+
+
+############################################################
+# coincidence_single_profile_cython
+############################################################
+def coincidence_single_profile_cython(double[:] spikes1, double[:] spikes2,
+                                      double t_start, double t_end, double max_tau):
+
+    cdef int N1 = len(spikes1)
+    cdef int N2 = len(spikes2)
+    cdef int j = -1
+    cdef double[:] c = np.zeros(N1)   # coincidences
+    cdef double interval = t_end - t_start
+    cdef double tau
+    for i in xrange(N1):
+        while j < N2-1 and spikes2[j+1] < spikes1[i]:
+            j += 1
+        tau = get_tau(spikes1, spikes2, i, j, interval, max_tau)
+        print i, j, spikes1[i], spikes2[j], tau
+        if j > -1 and spikes1[i]-spikes2[j] < tau:
+            # current spike in st1 is coincident
+            c[i] = 1
+        if j < N2-1:
+            j += 1
+            tau = get_tau(spikes1, spikes2, i, j, interval, max_tau)
+            print i, j, spikes1[i], spikes2[j], tau
+            if spikes2[j]-spikes1[i] < tau:
+                # current spike in st1 is coincident
+                c[i] = 1
+
+    return c
