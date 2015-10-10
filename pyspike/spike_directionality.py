@@ -242,27 +242,39 @@ def optimal_spike_train_order_from_matrix(D, full_output=False):
 
     p = np.arange(N)
 
-    T = 2*np.max(D)    # starting temperature
-    T_end = 1E-5 * T   # final temperature
-    alpha = 0.9        # cooling factor
-    total_iter = 0
-    while T > T_end:
-        iterations = 0
-        succ_iter = 0
-        while iterations < 100*N and succ_iter < 10*N:
-            # exchange two rows and cols
-            ind1 = np.random.randint(N-1)
-            delta_A = -2*D[p[ind1], p[ind1+1]]
-            if delta_A > 0.0 or exp(delta_A/T) > np.random.random():
-                # swap indices
-                p[ind1], p[ind1+1] = p[ind1+1], p[ind1]
-                A += delta_A
-                succ_iter += 1
-            iterations += 1
-        total_iter += iterations
-        T *= alpha   # cool down
-        if succ_iter == 0:
-            break
+    T_start = 2*np.max(D)    # starting temperature
+    T_end = 1E-5 * T_start   # final temperature
+    alpha = 0.9              # cooling factor
+
+    from cython.cython_simulated_annealing import sim_ann_cython as sim_ann
+
+    p, A, total_iter = sim_ann(D, T_start, T_end, alpha)
+
+    # T = T_start
+    # total_iter = 0
+    # while T > T_end:
+    #     iterations = 0
+    #     succ_iter = 0
+    #     # equilibrate for 100*N steps or 10*N successful steps
+    #     while iterations < 100*N and succ_iter < 10*N:
+    #         # exchange two rows and cols
+    #         ind1 = np.random.randint(N-1)
+    #         if ind1 < N-1:
+    #             ind2 = ind1+1
+    #         else:   # this can never happend
+    #             ind2 = 0
+    #         delta_A = -2*D[p[ind1], p[ind2]]
+    #         if delta_A > 0.0 or exp(delta_A/T) > np.random.random():
+    #             # swap indices
+    #             p[ind1], p[ind2] = p[ind2], p[ind1]
+    #             A += delta_A
+    #             succ_iter += 1
+    #         iterations += 1
+    #     total_iter += iterations
+    #     T *= alpha   # cool down
+    #     if succ_iter == 0:
+    #         break
+
     if full_output:
         return p, A, total_iter
     else:

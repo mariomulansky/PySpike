@@ -466,18 +466,20 @@ def coincidence_single_profile_cython(double[:] spikes1, double[:] spikes2,
     cdef double tau
     for i in xrange(N1):
         while j < N2-1 and spikes2[j+1] < spikes1[i]:
+            # move forward until spikes2[j] is the last spike before spikes1[i]
+            # note that if spikes2[j] is after spikes1[i] we dont do anything
             j += 1
         tau = get_tau(spikes1, spikes2, i, j, interval, max_tau)
-        print i, j, spikes1[i], spikes2[j], tau
-        if j > -1 and spikes1[i]-spikes2[j] < tau:
+        if j > -1 and fabs(spikes1[i]-spikes2[j]) < tau:
             # current spike in st1 is coincident
             c[i] = 1
-        if j < N2-1:
+        if j < N2-1 and spikes2[j] < spikes1[i]:
+            # in case spikes2[j] is before spikes1[i] it has to be the one 
+            # right before (see above), hence we move one forward and also 
+            # check the next spike
             j += 1
             tau = get_tau(spikes1, spikes2, i, j, interval, max_tau)
-            print i, j, spikes1[i], spikes2[j], tau
-            if spikes2[j]-spikes1[i] < tau:
+            if fabs(spikes2[j]-spikes1[i]) < tau:
                 # current spike in st1 is coincident
                 c[i] = 1
-
     return c
