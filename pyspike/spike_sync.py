@@ -217,12 +217,14 @@ def spike_sync_matrix(spike_trains, indices=None, interval=None, max_tau=None):
 ############################################################
 # filter_by_spike_sync
 ############################################################
-def filter_by_spike_sync(spike_trains, threshold, indices=None, max_tau=None):
+def filter_by_spike_sync(spike_trains, threshold, indices=None, max_tau=None,
+                         return_removed_spikes=False):
     """ Removes the spikes with a multi-variate spike_sync value below
     threshold.
     """
     N = len(spike_trains)
     filtered_spike_trains = []
+    removed_spike_trains = []
 
     # cython implementation
     try:
@@ -230,7 +232,7 @@ def filter_by_spike_sync(spike_trains, threshold, indices=None, max_tau=None):
             as coincidence_impl
     except ImportError:
         if not(pyspike.disable_backend_warning):
-            print("Warning: coincidence_single_profile_cytho not found. Make \
+            print("Warning: coincidence_single_profile_cython not found. Make \
 sure that PySpike is installed by running\n \
 'python setup.py build_ext --inplace'!\n \
 Falling back to slow python backend.")
@@ -243,10 +245,19 @@ Falling back to slow python backend.")
 
     for i, st in enumerate(spike_trains):
         coincidences = np.zeros_like(st)
-        for j in range(N).remove(i):
+        for j in xrange(N):
+            if i == j:
+                continue
             coincidences += coincidence_impl(st.spikes, spike_trains[j].spikes,
                                              st.t_start, st.t_end, max_tau)
         filtered_spikes = st[coincidences > threshold*(N-1)]
         filtered_spike_trains.append(SpikeTrain(filtered_spikes,
                                                 [st.t_start, st.t_end]))
-    return filtered_spike_trains
+        if return_removed_spikes:
+            removed_spikes = st[coincidences <= threshold*(N-1)]
+            removed_spike_trains.append(SpikeTrain(removed_spikes,
+                                                   [st.t_start, st.t_end]))
+    if return_removed_spikes:
+        return [filtered_spike_trains, removed_spike_trains]
+    else:
+        return filtered_spike_trains
