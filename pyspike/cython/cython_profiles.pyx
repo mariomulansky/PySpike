@@ -449,7 +449,7 @@ def coincidence_single_profile_cython(double[:] spikes1, double[:] spikes2,
         if j > -1 and fabs(spikes1[i]-spikes2[j]) < tau:
             # current spike in st1 is coincident
             c[i] = 1
-        if j < N2-1 and spikes2[j] < spikes1[i]:
+        if j < N2-1 and (j < 0 or spikes2[j] < spikes1[i]):
             # in case spikes2[j] is before spikes1[i] it has to be the one 
             # right before (see above), hence we move one forward and also 
             # check the next spike
