@@ -28,12 +28,13 @@ def test_single_prof():
             coincidence_single_profile_cython as coincidence_impl
     except ImportError:
         from pyspike.cython.python_backend import \
-            coincidence_single_profile_python as coincidence_impl
+            coincidence_single_python as coincidence_impl
 
     sync_prof = spk.spike_sync_profile(SpikeTrain(st1, 5.0),
                                        SpikeTrain(st2, 5.0))
 
     coincidences = np.array(coincidence_impl(st1, st2, 0, 5.0, 0.0))
+    print(coincidences)
     for i, t in enumerate(st1):
         assert_equal(coincidences[i], sync_prof.y[sync_prof.x == t],
                      "At index %d" % i)

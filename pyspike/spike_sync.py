@@ -315,7 +315,7 @@ sure that PySpike is installed by running\n \
 'python setup.py build_ext --inplace'!\n \
 Falling back to slow python backend.")
         # use python backend
-        from cython.python_backend import coincidence_single_profile_python \
+        from cython.python_backend import coincidence_single_python \
             as coincidence_impl
 
     if max_tau is None:
