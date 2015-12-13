@@ -7,6 +7,7 @@ Copyright 2015, Mario Mulansky <mario.mulansky@gmx.net>
 Distributed under the BSD License
 """
 
+from __future__ import division
 
 import numpy as np
 
@@ -37,13 +38,13 @@ def _generic_profile_multi(spike_trains, pair_distance_func, indices=None):
         """
         L1 = len(pairs1)
         if L1 > 1:
-            dist_prof1 = divide_and_conquer(pairs1[:L1/2], pairs1[L1/2:])
+            dist_prof1 = divide_and_conquer(pairs1[:L1//2], pairs1[L1//2:])
         else:
             dist_prof1 = pair_distance_func(spike_trains[pairs1[0][0]],
                                             spike_trains[pairs1[0][1]])
         L2 = len(pairs2)
         if L2 > 1:
-            dist_prof2 = divide_and_conquer(pairs2[:L2/2], pairs2[L2/2:])
+            dist_prof2 = divide_and_conquer(pairs2[:L2//2], pairs2[L2//2:])
         else:
             dist_prof2 = pair_distance_func(spike_trains[pairs2[0][0]],
                                             spike_trains[pairs2[0][1]])
@@ -63,8 +64,8 @@ def _generic_profile_multi(spike_trains, pair_distance_func, indices=None):
     L = len(pairs)
     if L > 1:
         # recursive iteration through the list of pairs to get average profile
-        avrg_dist = divide_and_conquer(pairs[:len(pairs)/2],
-                                       pairs[len(pairs)/2:])
+        avrg_dist = divide_and_conquer(pairs[:len(pairs)//2],
+                                       pairs[len(pairs)//2:])
     else:
         avrg_dist = pair_distance_func(spike_trains[pairs[0][0]],
                                        spike_trains[pairs[0][1]])
