@@ -2,6 +2,8 @@
 # Copyright 2014-2015, Mario Mulansky <mario.mulansky@gmx.net>
 # Distributed under the BSD License
 
+from __future__ import absolute_import
+
 import pyspike
 from pyspike import PieceWiseConstFunc
 from pyspike.generic import _generic_profile_multi, _generic_distance_multi, \
@@ -32,7 +34,7 @@ def isi_profile(spike_train1, spike_train2):
 
     # load cython implementation
     try:
-        from cython.cython_profiles import isi_profile_cython \
+        from .cython.cython_profiles import isi_profile_cython \
             as isi_profile_impl
     except ImportError:
         if not(pyspike.disable_backend_warning):
@@ -40,7 +42,7 @@ def isi_profile(spike_train1, spike_train2):
 PySpike is installed by running\n 'python setup.py build_ext --inplace'!\n \
 Falling back to slow python backend.")
         # use python backend
-        from cython.python_backend import isi_distance_python \
+        from .cython.python_backend import isi_distance_python \
             as isi_profile_impl
 
     times, values = isi_profile_impl(spike_train1.get_spikes_non_empty(),
@@ -74,7 +76,7 @@ def isi_distance(spike_train1, spike_train2, interval=None):
         # distance over the whole interval is requested: use specific function
         # for optimal performance
         try:
-            from cython.cython_distances import isi_distance_cython \
+            from .cython.cython_distances import isi_distance_cython \
                 as isi_distance_impl
 
             return isi_distance_impl(spike_train1.get_spikes_non_empty(),
