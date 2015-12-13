@@ -80,7 +80,7 @@ class DiscreteFunc(object):
             expected_mp = (averaging_window_size+1) * int(self.mp[0])
             y_plot = np.zeros_like(self.y)
             # compute the values in a loop, could be done in cython if required
-            for i in xrange(len(y_plot)):
+            for i in range(len(y_plot)):
 
                 if self.mp[i] >= expected_mp:
                     # the current value contains already all the wanted
@@ -244,7 +244,7 @@ def average_profile(profiles):
     assert len(profiles) > 1
 
     avrg_profile = profiles[0].copy()
-    for i in xrange(1, len(profiles)):
+    for i in range(1, len(profiles)):
         avrg_profile.add(profiles[i])
     avrg_profile.mul_scalar(1.0/len(profiles))  # normalize
 

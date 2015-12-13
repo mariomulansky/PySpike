@@ -137,8 +137,8 @@ def _generic_distance_matrix(spike_trains, dist_function,
     assert (indices < len(spike_trains)).all() and (indices >= 0).all(), \
         "Invalid index list."
     # generate a list of possible index pairs
-    pairs = [(i, j) for i in xrange(len(indices))
-             for j in xrange(i+1, len(indices))]
+    pairs = [(i, j) for i in range(len(indices))
+             for j in range(i+1, len(indices))]
 
     distance_matrix = np.zeros((len(indices), len(indices)))
     for i, j in pairs:

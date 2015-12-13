@@ -260,7 +260,7 @@ def optimal_spike_train_order(spike_trains,  indices=None, interval=None,
 def permutate_matrix(D, p):
     N = len(D)
     D_p = np.empty_like(D)
-    for n in xrange(N):
-        for m in xrange(N):
+    for n in range(N):
+        for m in range(N):
             D_p[n, m] = D[p[n], p[m]]
     return D_p
