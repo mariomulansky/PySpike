@@ -309,10 +309,10 @@ def check_dist_matrix(dist_func, dist_matrix_func):
 
     f_matrix = dist_matrix_func(spike_trains)
     # check zero diagonal
-    for i in xrange(4):
+    for i in range(4):
         assert_equal(0.0, f_matrix[i, i])
-    for i in xrange(4):
-        for j in xrange(i+1, 4):
+    for i in range(4):
+        for j in range(i+1, 4):
             assert_equal(f_matrix[i, j], f_matrix[j, i])
     assert_equal(f12, f_matrix[1, 0])
     assert_equal(f13, f_matrix[2, 0])

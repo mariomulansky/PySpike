@@ -2,7 +2,7 @@
 # Copyright 2014-2015, Mario Mulansky <mario.mulansky@gmx.net>
 # Distributed under the BSD License
 
-from __future__ import print_function
+from __future__ import absolute_import, print_function
 
 import numpy as np
 import collections
@@ -79,7 +79,7 @@ class DiscreteFunc(object):
             expected_mp = (averaging_window_size+1) * int(self.mp[0])
             y_plot = np.zeros_like(self.y)
             # compute the values in a loop, could be done in cython if required
-            for i in xrange(len(y_plot)):
+            for i in range(len(y_plot)):
 
                 if self.mp[i] >= expected_mp:
                     # the current value contains already all the wanted
@@ -199,7 +199,7 @@ class DiscreteFunc(object):
 
         # cython version
         try:
-            from cython.cython_add import add_discrete_function_cython as \
+            from .cython.cython_add import add_discrete_function_cython as \
                 add_discrete_function_impl
         except ImportError:
             print("Warning: add_discrete_function_cython not found. Make \
@@ -207,7 +207,7 @@ sure that PySpike is installed by running\n\
 'python setup.py build_ext --inplace'! \
 \n Falling back to slow python backend.")
             # use python backend
-            from cython.python_backend import add_discrete_function_python as \
+            from .cython.python_backend import add_discrete_function_python as \
                 add_discrete_function_impl
 
         self.x, self.y, self.mp = \
@@ -236,7 +236,7 @@ def average_profile(profiles):
     assert len(profiles) > 1
 
     avrg_profile = profiles[0].copy()
-    for i in xrange(1, len(profiles)):
+    for i in range(1, len(profiles)):
         avrg_profile.add(profiles[i])
     avrg_profile.mul_scalar(1.0/len(profiles))  # normalize
 
