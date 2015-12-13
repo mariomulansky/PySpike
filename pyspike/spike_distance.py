@@ -2,6 +2,8 @@
 # Copyright 2014-2015, Mario Mulansky <mario.mulansky@gmx.net>
 # Distributed under the BSD License
 
+from __future__ import absolute_import
+
 from pyspike import PieceWiseLinFunc
 from pyspike.generic import _generic_profile_multi, _generic_distance_multi, \
     _generic_distance_matrix
@@ -31,14 +33,14 @@ def spike_profile(spike_train1, spike_train2):
 
     # cython implementation
     try:
-        from cython.cython_profiles import spike_profile_cython \
+        from .cython.cython_profiles import spike_profile_cython \
             as spike_profile_impl
     except ImportError:
         print("Warning: spike_profile_cython not found. Make sure that \
 PySpike is installed by running\n 'python setup.py build_ext --inplace'!\n \
 Falling back to slow python backend.")
         # use python backend
-        from cython.python_backend import spike_distance_python \
+        from .cython.python_backend import spike_distance_python \
             as spike_profile_impl
 
     times, y_starts, y_ends = spike_profile_impl(
@@ -73,7 +75,7 @@ def spike_distance(spike_train1, spike_train2, interval=None):
         # distance over the whole interval is requested: use specific function
         # for optimal performance
         try:
-            from cython.cython_distances import spike_distance_cython \
+            from .cython.cython_distances import spike_distance_cython \
                 as spike_distance_impl
             return spike_distance_impl(spike_train1.get_spikes_non_empty(),
                                        spike_train2.get_spikes_non_empty(),
