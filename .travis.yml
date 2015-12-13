@@ -2,6 +2,9 @@ language: python
 python:
  - "2.6"
  - "2.7"
+ - "3.3"
+ - "3.4"
+ - "3.5"
 env:
  - CYTHON_INSTALL="pip install -q cython"
  - CYTHON_INSTALL=""
