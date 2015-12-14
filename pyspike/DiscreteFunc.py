@@ -2,10 +2,11 @@
 # Copyright 2014-2015, Mario Mulansky <mario.mulansky@gmx.net>
 # Distributed under the BSD License
 
-from __future__ import print_function
+from __future__ import absolute_import, print_function
 
 import numpy as np
 import collections
+import pyspike
 
 
 ##############################################################
@@ -79,7 +80,7 @@ class DiscreteFunc(object):
             expected_mp = (averaging_window_size+1) * int(self.mp[0])
             y_plot = np.zeros_like(self.y)
             # compute the values in a loop, could be done in cython if required
-            for i in xrange(len(y_plot)):
+            for i in range(len(y_plot)):
 
                 if self.mp[i] >= expected_mp:
                     # the current value contains already all the wanted
@@ -136,9 +137,8 @@ class DiscreteFunc(object):
         :rtype: pair of float
         """
 
-        if len(self.y) <= 2:
-            # no actual values in the profile, return spike sync of 1
-            return 1.0, 1.0
+        value = 0.0
+        multiplicity = 0.0
 
         def get_indices(ival):
             """ Retuns the indeces surrounding the given interval"""
@@ -151,28 +151,32 @@ class DiscreteFunc(object):
         if interval is None:
             # no interval given, integrate over the whole spike train
             # don't count the first value, which is zero by definition
-            return (1.0 * np.sum(self.y[1:-1]), np.sum(self.mp[1:-1]))
-
-        # check if interval is as sequence
-        assert isinstance(interval, collections.Sequence), \
-            "Invalid value for `interval`. None, Sequence or Tuple expected."
-        # check if interval is a sequence of intervals
-        if not isinstance(interval[0], collections.Sequence):
-            # find the indices corresponding to the interval
-            start_ind, end_ind = get_indices(interval)
-            return (np.sum(self.y[start_ind:end_ind]),
-                    np.sum(self.mp[start_ind:end_ind]))
+            value = 1.0 * np.sum(self.y[1:-1])
+            multiplicity = np.sum(self.mp[1:-1])
         else:
-            value = 0.0
-            multiplicity = 0.0
-            for ival in interval:
+            # check if interval is as sequence
+            assert isinstance(interval, collections.Sequence), \
+                "Invalid value for `interval`. None, Sequence or Tuple \
+expected."
+            # check if interval is a sequence of intervals
+            if not isinstance(interval[0], collections.Sequence):
                 # find the indices corresponding to the interval
-                start_ind, end_ind = get_indices(ival)
-                value += np.sum(self.y[start_ind:end_ind])
-                multiplicity += np.sum(self.mp[start_ind:end_ind])
+                start_ind, end_ind = get_indices(interval)
+                value = np.sum(self.y[start_ind:end_ind])
+                multiplicity = np.sum(self.mp[start_ind:end_ind])
+            else:
+                for ival in interval:
+                    # find the indices corresponding to the interval
+                    start_ind, end_ind = get_indices(ival)
+                    value += np.sum(self.y[start_ind:end_ind])
+                    multiplicity += np.sum(self.mp[start_ind:end_ind])
+        if multiplicity == 0.0:
+            # empty profile, return spike sync of 1
+            value = 1.0
+            multiplicity = 1.0
         return (value, multiplicity)
 
-    def avrg(self, interval=None):
+    def avrg(self, interval=None, normalize=True):
         """ Computes the average of the interval sequence:
         :math:`a = 1/N \\sum f_n` where N is the number of intervals.
 
@@ -185,7 +189,10 @@ class DiscreteFunc(object):
         :rtype: float
         """
         val, mp = self.integral(interval)
-        return val/mp
+        if normalize:
+            return val/mp
+        else:
+            return val
 
     def add(self, f):
         """ Adds another `DiscreteFunc` function to this function.
@@ -199,15 +206,16 @@ class DiscreteFunc(object):
 
         # cython version
         try:
-            from cython.cython_add import add_discrete_function_cython as \
+            from .cython.cython_add import add_discrete_function_cython as \
                 add_discrete_function_impl
         except ImportError:
-            print("Warning: add_discrete_function_cython not found. Make \
+            if not(pyspike.disable_backend_warning):
+                print("Warning: add_discrete_function_cython not found. Make \
 sure that PySpike is installed by running\n\
 'python setup.py build_ext --inplace'! \
 \n Falling back to slow python backend.")
             # use python backend
-            from cython.python_backend import add_discrete_function_python as \
+            from .cython.python_backend import add_discrete_function_python as \
                 add_discrete_function_impl
 
         self.x, self.y, self.mp = \
@@ -236,7 +244,7 @@ def average_profile(profiles):
     assert len(profiles) > 1
 
     avrg_profile = profiles[0].copy()
-    for i in xrange(1, len(profiles)):
+    for i in range(1, len(profiles)):
         avrg_profile.add(profiles[i])
     avrg_profile.mul_scalar(1.0/len(profiles))  # normalize
 

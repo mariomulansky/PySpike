@@ -2,10 +2,11 @@
 # Copyright 2014-2015, Mario Mulansky <mario.mulansky@gmx.net>
 # Distributed under the BSD License
 
-from __future__ import print_function
+from __future__ import absolute_import, print_function
 
 import numpy as np
 import collections
+import pyspike
 
 
 ##############################################################
@@ -188,14 +189,16 @@ class PieceWiseConstFunc(object):
 
         # cython version
         try:
-            from cython.cython_add import add_piece_wise_const_cython as \
+            from .cython.cython_add import add_piece_wise_const_cython as \
                 add_piece_wise_const_impl
         except ImportError:
-            print("Warning: add_piece_wise_const_cython not found. Make sure \
-that PySpike is installed by running\n 'python setup.py build_ext --inplace'! \
+            if not(pyspike.disable_backend_warning):
+                print("Warning: add_piece_wise_const_cython not found. Make \
+sure that PySpike is installed by running\n \
+'python setup.py build_ext --inplace'! \
 \n Falling back to slow python backend.")
             # use python backend
-            from cython.python_backend import add_piece_wise_const_python as \
+            from .cython.python_backend import add_piece_wise_const_python as \
                 add_piece_wise_const_impl
 
         self.x, self.y = add_piece_wise_const_impl(self.x, self.y, f.x, f.y)

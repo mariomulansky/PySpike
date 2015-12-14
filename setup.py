@@ -33,23 +33,29 @@ ext_modules = []
 
 if use_cython:  # Cython is available, compile .pyx -> .c
     ext_modules += [
-        Extension("pyspike.cython.cython_add", ["pyspike/cython/cython_add.pyx"]),
-        Extension("pyspike.cython.cython_profiles", ["pyspike/cython/cython_profiles.pyx"]),
-        Extension("pyspike.cython.cython_distances", ["pyspike/cython/cython_distances.pyx"]),
+        Extension("pyspike.cython.cython_add",
+                  ["pyspike/cython/cython_add.pyx"]),
+        Extension("pyspike.cython.cython_profiles",
+                  ["pyspike/cython/cython_profiles.pyx"]),
+        Extension("pyspike.cython.cython_distances",
+                  ["pyspike/cython/cython_distances.pyx"])
     ]
     cmdclass.update({'build_ext': build_ext})
 elif use_c:  # c files are there, compile to binaries
     ext_modules += [
-        Extension("pyspike.cython.cython_add", ["pyspike/cython/cython_add.c"]),
-        Extension("pyspike.cython.cython_profiles", ["pyspike/cython/cython_profiles.c"]),
-        Extension("pyspike.cython.cython_distances", ["pyspike/cython/cython_distances.c"]),
+        Extension("pyspike.cython.cython_add",
+                  ["pyspike/cython/cython_add.c"]),
+        Extension("pyspike.cython.cython_profiles",
+                  ["pyspike/cython/cython_profiles.c"]),
+        Extension("pyspike.cython.cython_distances",
+                  ["pyspike/cython/cython_distances.c"])
     ]
 # neither cython nor c files available -> automatic fall-back to python backend
 
 setup(
     name='pyspike',
     packages=find_packages(exclude=['doc']),
-    version='0.3.0',
+    version='0.4.0',
     cmdclass=cmdclass,
     ext_modules=ext_modules,
     include_dirs=[numpy.get_include()],
@@ -78,10 +84,10 @@ train similarity',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
-    ],
-    package_data={
-        'pyspike': ['cython/cython_add.c', 'cython/cython_profiles.c',
-                    'cython_distances.c'],
-        'test': ['Spike_testdata.txt']
-    }
+
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+    ]
 )

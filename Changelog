@@ -1,3 +1,9 @@
+PySpike v0.4:
+	* Python 3 support (thanks to Igor Gnatenko)
+	* list interface to SpikeTrain class
+	* disable_backend_warning property
+	* several bugfixes
+
 PySpike v0.3:
 	* addition of __version__ attribute
 	* restructured docs, Readme now only contains basic examples

@@ -28,7 +28,8 @@ def spike_train_from_string(s, edges, sep=' ', is_sorted=False):
 # load_spike_trains_txt
 ############################################################
 def load_spike_trains_from_txt(file_name, edges,
-                               separator=' ', comment='#', is_sorted=False):
+                               separator=' ', comment='#', is_sorted=False,
+                               ignore_empty_lines=True):
     """ Loads a number of spike trains from a text file. Each line of the text
     file should contain one spike train as a sequence of spike times separated
     by `separator`. Empty lines as well as lines starting with `comment` are

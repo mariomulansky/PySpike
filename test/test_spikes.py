@@ -13,10 +13,12 @@ from numpy.testing import assert_equal
 
 import pyspike as spk
 
+import os
+TEST_PATH = os.path.dirname(os.path.realpath(__file__))
+TEST_DATA = os.path.join(TEST_PATH, "PySpike_testdata.txt")
 
 def test_load_from_txt():
-    spike_trains = spk.load_spike_trains_from_txt("test/PySpike_testdata.txt",
-                                                  edges=(0, 4000))
+    spike_trains = spk.load_spike_trains_from_txt(TEST_DATA, edges=(0, 4000))
     assert len(spike_trains) == 40
 
     # check the first spike train
@@ -48,8 +50,7 @@ def check_merged_spikes(merged_spikes, spike_trains):
 
 def test_merge_spike_trains():
     # first load the data
-    spike_trains = spk.load_spike_trains_from_txt("test/PySpike_testdata.txt",
-                                                  edges=(0, 4000))
+    spike_trains = spk.load_spike_trains_from_txt(TEST_DATA, edges=(0, 4000))
 
     merged_spikes = spk.merge_spike_trains([spike_trains[0], spike_trains[1]])
     # test if result is sorted

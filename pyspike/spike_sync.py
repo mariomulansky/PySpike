@@ -3,8 +3,11 @@
 # Copyright 2014-2015, Mario Mulansky <mario.mulansky@gmx.net>
 # Distributed under the BSD License
 
+from __future__ import absolute_import
+
 import numpy as np
 from functools import partial
+import pyspike
 from pyspike import DiscreteFunc
 from pyspike.generic import _generic_profile_multi, _generic_distance_matrix
 
@@ -36,14 +39,15 @@ def spike_sync_profile(spike_train1, spike_train2, max_tau=None):
 
     # cython implementation
     try:
-        from cython.cython_profiles import coincidence_profile_cython \
+        from .cython.cython_profiles import coincidence_profile_cython \
             as coincidence_profile_impl
     except ImportError:
-        print("Warning: spike_distance_cython not found. Make sure that \
+        if not(pyspike.disable_backend_warning):
+            print("Warning: spike_distance_cython not found. Make sure that \
 PySpike is installed by running\n 'python setup.py build_ext --inplace'!\n \
 Falling back to slow python backend.")
         # use python backend
-        from cython.python_backend import coincidence_python \
+        from .cython.python_backend import coincidence_python \
             as coincidence_profile_impl
 
     if max_tau is None:
@@ -71,7 +75,7 @@ def _spike_sync_values(spike_train1, spike_train2, interval, max_tau):
         # distance over the whole interval is requested: use specific function
         # for optimal performance
         try:
-            from cython.cython_distances import coincidence_value_cython \
+            from .cython.cython_distances import coincidence_value_cython \
                 as coincidence_value_impl
             if max_tau is None:
                 max_tau = 0.0
