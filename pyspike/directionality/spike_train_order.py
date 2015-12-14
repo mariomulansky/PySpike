@@ -2,6 +2,8 @@
 # Copyright 2015, Mario Mulansky <mario.mulansky@gmx.net>
 # Distributed under the BSD License
 
+from __future__ import absolute_import
+
 import numpy as np
 from math import exp
 from functools import partial
@@ -35,7 +37,7 @@ def spike_train_order_profile(spike_train1, spike_train2, max_tau=None):
 
     # cython implementation
     try:
-        from cython.cython_directionality import \
+        from .cython.cython_directionality import \
             spike_train_order_profile_cython as \
             spike_train_order_profile_impl
     except ImportError:
@@ -45,7 +47,7 @@ def spike_train_order_profile(spike_train1, spike_train2, max_tau=None):
 PySpike is installed by running\n 'python setup.py build_ext --inplace'!\n \
 Falling back to slow python backend.")
         # use python backend
-        from cython.directionality_python_backend import \
+        from .cython.directionality_python_backend import \
             spike_train_order_python as spike_train_order_profile_impl
 
     if max_tau is None:
@@ -72,7 +74,7 @@ def spike_train_order(spike_train1, spike_train2, normalize=True,
         # distance over the whole interval is requested: use specific function
         # for optimal performance
         try:
-            from cython.cython_directionality import \
+            from .cython.cython_directionality import \
                 spike_train_order_cython as spike_train_order_impl
             if max_tau is None:
                 max_tau = 0.0
@@ -170,7 +172,7 @@ def spike_order_values(spike_trains, indices=None,
 
     # cython implementation
     try:
-        from cython.cython_directionality import \
+        from .cython.cython_directionality import \
             spike_order_values_cython as spike_order_values_impl
     except ImportError:
         raise NotImplementedError()
@@ -179,7 +181,7 @@ def spike_order_values(spike_trains, indices=None,
 # PySpike is installed by running\n 'python setup.py build_ext --inplace'!\n \
 # Falling back to slow python backend.")
 #         # use python backend
-#         from cython.python_backend import coincidence_python \
+#         from .cython.python_backend import coincidence_python \
 #             as coincidence_profile_impl
 
     if max_tau is None:
@@ -258,7 +260,7 @@ def optimal_spike_train_order(spike_trains,  indices=None, interval=None,
 def permutate_matrix(D, p):
     N = len(D)
     D_p = np.empty_like(D)
-    for n in xrange(N):
-        for m in xrange(N):
+    for n in range(N):
+        for m in range(N):
             D_p[n, m] = D[p[n], p[m]]
     return D_p

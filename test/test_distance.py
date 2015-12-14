@@ -17,6 +17,8 @@ from numpy.testing import assert_equal, assert_almost_equal, \
 import pyspike as spk
 from pyspike import SpikeTrain
 
+import os
+TEST_PATH = os.path.dirname(os.path.realpath(__file__))
 
 def test_isi():
     # generate two spike trains:
@@ -294,8 +296,8 @@ def test_multi_spike_sync():
                         expected, decimal=15)
 
     # multivariate regression test
-    spike_trains = spk.load_spike_trains_from_txt("test/SPIKE_Sync_Test.txt",
-                                                  edges=[0, 4000])
+    spike_trains = spk.load_spike_trains_from_txt(
+        os.path.join(TEST_PATH, "SPIKE_Sync_Test.txt"), edges=[0, 4000])
     # extract all spike times
     spike_times = np.array([])
     for st in spike_trains:
@@ -328,10 +330,10 @@ def check_dist_matrix(dist_func, dist_matrix_func):
 
     f_matrix = dist_matrix_func(spike_trains)
     # check zero diagonal
-    for i in xrange(4):
+    for i in range(4):
         assert_equal(0.0, f_matrix[i, i])
-    for i in xrange(4):
-        for j in xrange(i+1, 4):
+    for i in range(4):
+        for j in range(i+1, 4):
             assert_equal(f_matrix[i, j], f_matrix[j, i])
     assert_equal(f12, f_matrix[1, 0])
     assert_equal(f13, f_matrix[2, 0])
@@ -371,8 +373,8 @@ def test_regression_spiky():
 
     # multivariate check
 
-    spike_trains = spk.load_spike_trains_from_txt("test/PySpike_testdata.txt",
-                                                  (0.0, 4000.0))
+    spike_trains = spk.load_spike_trains_from_txt(
+        os.path.join(TEST_PATH, "PySpike_testdata.txt"), (0.0, 4000.0))
     isi_dist = spk.isi_distance_multi(spike_trains)
     # get the full precision from SPIKY
     assert_almost_equal(isi_dist, 0.17051816816999129656, decimal=15)
@@ -409,8 +411,8 @@ def test_regression_spiky():
 
 
 def test_multi_variate_subsets():
-    spike_trains = spk.load_spike_trains_from_txt("test/PySpike_testdata.txt",
-                                                  (0.0, 4000.0))
+    spike_trains = spk.load_spike_trains_from_txt(
+        os.path.join(TEST_PATH, "PySpike_testdata.txt"), (0.0, 4000.0))
     sub_set = [1, 3, 5, 7]
     spike_trains_sub_set = [spike_trains[i] for i in sub_set]
 
