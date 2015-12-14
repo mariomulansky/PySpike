@@ -16,11 +16,13 @@ from numpy.testing import assert_equal, assert_almost_equal, \
 
 import pyspike as spk
 
+import os
+TEST_PATH = os.path.dirname(os.path.realpath(__file__))
+TEST_DATA = os.path.join(TEST_PATH, "..", "SPIKE_Sync_Test.txt")
 
 def test_regression_15_isi():
     # load spike trains
-    spike_trains = spk.load_spike_trains_from_txt("test/SPIKE_Sync_Test.txt",
-                                                  edges=[0, 4000])
+    spike_trains = spk.load_spike_trains_from_txt(TEST_DATA, edges=[0, 4000])
 
     N = len(spike_trains)
 
@@ -38,8 +40,7 @@ def test_regression_15_isi():
 
 def test_regression_15_spike():
     # load spike trains
-    spike_trains = spk.load_spike_trains_from_txt("test/SPIKE_Sync_Test.txt",
-                                                  edges=[0, 4000])
+    spike_trains = spk.load_spike_trains_from_txt(TEST_DATA, edges=[0, 4000])
 
     N = len(spike_trains)
 
@@ -57,8 +58,7 @@ def test_regression_15_spike():
 
 def test_regression_15_sync():
     # load spike trains
-    spike_trains = spk.load_spike_trains_from_txt("test/SPIKE_Sync_Test.txt",
-                                                  edges=[0, 4000])
+    spike_trains = spk.load_spike_trains_from_txt(TEST_DATA, edges=[0, 4000])
 
     N = len(spike_trains)
 
