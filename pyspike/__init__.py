@@ -26,8 +26,6 @@ from .psth import psth
 from .spikes import load_spike_trains_from_txt, spike_train_from_string, \
     merge_spike_trains, generate_poisson_spikes
 
-from . import directionality as drct
-
 # define the __version__ following
 # http://stackoverflow.com/questions/17583443
 from pkg_resources import get_distribution, DistributionNotFound
