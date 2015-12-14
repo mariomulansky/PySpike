@@ -70,8 +70,8 @@ def test_spike_empty():
     st1 = SpikeTrain([], edges=(0.0, 1.0))
     st2 = SpikeTrain([0.4, ], edges=(0.0, 1.0))
     d = spk.spike_distance(st1, st2)
-    assert_almost_equal(d, 0.4*0.4*1.0/(0.4+1.0)**2 + 0.6*0.4*1.0/(0.6+1.0)**2,
-                        decimal=15)
+    d_expect = 0.4*0.4*1.0/(0.4+1.0)**2 + 0.6*0.4*1.0/(0.6+1.0)**2
+    assert_almost_equal(d, d_expect, decimal=15)
     prof = spk.spike_profile(st1, st2)
     assert_equal(d, prof.avrg())
     assert_array_equal(prof.x, [0.0, 0.4, 1.0])
