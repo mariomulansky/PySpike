@@ -7,6 +7,7 @@ Copyright 2015, Mario Mulansky <mario.mulansky@gmx.net>
 Distributed under the BSD License
 """
 
+from __future__ import division
 
 import numpy as np
 
@@ -38,14 +39,14 @@ def _generic_profile_multi(spike_trains, pair_distance_func, indices=None):
         L1 = len(pairs1)
         if L1 > 1:
             dist_prof1 = divide_and_conquer(pairs1[:L1//2],
-                                            pairs1[int(L1//2):])
+                                            pairs1[L1//2:])
         else:
             dist_prof1 = pair_distance_func(spike_trains[pairs1[0][0]],
                                             spike_trains[pairs1[0][1]])
         L2 = len(pairs2)
         if L2 > 1:
             dist_prof2 = divide_and_conquer(pairs2[:L2//2],
-                                            pairs2[int(L2//2):])
+                                            pairs2[L2//2:])
         else:
             dist_prof2 = pair_distance_func(spike_trains[pairs2[0][0]],
                                             spike_trains[pairs2[0][1]])
@@ -137,8 +138,8 @@ def _generic_distance_matrix(spike_trains, dist_function,
     assert (indices < len(spike_trains)).all() and (indices >= 0).all(), \
         "Invalid index list."
     # generate a list of possible index pairs
-    pairs = [(i, j) for i in xrange(len(indices))
-             for j in xrange(i+1, len(indices))]
+    pairs = [(i, j) for i in range(len(indices))
+             for j in range(i+1, len(indices))]
 
     distance_matrix = np.zeros((len(indices), len(indices)))
     for i, j in pairs:

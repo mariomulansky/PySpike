@@ -24,7 +24,7 @@ def psth(spike_trains, bin_size):
 
     # N = len(spike_trains)
     combined_spike_train = spike_trains[0].spikes
-    for i in xrange(1, len(spike_trains)):
+    for i in range(1, len(spike_trains)):
         combined_spike_train = np.append(combined_spike_train,
                                          spike_trains[i].spikes)
 

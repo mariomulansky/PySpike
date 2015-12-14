@@ -26,7 +26,7 @@ print("%d spike trains with %d spikes" % (M, int(r*T)))
 spike_trains = []
 
 t_start = datetime.now()
-for i in xrange(M):
+for i in range(M):
     spike_trains.append(spk.generate_poisson_spikes(r, T))
 t_end = datetime.now()
 runtime = (t_end-t_start).total_seconds()
