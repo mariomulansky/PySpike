@@ -8,7 +8,12 @@ python:
 env:
  - CYTHON_INSTALL="pip install -q cython"
  - CYTHON_INSTALL=""
+before_install:
+  - sudo apt-get install libblas-dev
+  - sudo apt-get install liblapack-dev
+  - sudo apt-get install gfortran
 install:
+ - pip install scipy
  - $CYTHON_INSTALL
 
 script:
