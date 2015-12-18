@@ -20,6 +20,7 @@ from pyspike import SpikeTrain
 import os
 TEST_PATH = os.path.dirname(os.path.realpath(__file__))
 
+
 def test_isi():
     # generate two spike trains:
     t1 = SpikeTrain([0.2, 0.4, 0.6, 0.7], 1.0)

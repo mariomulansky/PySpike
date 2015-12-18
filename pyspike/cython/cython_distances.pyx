@@ -184,7 +184,8 @@ def spike_distance_cython(double[:] t1, double[:] t2,
     N1 = len(t1)
     N2 = len(t2)
 
-    with nogil: # release the interpreter to allow multithreading
+    # with nogil: # release the interpreter to allow multithreading
+    if True:
         t_last = t_start
         # t_p1 = t_start
         # t_p2 = t_start
@@ -193,6 +194,7 @@ def spike_distance_cython(double[:] t1, double[:] t2,
         t_aux1[1] = fmax(t_end, t1[N1-1]+(t1[N1-1]-t1[N1-2]))
         t_aux2[0] = fmin(t_start, t2[0]-(t2[1]-t2[0]))
         t_aux2[1] = fmax(t_end, t2[N2-1]+(t2[N2-1]-t2[N2-2]))
+        # print "aux spikes %.15f, %.15f ; %.15f, %.15f" % (t_aux1[0], t_aux1[1], t_aux2[0], t_aux2[1])
         t_p1 = t_start if (t1[0] == t_start) else t_aux1[0]
         t_p2 = t_start if (t2[0] == t_start) else t_aux2[0]
         if t1[0] > t_start:
@@ -207,7 +209,8 @@ def spike_distance_cython(double[:] t1, double[:] t2,
         else:
             t_f1 = t1[1]
             dt_f1 = get_min_dist_cython(t_f1, t2, N2, 0, t_aux2[0], t_aux2[1])
-            dt_p1 = 0.0
+            # dt_p1 = t_start-t_p2  # 0.0
+            dt_p1 = get_min_dist_cython(t_p1, t2, N2, 0, t_aux2[0], t_aux2[1])
             isi1 = t1[1]-t1[0]
             s1 = dt_p1
             index1 = 0
@@ -223,7 +226,8 @@ def spike_distance_cython(double[:] t1, double[:] t2,
         else:
             t_f2 = t2[1]
             dt_f2 = get_min_dist_cython(t_f2, t1, N1, 0, t_aux1[0], t_aux1[1])
-            dt_p2 = 0.0
+            # dt_p2 = t_start-t_p1  # 0.0
+            dt_p2 = get_min_dist_cython(t_p2, t1, N1, 0, t_aux1[0], t_aux1[1])
             isi2 = t2[1]-t2[0]
             s2 = dt_p2
             index2 = 0
