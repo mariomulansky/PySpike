@@ -24,7 +24,9 @@ def test_get_non_empty():
 
     st = SpikeTrain([0.5, ], edges=(0.0, 1.0))
     spikes = st.get_spikes_non_empty()
-    assert_array_equal(spikes, [0.0, 0.5, 1.0])
+    # assert_array_equal(spikes, [0.0, 0.5, 1.0])
+    # spike trains with one spike don't get edge spikes anymore
+    assert_array_equal(spikes, [0.5, ])
 
 
 def test_isi_empty():
@@ -70,21 +72,23 @@ def test_spike_empty():
     st1 = SpikeTrain([], edges=(0.0, 1.0))
     st2 = SpikeTrain([0.4, ], edges=(0.0, 1.0))
     d = spk.spike_distance(st1, st2)
-    d_expect = 0.4*0.4*1.0/(0.4+1.0)**2 + 0.6*0.4*1.0/(0.6+1.0)**2
+    d_expect = 2*0.4*0.4*1.0/(0.4+1.0)**2 + 2*0.6*0.4*1.0/(0.6+1.0)**2
     assert_almost_equal(d, d_expect, decimal=15)
     prof = spk.spike_profile(st1, st2)
     assert_equal(d, prof.avrg())
     assert_array_equal(prof.x, [0.0, 0.4, 1.0])
-    assert_array_almost_equal(prof.y1, [0.0, 2*0.4*1.0/(0.6+1.0)**2],
+    assert_array_almost_equal(prof.y1, [2*0.4*1.0/(0.4+1.0)**2,
+                                        2*0.4*1.0/(0.6+1.0)**2],
                               decimal=15)
-    assert_array_almost_equal(prof.y2, [2*0.4*1.0/(0.4+1.0)**2, 0.0],
+    assert_array_almost_equal(prof.y2, [2*0.4*1.0/(0.4+1.0)**2,
+                                        2*0.4*1.0/(0.6+1.0)**2],
                               decimal=15)
 
     st1 = SpikeTrain([0.6, ], edges=(0.0, 1.0))
     st2 = SpikeTrain([0.4, ], edges=(0.0, 1.0))
     d = spk.spike_distance(st1, st2)
-    s1 = np.array([0.0, 0.4*0.2/0.6, 0.2, 0.0])
-    s2 = np.array([0.0, 0.2, 0.2*0.4/0.6, 0.0])
+    s1 = np.array([0.2, 0.2, 0.2, 0.2])
+    s2 = np.array([0.2, 0.2, 0.2, 0.2])
     isi1 = np.array([0.6, 0.6, 0.4])
     isi2 = np.array([0.4, 0.6, 0.6])
     expected_y1 = (s1[:-1]*isi2+s2[:-1]*isi1) / (0.5*(isi1+isi2)**2)

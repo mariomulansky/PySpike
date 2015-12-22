@@ -28,17 +28,17 @@ def isi_distance_python(s1, s2, t_start, t_end):
     isi_values = np.empty(len(spike_events) - 1)
     if s1[0] > t_start:
         # edge correction
-        nu1 = max(s1[0] - t_start, s1[1] - s1[0])
+        nu1 = max(s1[0] - t_start, s1[1] - s1[0]) if N1 > 1 else s1[0]-t_start
         index1 = -1
     else:
-        nu1 = s1[1] - s1[0]
+        nu1 = s1[1] - s1[0] if N1 > 1 else t_end-s1[0]
         index1 = 0
     if s2[0] > t_start:
         # edge correction
-        nu2 = max(s2[0] - t_start, s2[1] - s2[0])
+        nu2 = max(s2[0] - t_start, s2[1] - s2[0]) if N2 > 1 else s2[0]-t_start
         index2 = -1
     else:
-        nu2 = s2[1] - s2[0]
+        nu2 = s2[1] - s2[0] if N2 > 1 else t_end-s2[0]
         index2 = 0
 
     isi_values[0] = abs(nu1 - nu2) / max(nu1, nu2)
@@ -52,7 +52,8 @@ def isi_distance_python(s1, s2, t_start, t_end):
                 nu1 = s1[index1+1]-s1[index1]
             else:
                 # edge correction
-                nu1 = max(t_end-s1[N1-1], s1[N1-1]-s1[N1-2])
+                nu1 = max(t_end-s1[N1-1], s1[N1-1]-s1[N1-2]) if N1 > 1 \
+                    else t_end-s1[N1-1]
 
         elif (index2 < N2-1) and (index1 == N1-1 or
                                   s1[index1+1] > s2[index2+1]):
@@ -62,7 +63,8 @@ def isi_distance_python(s1, s2, t_start, t_end):
                 nu2 = s2[index2+1]-s2[index2]
             else:
                 # edge correction
-                nu2 = max(t_end-s2[N2-1], s2[N2-1]-s2[N2-2])
+                nu2 = max(t_end-s2[N2-1], s2[N2-1]-s2[N2-2]) if N2 > 1 \
+                    else t_end-s2[N2-1]
 
         else:  # s1[index1 + 1] == s2[index2 + 1]
             index1 += 1
@@ -72,12 +74,14 @@ def isi_distance_python(s1, s2, t_start, t_end):
                 nu1 = s1[index1+1]-s1[index1]
             else:
                 # edge correction
-                nu1 = max(t_end-s1[N1-1], s1[N1-1]-s1[N1-2])
+                nu1 = max(t_end-s1[N1-1], s1[N1-1]-s1[N1-2]) if N1 > 1 \
+                    else t_end-s1[N1-1]
             if index2 < N2-1:
                 nu2 = s2[index2+1]-s2[index2]
             else:
                 # edge correction
-                nu2 = max(t_end-s2[N2-1], s2[N2-1]-s2[N2-2])
+                nu2 = max(t_end-s2[N2-1], s2[N2-1]-s2[N2-2]) if N2 > 1 \
+                    else t_end-s2[N2-1]
         # compute the corresponding isi-distance
         isi_values[index] = abs(nu1 - nu2) / \
             max(nu1, nu2)
@@ -146,10 +150,10 @@ def spike_distance_python(spikes1, spikes2, t_start, t_end):
 
     t_aux1 = np.zeros(2)
     t_aux2 = np.zeros(2)
-    t_aux1[0] = min(t_start, t1[0]-(t1[1]-t1[0]))
-    t_aux1[1] = max(t_end, t1[N1-1]+(t1[N1-1]-t1[N1-2]))
-    t_aux2[0] = min(t_start, t2[0]-(t2[1]-t2[0]))
-    t_aux2[1] = max(t_end, t2[N2-1]+(t2[N2-1]-t2[N2-2]))
+    t_aux1[0] = min(t_start, t1[0]-(t1[1]-t1[0])) if N1 > 1 else t_start
+    t_aux1[1] = max(t_end, t1[N1-1]+(t1[N1-1]-t1[N1-2])) if N1 > 1 else t_end
+    t_aux2[0] = min(t_start, t2[0]-(t2[1]-t2[0])) if N2 > 1 else t_start
+    t_aux2[1] = max(t_end, t2[N2-1]+(t2[N2-1]-t2[N2-2])) if N2 > 1 else t_end
     t_p1 = t_start if (t1[0] == t_start) else t_aux1[0]
     t_p2 = t_start if (t2[0] == t_start) else t_aux2[0]
 
@@ -160,16 +164,16 @@ def spike_distance_python(spikes1, spikes2, t_start, t_end):
         t_f1 = t1[0]
         dt_f1 = get_min_dist(t_f1, t2, 0, t_aux2[0], t_aux2[1])
         dt_p1 = dt_f1
-        isi1 = max(t_f1-t_start, t1[1]-t1[0])
+        isi1 = max(t_f1-t_start, t1[1]-t1[0]) if N1 > 1 else t_f1-t_start
         # s1 = dt_p1*(t_f1-t_start)/isi1
         s1 = dt_p1
         index1 = -1
     else:
         # dt_p1 = t_start-t_p2
+        t_f1 = t1[1] if N1 > 1 else t_end
         dt_p1 = get_min_dist(t_p1, t2, 0, t_aux2[0], t_aux2[1])
-        t_f1 = t1[1]
         dt_f1 = get_min_dist(t_f1, t2, 0, t_aux2[0], t_aux2[1])
-        isi1 = t1[1]-t1[0]
+        isi1 = t_f1-t1[0]
         s1 = dt_p1
         index1 = 0
     if t2[0] > t_start:
@@ -177,22 +181,17 @@ def spike_distance_python(spikes1, spikes2, t_start, t_end):
         t_f2 = t2[0]
         dt_f2 = get_min_dist(t_f2, t1, 0, t_aux1[0], t_aux1[1])
         dt_p2 = dt_f2
-        isi2 = max(t_f2-t_start, t2[1]-t2[0])
+        isi2 = max(t_f2-t_start, t2[1]-t2[0]) if N2 > 1 else t_f2-t_start
         # s2 = dt_p2*(t_f2-t_start)/isi2
         s2 = dt_p2
         index2 = -1
     else:
-        dt_p2 = t_start-t_p1
+        t_f2 = t2[1] if N2 > 1 else t_end
         dt_p2 = get_min_dist(t_p2, t1, 0, t_aux1[0], t_aux1[1])
-        t_f2 = t2[1]
         dt_f2 = get_min_dist(t_f2, t1, 0, t_aux1[0], t_aux1[1])
-        isi2 = t2[1]-t2[0]
+        isi2 = t_f2-t2[0]
         s2 = dt_p2
         index2 = 0
-
-    # print "t_p1:", repr(t_p1), ", t_f1:", repr(t_f1), ", dt_p1:", repr(dt_p1), ", dt_f1:", repr(dt_f1)
-    # print "t_p2:", repr(t_p2), ", t_f2:", repr(t_f2), ", dt_p2:", repr(dt_p2), ", dt_f2:", repr(dt_f2)
-    # print "s1: ", repr(s1), ", s2:", repr(s2)
 
     y_starts[0] = (s1*isi2 + s2*isi1) / (0.5*(isi1+isi2)**2)
     index = 1
@@ -221,7 +220,8 @@ def spike_distance_python(spikes1, spikes2, t_start, t_end):
                 s1 = dt_p1
             else:
                 dt_f1 = dt_p1
-                isi1 = max(t_end-t1[N1-1], t1[N1-1]-t1[N1-2])
+                isi1 = max(t_end-t1[N1-1], t1[N1-1]-t1[N1-2]) if N1 > 1 \
+                    else t_end-t1[N1-1]
                 # s1 needs adjustment due to change of isi1
                 # s1 = dt_p1*(t_end-t1[N1-1])/isi1
                 # Eero's correction: no adjustment
@@ -250,7 +250,8 @@ def spike_distance_python(spikes1, spikes2, t_start, t_end):
                 s2 = dt_p2
             else:
                 dt_f2 = dt_p2
-                isi2 = max(t_end-t2[N2-1], t2[N2-1]-t2[N2-2])
+                isi2 = max(t_end-t2[N2-1], t2[N2-1]-t2[N2-2]) if N2 > 1 \
+                    else t_end-t2[N2-1]
                 # s2 needs adjustment due to change of isi2
                 # s2 = dt_p2*(t_end-t2[N2-1])/isi2
                 # Eero's adjustment: no correction
@@ -274,7 +275,8 @@ def spike_distance_python(spikes1, spikes2, t_start, t_end):
             else:
                 t_f1 = t_aux1[1]
                 dt_f1 = dt_p1
-                isi1 = max(t_end-t1[N1-1], t1[N1-1]-t1[N1-2])
+                isi1 = max(t_end-t1[N1-1], t1[N1-1]-t1[N1-2]) if N1 > 1 \
+                    else t_end-t1[N1-1]
             if index2 < N2-1:
                 t_f2 = t2[index2+1]
                 dt_f2 = get_min_dist(t_f2, t1, index1, t_aux1[0], t_aux1[1])
@@ -282,28 +284,18 @@ def spike_distance_python(spikes1, spikes2, t_start, t_end):
             else:
                 t_f2 = t_aux2[1]
                 dt_f2 = dt_p2
-                isi2 = max(t_end-t2[N2-1], t2[N2-1]-t2[N2-2])
+                isi2 = max(t_end-t2[N2-1], t2[N2-1]-t2[N2-2]) if N2 > 1 \
+                    else t_end-t2[N2-1]
         index += 1
-
-        # print "t_p1:", repr(t_p1), ", t_f1:", repr(t_f1), ", dt_p1:", repr(dt_p1), ", dt_f1:", repr(dt_f1)
-        # print "t_p2:", repr(t_p2), ", t_f2:", repr(t_f2), ", dt_p2:", repr(dt_p2), ", dt_f2:", repr(dt_f2)
-        # print "s1: ", repr(s1), ", s2:", repr(s2)
 
     # the last event is the interval end
     if spike_events[index-1] == t_end:
         index -= 1
     else:
         spike_events[index] = t_end
-        # the ending value of the last interval
-        isi1 = max(t_end-t1[N1-1], t1[N1-1]-t1[N1-2])
-        isi2 = max(t_end-t2[N2-1], t2[N2-1]-t2[N2-2])
         s1 = dt_f1  # *(t_end-t1[N1-1])/isi1
         s2 = dt_f2  # *(t_end-t2[N2-1])/isi2
         y_ends[index-1] = (s1*isi2 + s2*isi1) / (0.5*(isi1+isi2)**2)
-
-    # print "t_p1:", repr(t_p1), ", t_f1:", repr(t_f1), ", dt_p1:", repr(dt_p1), ", dt_f1:", repr(dt_f1)
-    # print "t_p2:", repr(t_p2), ", t_f2:", repr(t_f2), ", dt_p2:", repr(dt_p2), ", dt_f2:", repr(dt_f2)
-    # print "s1: ", repr(s1), ", s2:", repr(s2)
 
     # use only the data added above
     # could be less than original length due to equal spike times
