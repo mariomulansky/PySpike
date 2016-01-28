@@ -31,12 +31,20 @@ def test_regression_random():
             spike_trains.append(spk.SpikeTrain(spikes.flatten(), 100.0))
 
         isi = spk.isi_distance_multi(spike_trains)
+        isi_prof = spk.isi_profile_multi(spike_trains).avrg()
+
         spike = spk.spike_distance_multi(spike_trains)
+        spike_prof = spk.spike_profile_multi(spike_trains).avrg()
         # spike_sync = spk.spike_sync_multi(spike_trains)
 
         assert_almost_equal(isi, results_cSPIKY[i][0], decimal=14,
                             err_msg="Index: %d, ISI" % i)
+        assert_almost_equal(isi_prof, results_cSPIKY[i][0], decimal=14,
+                            err_msg="Index: %d, ISI" % i)
+
         assert_almost_equal(spike, results_cSPIKY[i][1], decimal=14,
+                            err_msg="Index: %d, SPIKE" % i)
+        assert_almost_equal(spike_prof, results_cSPIKY[i][1], decimal=14,
                             err_msg="Index: %d, SPIKE" % i)
 
 
