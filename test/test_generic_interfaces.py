@@ -23,7 +23,12 @@ class dist_from_prof:
         self.prof_func = prof_func
 
     def __call__(self, *args, **kwargs):
-        return self.prof_func(*args, **kwargs).avrg()
+        if "interval" in kwargs:
+            # forward interval arg into avrg function
+            interval = kwargs.pop("interval")
+            return self.prof_func(*args, **kwargs).avrg(interval=interval)
+        else:
+            return self.prof_func(*args, **kwargs).avrg()
 
 
 def check_func(dist_func):
@@ -50,6 +55,22 @@ def check_func(dist_func):
     isi123_ = dist_func(spike_trains, indices=[0, 1, 2])
     assert_equal(isi123, isi123_)
 
+    # run the same test with an additional interval parameter
+
+    isi12 = dist_func(t1, t2, interval=[0.0, 0.5])
+    isi12_ = dist_func([t1, t2], interval=[0.0, 0.5])
+    assert_equal(isi12, isi12_)
+
+    isi12_ = dist_func(spike_trains, indices=[0, 1], interval=[0.0, 0.5])
+    assert_equal(isi12, isi12_)
+
+    isi123 = dist_func(t1, t2, t3, interval=[0.0, 0.5])
+    isi123_ = dist_func([t1, t2, t3], interval=[0.0, 0.5])
+    assert_equal(isi123, isi123_)
+
+    isi123_ = dist_func(spike_trains, indices=[0, 1, 2], interval=[0.0, 0.5])
+    assert_equal(isi123, isi123_)
+
 
 def test_isi_profile():
     check_func(dist_from_prof(spk.isi_profile))
@@ -57,6 +78,14 @@ def test_isi_profile():
 
 def test_isi_distance():
     check_func(spk.isi_distance)
+
+
+def test_spike_profile():
+    check_func(dist_from_prof(spk.spike_profile))
+
+
+def test_spike_distance():
+    check_func(spk.spike_distance)
 
 
 if __name__ == "__main__":
