@@ -1,4 +1,4 @@
-""" test_isi_interface.py
+""" test_generic_interface.py
 
 Tests the generic interfaces of the profile and distance functions
 
@@ -88,6 +88,18 @@ def test_spike_distance():
     check_func(spk.spike_distance)
 
 
+def test_spike_sync_profile():
+    check_func(dist_from_prof(spk.spike_sync_profile))
+
+
+def test_spike_sync():
+    check_func(spk.spike_sync)
+
+
 if __name__ == "__main__":
     test_isi_profile()
     test_isi_distance()
+    test_spike_profile()
+    test_spike_distance()
+    test_spike_sync_profile()
+    test_spike_sync()
