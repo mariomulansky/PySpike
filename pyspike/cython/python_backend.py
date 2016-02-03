@@ -560,7 +560,9 @@ def add_discrete_function_python(x1, y1, mp1, x2, y2, mp2):
     index1 = 0
     index2 = 0
     index = 0
-    while (index1+1 < len(y1)) and (index2+1 < len(y2)):
+    N1 = len(x1)-1
+    N2 = len(x2)-1
+    while (index1+1 < N1) and (index2+1 < N2):
         if x1[index1+1] < x2[index2+1]:
             index1 += 1
             index += 1
@@ -581,20 +583,21 @@ def add_discrete_function_python(x1, y1, mp1, x2, y2, mp2):
             y_new[index] = y1[index1] + y2[index2]
             mp_new[index] = mp1[index1] + mp2[index2]
     # one array reached the end -> copy the contents of the other to the end
-    if index1+1 < len(y1):
-        x_new[index+1:index+1+len(x1)-index1-1] = x1[index1+1:]
-        y_new[index+1:index+1+len(x1)-index1-1] = y1[index1+1:]
-        mp_new[index+1:index+1+len(x1)-index1-1] = mp1[index1+1:]
-        index += len(x1)-index1-1
-    elif index2+1 < len(y2):
-        x_new[index+1:index+1+len(x2)-index2-1] = x2[index2+1:]
-        y_new[index+1:index+1+len(x2)-index2-1] = y2[index2+1:]
-        mp_new[index+1:index+1+len(x2)-index2-1] = mp2[index2+1:]
-        index += len(x2)-index2-1
-    # else:  # both arrays reached the end simultaneously
-    #     x_new[index+1] = x1[-1]
-    #     y_new[index+1] = y1[-1] + y2[-1]
-    #     mp_new[index+1] = mp1[-1] + mp2[-1]
+    if index1+1 < N1:
+        x_new[index+1:index+1+N1-index1] = x1[index1+1:]
+        y_new[index+1:index+1+N1-index1] = y1[index1+1:]
+        mp_new[index+1:index+1+N1-index1] = mp1[index1+1:]
+        index += N1-index1
+    elif index2+1 < N2:
+        x_new[index+1:index+1+N2-index2] = x2[index2+1:]
+        y_new[index+1:index+1+N2-index2] = y2[index2+1:]
+        mp_new[index+1:index+1+N2-index2] = mp2[index2+1:]
+        index += N2-index2
+    else:  # both arrays reached the end simultaneously
+        x_new[index+1] = x1[-1]
+        y_new[index+1] = y1[-1] + y2[-1]
+        mp_new[index+1] = mp1[-1] + mp2[-1]
+        index += 1
 
     y_new[0] = y_new[1]
     mp_new[0] = mp_new[1]
