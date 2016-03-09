@@ -21,9 +21,9 @@ merged_spike_train = spk.merge_spike_trains([spike_trains[0], spike_trains[1]])
 
 print(merged_spike_train.spikes)
 
-plt.plot(spike_trains[0].spikes, np.ones_like(spike_trains[0].spikes), 'o')
-plt.plot(spike_trains[1].spikes, np.ones_like(spike_trains[1].spikes), 'x')
+plt.plot(spike_trains[0], np.ones_like(spike_trains[0]), 'o')
+plt.plot(spike_trains[1], np.ones_like(spike_trains[1]), 'x')
 plt.plot(merged_spike_train.spikes,
-         2*np.ones_like(merged_spike_train.spikes), 'o')
+         2*np.ones_like(merged_spike_train), 'o')
 
 plt.show()

@@ -55,20 +55,27 @@ def isi_distance_cython(double[:] s1, double[:] s2,
     N2 = len(s2)
 
     # first interspike interval - check if a spike exists at the start time
+    # and also account for spike trains with single spikes
     if s1[0] > t_start:
-        # edge correction
-        nu1 = fmax(s1[0]-t_start, s1[1]-s1[0])
+        # edge correction for the first interspike interval: 
+        # take the maximum of the distance from the beginning to the first
+        # spike and the interval between the first two spikes.
+        # if there is only one spike, take the its distance to the beginning
+        nu1 = fmax(s1[0]-t_start, s1[1]-s1[0]) if N1 > 1 else s1[0]-t_start
         index1 = -1
     else:
-        nu1 = s1[1]-s1[0]
+        # if the first spike is exactly at the start, take the distance
+        # to the next spike. If this is the only spike, take the distance to
+        # the end.
+        nu1 = s1[1]-s1[0] if N1 > 1 else t_end-s1[0]
         index1 = 0
 
     if s2[0] > t_start:
-        # edge correction
-        nu2 = fmax(s2[0]-t_start, s2[1]-s2[0])
+        # edge correction as above
+        nu2 = fmax(s2[0]-t_start, s2[1]-s2[0]) if N2 > 1 else s2[0]-t_start
         index2 = -1
     else:
-        nu2 = s2[1]-s2[0]
+        nu2 = s2[1]-s2[0] if N2 > 1 else t_end-s2[0]
         index2 = 0
 
     last_t = t_start
@@ -86,8 +93,12 @@ def isi_distance_cython(double[:] s1, double[:] s2,
                 if index1 < N1-1:
                     nu1 = s1[index1+1]-s1[index1]
                 else:
-                    # edge correction
-                    nu1 = fmax(t_end-s1[index1], nu1)
+                    # edge correction for the last ISI: 
+                    # take the max of the distance of the last
+                    # spike to the end and the previous ISI. If there was only
+                    # one spike, always take the distance to the end.
+                    nu1 = fmax(t_end-s1[index1], nu1) if N1 > 1 \
+                          else t_end-s1[index1]
             elif (index2 < N2-1) and ((index1 == N1-1) or
                                       (s1[index1+1] > s2[index2+1])):
                 index2 += 1
@@ -95,8 +106,9 @@ def isi_distance_cython(double[:] s1, double[:] s2,
                 if index2 < N2-1:
                     nu2 = s2[index2+1]-s2[index2]
                 else:
-                    # edge correction
-                    nu2 = fmax(t_end-s2[index2], nu2)
+                    # edge correction for the end as above
+                    nu2 = fmax(t_end-s2[index2], nu2) if N2 > 1 \
+                          else t_end-s2[index2]
             else: # s1[index1+1] == s2[index2+1]
                 index1 += 1
                 index2 += 1
@@ -104,13 +116,15 @@ def isi_distance_cython(double[:] s1, double[:] s2,
                 if index1 < N1-1:
                     nu1 = s1[index1+1]-s1[index1]
                 else:
-                    # edge correction
-                    nu1 = fmax(t_end-s1[index1], nu1)
+                    # edge correction for the end as above
+                    nu1 = fmax(t_end-s1[index1], nu1) if N1 > 1 \
+                          else t_end-s1[index1]
                 if index2 < N2-1:
                     nu2 = s2[index2+1]-s2[index2]
                 else:
-                    # edge correction
-                    nu2 = fmax(t_end-s2[index2], nu2)
+                    # edge correction for the end as above
+                    nu2 = fmax(t_end-s2[index2], nu2) if N2 > 1 \
+                          else t_end-s2[index2]
             # compute the corresponding isi-distance
             isi_value += curr_isi * (curr_t - last_t)
             curr_isi = fabs(nu1 - nu2) / fmax(nu1, nu2)
@@ -184,31 +198,35 @@ def spike_distance_cython(double[:] t1, double[:] t2,
     N1 = len(t1)
     N2 = len(t2)
 
+    # we can assume at least one spikes per spike train
+    assert N1 > 0
+    assert N2 > 0
+
+
     with nogil: # release the interpreter to allow multithreading
         t_last = t_start
-        # t_p1 = t_start
-        # t_p2 = t_start
         # auxiliary spikes for edge correction - consistent with first/last ISI 
-        t_aux1[0] = fmin(t_start, t1[0]-(t1[1]-t1[0]))
-        t_aux1[1] = fmax(t_end, t1[N1-1]+(t1[N1-1]-t1[N1-2]))
-        t_aux2[0] = fmin(t_start, t2[0]-(t2[1]-t2[0]))
-        t_aux2[1] = fmax(t_end, t2[N2-1]+(t2[N2-1]-t2[N2-2]))
+        t_aux1[0] = fmin(t_start, 2*t1[0]-t1[1]) if N1 > 1 else t_start
+        t_aux1[1] = fmax(t_end, 2*t1[N1-1]-t1[N1-2]) if N1 > 1 else t_end
+        t_aux2[0] = fmin(t_start, 2*t2[0]-t2[1]) if N2 > 1 else t_start
+        t_aux2[1] = fmax(t_end, 2*t2[N2-1]+-t2[N2-2]) if N2 > 1 else t_end
+        # print "aux spikes %.15f, %.15f ; %.15f, %.15f" % (t_aux1[0], t_aux1[1], t_aux2[0], t_aux2[1])
         t_p1 = t_start if (t1[0] == t_start) else t_aux1[0]
         t_p2 = t_start if (t2[0] == t_start) else t_aux2[0]
         if t1[0] > t_start:
             # dt_p1 = t2[0]-t_start
             t_f1 = t1[0]
             dt_f1 = get_min_dist_cython(t_f1, t2, N2, 0, t_aux2[0], t_aux2[1])
-            isi1 = fmax(t_f1-t_start, t1[1]-t1[0])
+            isi1 = fmax(t_f1-t_start, t1[1]-t1[0]) if N1 > 1 else t_f1-t_start
             dt_p1 = dt_f1
             # s1 = dt_p1*(t_f1-t_start)/isi1
             s1 = dt_p1
             index1 = -1
-        else:
-            t_f1 = t1[1]
+        else:  # t1[0] == t_start
+            t_f1 = t1[1] if N1 > 1 else t_end
             dt_f1 = get_min_dist_cython(t_f1, t2, N2, 0, t_aux2[0], t_aux2[1])
-            dt_p1 = 0.0
-            isi1 = t1[1]-t1[0]
+            dt_p1 = get_min_dist_cython(t_p1, t2, N2, 0, t_aux2[0], t_aux2[1])
+            isi1 = t_f1-t1[0]
             s1 = dt_p1
             index1 = 0
         if t2[0] > t_start:
@@ -216,15 +234,16 @@ def spike_distance_cython(double[:] t1, double[:] t2,
             t_f2 = t2[0]
             dt_f2 = get_min_dist_cython(t_f2, t1, N1, 0, t_aux1[0], t_aux1[1])
             dt_p2 = dt_f2
-            isi2 = fmax(t_f2-t_start, t2[1]-t2[0])
+            isi2 = fmax(t_f2-t_start, t2[1]-t2[0]) if N2 > 1 else t_f2-t_start
             # s2 = dt_p2*(t_f2-t_start)/isi2
             s2 = dt_p2
             index2 = -1
-        else:
-            t_f2 = t2[1]
+        else:  # t2[0] == t_start
+            t_f2 = t2[1] if N2 > 1 else t_end
             dt_f2 = get_min_dist_cython(t_f2, t1, N1, 0, t_aux1[0], t_aux1[1])
-            dt_p2 = 0.0
-            isi2 = t2[1]-t2[0]
+            # dt_p2 = t_start-t_p1  # 0.0
+            dt_p2 = get_min_dist_cython(t_p2, t1, N1, 0, t_aux1[0], t_aux1[1])
+            isi2 = t_f2-t2[0]
             s2 = dt_p2
             index2 = 0
 
@@ -259,7 +278,8 @@ def spike_distance_cython(double[:] t1, double[:] t2,
                     s1 = dt_p1
                 else:
                     dt_f1 = dt_p1
-                    isi1 = fmax(t_end-t1[N1-1], t1[N1-1]-t1[N1-2])
+                    isi1 = fmax(t_end-t1[N1-1], t1[N1-1]-t1[N1-2]) if N1 > 1 \
+                           else t_end-t1[N1-1]
                     # s1 needs adjustment due to change of isi1
                     # s1 = dt_p1*(t_end-t1[N1-1])/isi1
                     # Eero's correction: no adjustment
@@ -292,7 +312,8 @@ def spike_distance_cython(double[:] t1, double[:] t2,
                     s2 = dt_p2
                 else:
                     dt_f2 = dt_p2
-                    isi2 = fmax(t_end-t2[N2-1], t2[N2-1]-t2[N2-2])
+                    isi2 = fmax(t_end-t2[N2-1], t2[N2-1]-t2[N2-2]) if N2 > 1 \
+                           else t_end-t2[N2-1]
                     # s2 needs adjustment due to change of isi2
                     # s2 = dt_p2*(t_end-t2[N2-1])/isi2
                     # Eero's correction: no adjustment
@@ -318,7 +339,8 @@ def spike_distance_cython(double[:] t1, double[:] t2,
                 else:
                     t_f1 = t_aux1[1]
                     dt_f1 = dt_p1
-                    isi1 = fmax(t_end-t1[N1-1], t1[N1-1]-t1[N1-2])
+                    isi1 = fmax(t_end-t1[N1-1], t1[N1-1]-t1[N1-2]) if N1 > 1 \
+                           else t_end-t1[N1-1]
                 if index2 < N2-1:
                     t_f2 = t2[index2+1]
                     dt_f2 = get_min_dist_cython(t_f2, t1, N1, index1,
@@ -327,7 +349,8 @@ def spike_distance_cython(double[:] t1, double[:] t2,
                 else:
                     t_f2 = t_aux2[1]
                     dt_f2 = dt_p2
-                    isi2 = fmax(t_end-t2[N2-1], t2[N2-1]-t2[N2-2])
+                    isi2 = fmax(t_end-t2[N2-1], t2[N2-1]-t2[N2-2]) if N2 > 1 \
+                           else t_end-t2[N2-1]
             index += 1
             t_last = t_curr
         # isi1 = max(t_end-t1[N1-1], t1[N1-1]-t1[N1-2])

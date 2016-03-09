@@ -68,7 +68,7 @@ class SpikeTrain(object):
         """Returns the spikes of this spike train with auxiliary spikes in case
         of empty spike trains.
         """
-        if len(self.spikes) < 2:
+        if len(self.spikes) < 1:
             return np.unique(np.insert([self.t_start, self.t_end], 1,
                                        self.spikes))
         else:
