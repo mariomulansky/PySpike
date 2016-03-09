@@ -31,7 +31,7 @@ plt.figure()
 
 plt.subplot(211)
 
-f = spk.spike_sync_profile_multi(spike_trains)
+f = spk.spike_sync_profile(spike_trains)
 x, y = f.get_plottable_data()
 plt.plot(x, y, '-b', alpha=0.7, label="SPIKE-Sync profile")
 

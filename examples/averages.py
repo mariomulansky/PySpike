@@ -12,7 +12,7 @@ from __future__ import print_function
 import pyspike as spk
 
 spike_trains = spk.load_spike_trains_from_txt("PySpike_testdata.txt",
-                                              time_interval=(0, 4000))
+                                              edges=(0, 4000))
 
 f = spk.isi_profile(spike_trains[0], spike_trains[1])
 
