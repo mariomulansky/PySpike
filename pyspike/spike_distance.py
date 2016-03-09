@@ -28,6 +28,13 @@ def spike_profile(*args, **kwargs):
       spike_profile(spike_trains, indices=[0, 1])  # use only the spike trains
                                                    # given by the indices
 
+    The multivariate spike-distance profile is defined as the average of all
+    pairs of spike-trains:
+
+    .. math:: <S(t)> = \\frac{2}{N(N-1)} \\sum_{<i,j>} S^{i, j}`,
+
+    where the sum goes over all pairs <i,j>
+
     :returns: The spike-distance profile :math:`S(t)`
     :rtype: :class:`.PieceWiseConstLin`
     """
@@ -43,9 +50,9 @@ def spike_profile(*args, **kwargs):
 # spike_profile_bi
 ############################################################
 def spike_profile_bi(spike_train1, spike_train2):
-    """ Computes the spike-distance profile :math:`S(t)` of the two given spike
-    trains. Returns the profile as a PieceWiseLinFunc object. The SPIKE-values
-    are defined positive :math:`S(t)>=0`.
+    """ Specific function to compute a bivariate SPIKE-profile. This is a
+    deprecated function and should not be called directly. Use
+    :func:`.spike_profile` to compute SPIKE-profiles.
 
     :param spike_train1: First spike train.
     :type spike_train1: :class:`.SpikeTrain`
@@ -86,12 +93,9 @@ Falling back to slow python backend.")
 # spike_profile_multi
 ############################################################
 def spike_profile_multi(spike_trains, indices=None):
-    """ Computes the multi-variate spike distance profile for a set of spike
-    trains. That is the average spike-distance of all pairs of spike-trains:
-
-    .. math:: <S(t)> = \\frac{2}{N(N-1)} \\sum_{<i,j>} S^{i, j}`,
-
-    where the sum goes over all pairs <i,j>
+    """ Specific function to compute a multivariate SPIKE-profile. This is a
+    deprecated function and should not be called directly. Use
+    :func:`.spike_profile` to compute SPIKE-profiles.
 
     :param spike_trains: list of :class:`.SpikeTrain`
     :param indices: list of indices defining which spike trains to use,
@@ -128,6 +132,13 @@ def spike_distance(*args, **kwargs):
       spike_distance(spike_trains, indices=[0, 1])  # use only the spike trains
                                                     # given by the indices
 
+    In the multivariate case, the spike distance is given as the integral over
+    the multivariate profile, that is the average profile of all spike train
+    pairs:
+
+    .. math::  D_S = \\int_0^T \\frac{2}{N(N-1)} \\sum_{<i,j>}
+               S^{i, j} dt
+
     :returns: The spike-distance :math:`D_S`.
     :rtype: double
     """
@@ -144,11 +155,9 @@ def spike_distance(*args, **kwargs):
 # spike_distance_bi
 ############################################################
 def spike_distance_bi(spike_train1, spike_train2, interval=None):
-    """ Computes the spike-distance :math:`D_S` of the given spike trains. The
-    spike-distance is the integral over the spike distance profile
-    :math:`S(t)`:
-
-    .. math:: D_S = \int_{T_0}^{T_1} S(t) dt.
+    """ Specific function to compute a bivariate SPIKE-distance. This is a
+    deprecated function and should not be called directly. Use
+    :func:`.spike_distance` to compute SPIKE-distances.
 
     :param spike_train1: First spike train.
     :type spike_train1: :class:`.SpikeTrain`
@@ -183,13 +192,9 @@ def spike_distance_bi(spike_train1, spike_train2, interval=None):
 # spike_distance_multi
 ############################################################
 def spike_distance_multi(spike_trains, indices=None, interval=None):
-    """ Computes the multi-variate spike distance for a set of spike trains.
-    That is the time average of the multi-variate spike profile:
-
-    .. math::  D_S = \\int_0^T \\frac{2}{N(N-1)} \\sum_{<i,j>}
-               S^{i, j} dt
-
-    where the sum goes over all pairs <i,j>
+    """ Specific function to compute a multivariate SPIKE-distance. This is a
+    deprecated function and should not be called directly. Use
+    :func:`.spike_distance` to compute SPIKE-distances.
 
     :param spike_trains: list of :class:`.SpikeTrain`
     :param indices: list of indices defining which spike trains to use,

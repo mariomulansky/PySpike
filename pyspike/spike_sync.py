@@ -34,6 +34,11 @@ def spike_sync_profile(*args, **kwargs):
       spike_sync_profile(sts, indices=[0, 1])  # use only the spike trains
                                                # given by the indices
 
+    In the multivariate case, the profile is defined as the number of
+    coincidences for each spike in the set of spike trains divided by the
+    number of spike trains pairs involving the spike train of containing this
+    spike, which is the number of spike trains minus one (N-1).
+
     :returns: The spike-sync profile :math:`S_{sync}(t)`.
     :rtype: :class:`pyspike.function.DiscreteFunction`
     """
@@ -49,10 +54,9 @@ def spike_sync_profile(*args, **kwargs):
 # spike_sync_profile_bi
 ############################################################
 def spike_sync_profile_bi(spike_train1, spike_train2, max_tau=None):
-    """ Computes the spike-synchronization profile S_sync(t) of the two given
-    spike trains. Returns the profile as a DiscreteFunction object. The S_sync
-    values are either 1 or 0, indicating the presence or absence of a
-    coincidence.
+    """ Specific function to compute a bivariate SPIKE-Sync-profile. This is a
+    deprecated function and should not be called directly. Use
+    :func:`.spike_sync_profile` to compute SPIKE-Sync-profiles.
 
     :param spike_train1: First spike train.
     :type spike_train1: :class:`pyspike.SpikeTrain`
@@ -98,11 +102,9 @@ Falling back to slow python backend.")
 # spike_sync_profile_multi
 ############################################################
 def spike_sync_profile_multi(spike_trains, indices=None, max_tau=None):
-    """ Computes the multi-variate spike synchronization profile for a set of
-    spike trains. For each spike in the set of spike trains, the multi-variate
-    profile is defined as the number of coincidences divided by the number of
-    spike trains pairs involving the spike train of containing this spike,
-    which is the number of spike trains minus one (N-1).
+    """  Specific function to compute a multivariate SPIKE-Sync-profile.
+    This is a deprecated function and should not be called directly. Use
+    :func:`.spike_sync_profile` to compute SPIKE-Sync-profiles.
 
     :param spike_trains: list of :class:`pyspike.SpikeTrain`
     :param indices: list of indices defining which spike trains to use,
@@ -176,6 +178,9 @@ def spike_sync(*args, **kwargs):
       spike_sync(spike_trains, indices=[0, 1])  # use only the spike trains
                                                 # given by the indices
 
+    The multivariate SPIKE-Sync is again defined as the overall ratio of all
+    coincidence values divided by the total number of spikes.
+
     :returns: The spike synchronization value.
     :rtype: `double`
     """
@@ -192,11 +197,9 @@ def spike_sync(*args, **kwargs):
 # spike_sync_bi
 ############################################################
 def spike_sync_bi(spike_train1, spike_train2, interval=None, max_tau=None):
-    """ Computes the spike synchronization value SYNC of the given spike
-    trains. The spike synchronization value is the computed as the total number
-    of coincidences divided by the total number of spikes:
-
-    .. math:: SYNC = \sum_n C_n / N.
+    """ Specific function to compute a bivariate SPIKE-Sync value.
+    This is a deprecated function and should not be called directly. Use
+    :func:`.spike_sync` to compute SPIKE-Sync values.
 
     :param spike_train1: First spike train.
     :type spike_train1: :class:`pyspike.SpikeTrain`
@@ -219,8 +222,9 @@ def spike_sync_bi(spike_train1, spike_train2, interval=None, max_tau=None):
 # spike_sync_multi
 ############################################################
 def spike_sync_multi(spike_trains, indices=None, interval=None, max_tau=None):
-    """ Computes the multi-variate spike synchronization value for a set of
-    spike trains.
+    """ Specific function to compute a multivariate SPIKE-Sync value.
+    This is a deprecated function and should not be called directly. Use
+    :func:`.spike_sync` to compute SPIKE-Sync values.
 
     :param spike_trains: list of :class:`pyspike.SpikeTrain`
     :param indices: list of indices defining which spike trains to use,

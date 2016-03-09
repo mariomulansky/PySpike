@@ -20,13 +20,21 @@ def isi_profile(*args, **kwargs):
 
     Valid call structures::
 
-      isi_profile(st1, st2)  # returns the bi-variate profile
+      isi_profile(st1, st2)       # returns the bi-variate profile
       isi_profile(st1, st2, st3)  # multi-variate profile of 3 spike trains
 
       spike_trains = [st1, st2, st3, st4]  # list of spike trains
-      isi_profile(spike_trains)  # profile of the list of spike trains
+      isi_profile(spike_trains)   # profile of the list of spike trains
       isi_profile(spike_trains, indices=[0, 1])  # use only the spike trains
                                                  # given by the indices
+
+    The multivariate ISI distance profile for a set of spike trains is defined
+    as the average ISI-profile of all pairs of spike-trains:
+
+    .. math:: <I(t)> = \\frac{2}{N(N-1)} \\sum_{<i,j>} I^{i,j},
+
+    where the sum goes over all pairs <i,j>
+
 
     :returns: The isi-distance profile :math:`I(t)`
     :rtype: :class:`.PieceWiseConstFunc`
@@ -43,10 +51,9 @@ def isi_profile(*args, **kwargs):
 # isi_profile_bi
 ############################################################
 def isi_profile_bi(spike_train1, spike_train2):
-    """ Bi-variate ISI-profile.
-    Computes the isi-distance profile :math:`I(t)` of the two given
-    spike trains. Returns the profile as a PieceWiseConstFunc object.
-    See :func:`.isi_profile`.
+    """ Specific function to compute a bivariate ISI-profile. This is a
+    deprecated function and should not be called directly. Use
+    :func:`.isi_profile` to compute ISI-profiles.
 
     :param spike_train1: First spike train.
     :type spike_train1: :class:`.SpikeTrain`
@@ -85,12 +92,10 @@ Falling back to slow python backend.")
 # isi_profile_multi
 ############################################################
 def isi_profile_multi(spike_trains, indices=None):
-    """ computes the multi-variate isi distance profile for a set of spike
-    trains. That is the average isi-distance of all pairs of spike-trains:
+    """ Specific function to compute the multivariate ISI-profile for a set of
+    spike trains. This is a deprecated function and should not be called
+    directly. Use :func:`.isi_profile` to compute ISI-profiles.
 
-    .. math:: <I(t)> = \\frac{2}{N(N-1)} \\sum_{<i,j>} I^{i,j},
-
-    where the sum goes over all pairs <i,j>
 
     :param spike_trains: list of :class:`.SpikeTrain`
     :param indices: list of indices defining which spike trains to use,
@@ -114,6 +119,14 @@ def isi_distance(*args, **kwargs):
     :math:`I(t)`:
 
     .. math:: D_I = \\int_{T_0}^{T_1} I(t) dt.
+
+    In the multivariate case it is the integral over the multivariate
+    ISI-profile, i.e. the average profile over all spike train pairs:
+
+    .. math:: D_I = \\int_0^T \\frac{2}{N(N-1)} \\sum_{<i,j>} I^{i,j},
+
+    where the sum goes over all pairs <i,j>
+
 
 
     Valid call structures::
@@ -139,14 +152,12 @@ def isi_distance(*args, **kwargs):
 
 
 ############################################################
-# isi_distance_bi
+# _isi_distance_bi
 ############################################################
 def isi_distance_bi(spike_train1, spike_train2, interval=None):
-    """ Computes the ISI-distance :math:`D_I` of the given spike trains. The
-    isi-distance is the integral over the isi distance profile
-    :math:`I(t)`:
-
-    .. math:: D_I = \\int_{T_0}^{T_1} I(t) dt.
+    """ Specific function to compute the bivariate ISI-distance.
+    This is a deprecated function and should not be called directly. Use
+    :func:`.isi_distance` to compute ISI-distances.
 
     :param spike_train1: First spike train.
     :type spike_train1: :class:`.SpikeTrain`
@@ -181,12 +192,9 @@ def isi_distance_bi(spike_train1, spike_train2, interval=None):
 # isi_distance_multi
 ############################################################
 def isi_distance_multi(spike_trains, indices=None, interval=None):
-    """ computes the multi-variate isi-distance for a set of spike-trains.
-    That is the time average of the multi-variate spike profile:
-
-    .. math:: D_I = \\int_0^T \\frac{2}{N(N-1)} \\sum_{<i,j>} I^{i,j},
-
-    where the sum goes over all pairs <i,j>
+    """ Specific function to compute the multivariate ISI-distance.
+    This is a deprecfated function and should not be called directly. Use
+    :func:`.isi_distance` to compute ISI-distances.
 
     :param spike_trains: list of :class:`.SpikeTrain`
     :param indices: list of indices defining which spike trains to use,
