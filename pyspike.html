@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pyspike package &mdash; PySpike 0.3.0 documentation</title>
+    <title>pyspike package &mdash; PySpike 0.5.1 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.3.0',
+        VERSION:     '0.5.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="PySpike 0.3.0 documentation" href="index.html" />
+    <link rel="top" title="PySpike 0.5.1 documentation" href="index.html" />
     <link rel="prev" title="PySpike" href="index.html" /> 
   </head>
   <body>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="index.html" title="PySpike"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PySpike 0.3.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">PySpike 0.5.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -503,7 +503,7 @@ False otherwise</td>
 
 <dl class="method">
 <dt id="pyspike.DiscreteFunc.DiscreteFunc.avrg">
-<tt class="descname">avrg</tt><big>(</big><em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/DiscreteFunc.html#DiscreteFunc.avrg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.DiscreteFunc.DiscreteFunc.avrg" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">avrg</tt><big>(</big><em>interval=None</em>, <em>normalize=True</em><big>)</big><a class="reference internal" href="_modules/pyspike/DiscreteFunc.html#DiscreteFunc.avrg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.DiscreteFunc.DiscreteFunc.avrg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the average of the interval sequence:
 <span class="math">\(a = 1/N \sum f_n\)</span> where N is the number of intervals.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -631,12 +631,45 @@ SPIKE-profiles to be averaged.</td>
 <span id="isi-distance"></span><h3>ISI-distance<a class="headerlink" href="#module-pyspike.isi_distance" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="pyspike.isi_distance.isi_distance">
-<tt class="descclassname">pyspike.isi_distance.</tt><tt class="descname">isi_distance</tt><big>(</big><em>spike_train1</em>, <em>spike_train2</em>, <em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/isi_distance.html#isi_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.isi_distance.isi_distance" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">pyspike.isi_distance.</tt><tt class="descname">isi_distance</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pyspike/isi_distance.html#isi_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.isi_distance.isi_distance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the ISI-distance <span class="math">\(D_I\)</span> of the given spike trains. The
 isi-distance is the integral over the isi distance profile
 <span class="math">\(I(t)\)</span>:</p>
 <div class="math">
 \[D_I = \int_{T_0}^{T_1} I(t) dt.\]</div>
+<p>In the multivariate case it is the integral over the multivariate
+ISI-profile, i.e. the average profile over all spike train pairs:</p>
+<div class="math">
+\[\begin{split}D_I = \int_0^T \frac{2}{N(N-1)} \sum_{&lt;i,j&gt;} I^{i,j},\end{split}\]</div>
+<p>where the sum goes over all pairs &lt;i,j&gt;</p>
+<p>Valid call structures:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">isi_distance</span><span class="p">(</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">)</span>  <span class="c"># returns the bi-variate distance</span>
+<span class="n">isi_distance</span><span class="p">(</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">,</span> <span class="n">st3</span><span class="p">)</span>  <span class="c"># multi-variate distance of 3 spike trains</span>
+
+<span class="n">spike_trains</span> <span class="o">=</span> <span class="p">[</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">,</span> <span class="n">st3</span><span class="p">,</span> <span class="n">st4</span><span class="p">]</span>  <span class="c"># list of spike trains</span>
+<span class="n">isi_distance</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">)</span>  <span class="c"># distance of the list of spike trains</span>
+<span class="n">isi_distance</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>  <span class="c"># use only the spike trains</span>
+                                            <span class="c"># given by the indices</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The isi-distance <span class="math">\(D_I\)</span>.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">double</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyspike.isi_distance.isi_distance_bi">
+<tt class="descclassname">pyspike.isi_distance.</tt><tt class="descname">isi_distance_bi</tt><big>(</big><em>spike_train1</em>, <em>spike_train2</em>, <em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/isi_distance.html#isi_distance_bi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.isi_distance.isi_distance_bi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specific function to compute the bivariate ISI-distance.
+This is a deprecated function and should not be called directly. Use
+<a class="reference internal" href="#pyspike.isi_distance.isi_distance" title="pyspike.isi_distance.isi_distance"><tt class="xref py py-func docutils literal"><span class="pre">isi_distance()</span></tt></a> to compute ISI-distances.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -690,11 +723,9 @@ the average over the whole function is computed.</li>
 <dl class="function">
 <dt id="pyspike.isi_distance.isi_distance_multi">
 <tt class="descclassname">pyspike.isi_distance.</tt><tt class="descname">isi_distance_multi</tt><big>(</big><em>spike_trains</em>, <em>indices=None</em>, <em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/isi_distance.html#isi_distance_multi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.isi_distance.isi_distance_multi" title="Permalink to this definition">¶</a></dt>
-<dd><p>computes the multi-variate isi-distance for a set of spike-trains.
-That is the time average of the multi-variate spike profile:</p>
-<div class="math">
-\[\begin{split}D_I = \int_0^T \frac{2}{N(N-1)} \sum_{&lt;i,j&gt;} I^{i,j},\end{split}\]</div>
-<p>where the sum goes over all pairs &lt;i,j&gt;</p>
+<dd><p>Specific function to compute the multivariate ISI-distance.
+This is a deprecfated function and should not be called directly. Use
+<a class="reference internal" href="#pyspike.isi_distance.isi_distance" title="pyspike.isi_distance.isi_distance"><tt class="xref py py-func docutils literal"><span class="pre">isi_distance()</span></tt></a> to compute ISI-distances.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -720,10 +751,43 @@ the average over the whole function is computed.</li>
 
 <dl class="function">
 <dt id="pyspike.isi_distance.isi_profile">
-<tt class="descclassname">pyspike.isi_distance.</tt><tt class="descname">isi_profile</tt><big>(</big><em>spike_train1</em>, <em>spike_train2</em><big>)</big><a class="reference internal" href="_modules/pyspike/isi_distance.html#isi_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.isi_distance.isi_profile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the isi-distance profile <span class="math">\(I(t)\)</span> of the two given
-spike trains. Retruns the profile as a PieceWiseConstFunc object. The
+<tt class="descclassname">pyspike.isi_distance.</tt><tt class="descname">isi_profile</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pyspike/isi_distance.html#isi_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.isi_distance.isi_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the isi-distance profile <span class="math">\(I(t)\)</span> of the given
+spike trains. Returns the profile as a PieceWiseConstFunc object. The
 ISI-values are defined positive <span class="math">\(I(t)&gt;=0\)</span>.</p>
+<p>Valid call structures:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">isi_profile</span><span class="p">(</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">)</span>       <span class="c"># returns the bi-variate profile</span>
+<span class="n">isi_profile</span><span class="p">(</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">,</span> <span class="n">st3</span><span class="p">)</span>  <span class="c"># multi-variate profile of 3 spike trains</span>
+
+<span class="n">spike_trains</span> <span class="o">=</span> <span class="p">[</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">,</span> <span class="n">st3</span><span class="p">,</span> <span class="n">st4</span><span class="p">]</span>  <span class="c"># list of spike trains</span>
+<span class="n">isi_profile</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">)</span>   <span class="c"># profile of the list of spike trains</span>
+<span class="n">isi_profile</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>  <span class="c"># use only the spike trains</span>
+                                           <span class="c"># given by the indices</span>
+</pre></div>
+</div>
+<p>The multivariate ISI distance profile for a set of spike trains is defined
+as the average ISI-profile of all pairs of spike-trains:</p>
+<div class="math">
+\[\begin{split}&lt;I(t)&gt; = \frac{2}{N(N-1)} \sum_{&lt;i,j&gt;} I^{i,j},\end{split}\]</div>
+<p>where the sum goes over all pairs &lt;i,j&gt;</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The isi-distance profile <span class="math">\(I(t)\)</span></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#pyspike.PieceWiseConstFunc.PieceWiseConstFunc" title="pyspike.PieceWiseConstFunc.PieceWiseConstFunc"><tt class="xref py py-class docutils literal"><span class="pre">PieceWiseConstFunc</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyspike.isi_distance.isi_profile_bi">
+<tt class="descclassname">pyspike.isi_distance.</tt><tt class="descname">isi_profile_bi</tt><big>(</big><em>spike_train1</em>, <em>spike_train2</em><big>)</big><a class="reference internal" href="_modules/pyspike/isi_distance.html#isi_profile_bi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.isi_distance.isi_profile_bi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specific function to compute a bivariate ISI-profile. This is a
+deprecated function and should not be called directly. Use
+<a class="reference internal" href="#pyspike.isi_distance.isi_profile" title="pyspike.isi_distance.isi_profile"><tt class="xref py py-func docutils literal"><span class="pre">isi_profile()</span></tt></a> to compute ISI-profiles.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -747,11 +811,9 @@ ISI-values are defined positive <span class="math">\(I(t)&gt;=0\)</span>.</p>
 <dl class="function">
 <dt id="pyspike.isi_distance.isi_profile_multi">
 <tt class="descclassname">pyspike.isi_distance.</tt><tt class="descname">isi_profile_multi</tt><big>(</big><em>spike_trains</em>, <em>indices=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/isi_distance.html#isi_profile_multi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.isi_distance.isi_profile_multi" title="Permalink to this definition">¶</a></dt>
-<dd><p>computes the multi-variate isi distance profile for a set of spike
-trains. That is the average isi-distance of all pairs of spike-trains:</p>
-<div class="math">
-\[\begin{split}&lt;I(t)&gt; = \frac{2}{N(N-1)} \sum_{&lt;i,j&gt;} I^{i,j},\end{split}\]</div>
-<p>where the sum goes over all pairs &lt;i,j&gt;</p>
+<dd><p>Specific function to compute the multivariate ISI-profile for a set of
+spike trains. This is a deprecated function and should not be called
+directly. Use <a class="reference internal" href="#pyspike.isi_distance.isi_profile" title="pyspike.isi_distance.isi_profile"><tt class="xref py py-func docutils literal"><span class="pre">isi_profile()</span></tt></a> to compute ISI-profiles.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -778,11 +840,46 @@ if None all given spike trains are used (default=None)</li>
 <span id="spike-distance"></span><h3>SPIKE-distance<a class="headerlink" href="#module-pyspike.spike_distance" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="pyspike.spike_distance.spike_distance">
-<tt class="descclassname">pyspike.spike_distance.</tt><tt class="descname">spike_distance</tt><big>(</big><em>spike_train1</em>, <em>spike_train2</em>, <em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/spike_distance.html#spike_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_distance.spike_distance" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the spike-distance <span class="math">\(D_S\)</span> of the given spike trains. The
-spike-distance is the integral over the isi distance profile <span class="math">\(S(t)\)</span>:</p>
+<tt class="descclassname">pyspike.spike_distance.</tt><tt class="descname">spike_distance</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pyspike/spike_distance.html#spike_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_distance.spike_distance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the SPIKE-distance <span class="math">\(D_S\)</span> of the given spike trains. The
+spike-distance is the integral over the spike distance profile
+<span class="math">\(D(t)\)</span>:</p>
 <div class="math">
 \[D_S = \int_{T_0}^{T_1} S(t) dt.\]</div>
+<p>Valid call structures:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">spike_distance</span><span class="p">(</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">)</span>  <span class="c"># returns the bi-variate distance</span>
+<span class="n">spike_distance</span><span class="p">(</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">,</span> <span class="n">st3</span><span class="p">)</span>  <span class="c"># multi-variate distance of 3 spike trains</span>
+
+<span class="n">spike_trains</span> <span class="o">=</span> <span class="p">[</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">,</span> <span class="n">st3</span><span class="p">,</span> <span class="n">st4</span><span class="p">]</span>  <span class="c"># list of spike trains</span>
+<span class="n">spike_distance</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">)</span>  <span class="c"># distance of the list of spike trains</span>
+<span class="n">spike_distance</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>  <span class="c"># use only the spike trains</span>
+                                              <span class="c"># given by the indices</span>
+</pre></div>
+</div>
+<p>In the multivariate case, the spike distance is given as the integral over
+the multivariate profile, that is the average profile of all spike train
+pairs:</p>
+<div class="math">
+\[\begin{split}D_S = \int_0^T \frac{2}{N(N-1)} \sum_{&lt;i,j&gt;}
+S^{i, j} dt\end{split}\]</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The spike-distance <span class="math">\(D_S\)</span>.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">double</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyspike.spike_distance.spike_distance_bi">
+<tt class="descclassname">pyspike.spike_distance.</tt><tt class="descname">spike_distance_bi</tt><big>(</big><em>spike_train1</em>, <em>spike_train2</em>, <em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/spike_distance.html#spike_distance_bi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_distance.spike_distance_bi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specific function to compute a bivariate SPIKE-distance. This is a
+deprecated function and should not be called directly. Use
+<a class="reference internal" href="#pyspike.spike_distance.spike_distance" title="pyspike.spike_distance.spike_distance"><tt class="xref py py-func docutils literal"><span class="pre">spike_distance()</span></tt></a> to compute SPIKE-distances.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -836,12 +933,9 @@ the average over the whole function is computed.</li>
 <dl class="function">
 <dt id="pyspike.spike_distance.spike_distance_multi">
 <tt class="descclassname">pyspike.spike_distance.</tt><tt class="descname">spike_distance_multi</tt><big>(</big><em>spike_trains</em>, <em>indices=None</em>, <em>interval=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/spike_distance.html#spike_distance_multi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_distance.spike_distance_multi" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the multi-variate spike distance for a set of spike trains.
-That is the time average of the multi-variate spike profile:</p>
-<div class="math">
-\[\begin{split}D_S = \int_0^T \frac{2}{N(N-1)} \sum_{&lt;i,j&gt;}
-S^{i, j} dt\end{split}\]</div>
-<p>where the sum goes over all pairs &lt;i,j&gt;</p>
+<dd><p>Specific function to compute a multivariate SPIKE-distance. This is a
+deprecated function and should not be called directly. Use
+<a class="reference internal" href="#pyspike.spike_distance.spike_distance" title="pyspike.spike_distance.spike_distance"><tt class="xref py py-func docutils literal"><span class="pre">spike_distance()</span></tt></a> to compute SPIKE-distances.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -867,10 +961,43 @@ the average over the whole function is computed.</li>
 
 <dl class="function">
 <dt id="pyspike.spike_distance.spike_profile">
-<tt class="descclassname">pyspike.spike_distance.</tt><tt class="descname">spike_profile</tt><big>(</big><em>spike_train1</em>, <em>spike_train2</em><big>)</big><a class="reference internal" href="_modules/pyspike/spike_distance.html#spike_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_distance.spike_profile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the spike-distance profile <span class="math">\(S(t)\)</span> of the two given spike
-trains. Returns the profile as a PieceWiseLinFunc object. The SPIKE-values
-are defined positive <span class="math">\(S(t)&gt;=0\)</span>.</p>
+<tt class="descclassname">pyspike.spike_distance.</tt><tt class="descname">spike_profile</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pyspike/spike_distance.html#spike_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_distance.spike_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the spike-distance profile <span class="math">\(S(t)\)</span> of the given
+spike trains. Returns the profile as a PieceWiseConstLin object. The
+SPIKE-values are defined positive <span class="math">\(S(t)&gt;=0\)</span>.</p>
+<p>Valid call structures:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">spike_profile</span><span class="p">(</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">)</span>  <span class="c"># returns the bi-variate profile</span>
+<span class="n">spike_profile</span><span class="p">(</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">,</span> <span class="n">st3</span><span class="p">)</span>  <span class="c"># multi-variate profile of 3 spike trains</span>
+
+<span class="n">spike_trains</span> <span class="o">=</span> <span class="p">[</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">,</span> <span class="n">st3</span><span class="p">,</span> <span class="n">st4</span><span class="p">]</span>  <span class="c"># list of spike trains</span>
+<span class="n">spike_profile</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">)</span>  <span class="c"># profile of the list of spike trains</span>
+<span class="n">spike_profile</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>  <span class="c"># use only the spike trains</span>
+                                             <span class="c"># given by the indices</span>
+</pre></div>
+</div>
+<p>The multivariate spike-distance profile is defined as the average of all
+pairs of spike-trains:</p>
+<div class="math">
+\[\begin{split}&lt;S(t)&gt; = \frac{2}{N(N-1)} \sum_{&lt;i,j&gt;} S^{i, j}`,\end{split}\]</div>
+<p>where the sum goes over all pairs &lt;i,j&gt;</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The spike-distance profile <span class="math">\(S(t)\)</span></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">PieceWiseConstLin</span></tt></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyspike.spike_distance.spike_profile_bi">
+<tt class="descclassname">pyspike.spike_distance.</tt><tt class="descname">spike_profile_bi</tt><big>(</big><em>spike_train1</em>, <em>spike_train2</em><big>)</big><a class="reference internal" href="_modules/pyspike/spike_distance.html#spike_profile_bi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_distance.spike_profile_bi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specific function to compute a bivariate SPIKE-profile. This is a
+deprecated function and should not be called directly. Use
+<a class="reference internal" href="#pyspike.spike_distance.spike_profile" title="pyspike.spike_distance.spike_profile"><tt class="xref py py-func docutils literal"><span class="pre">spike_profile()</span></tt></a> to compute SPIKE-profiles.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -894,11 +1021,9 @@ are defined positive <span class="math">\(S(t)&gt;=0\)</span>.</p>
 <dl class="function">
 <dt id="pyspike.spike_distance.spike_profile_multi">
 <tt class="descclassname">pyspike.spike_distance.</tt><tt class="descname">spike_profile_multi</tt><big>(</big><em>spike_trains</em>, <em>indices=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/spike_distance.html#spike_profile_multi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_distance.spike_profile_multi" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the multi-variate spike distance profile for a set of spike
-trains. That is the average spike-distance of all pairs of spike-trains:</p>
-<div class="math">
-\[\begin{split}&lt;S(t)&gt; = \frac{2}{N(N-1)} \sum_{&lt;i,j&gt;} S^{i, j}`,\end{split}\]</div>
-<p>where the sum goes over all pairs &lt;i,j&gt;</p>
+<dd><p>Specific function to compute a multivariate SPIKE-profile. This is a
+deprecated function and should not be called directly. Use
+<a class="reference internal" href="#pyspike.spike_distance.spike_profile" title="pyspike.spike_distance.spike_profile"><tt class="xref py py-func docutils literal"><span class="pre">spike_profile()</span></tt></a> to compute SPIKE-profiles.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -925,12 +1050,42 @@ if None all given spike trains are used (default=None)</li>
 <span id="spike-synchronization"></span><h3>SPIKE-synchronization<a class="headerlink" href="#module-pyspike.spike_sync" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="pyspike.spike_sync.spike_sync">
-<tt class="descclassname">pyspike.spike_sync.</tt><tt class="descname">spike_sync</tt><big>(</big><em>spike_train1</em>, <em>spike_train2</em>, <em>interval=None</em>, <em>max_tau=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/spike_sync.html#spike_sync"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_sync.spike_sync" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">pyspike.spike_sync.</tt><tt class="descname">spike_sync</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pyspike/spike_sync.html#spike_sync"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_sync.spike_sync" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the spike synchronization value SYNC of the given spike
 trains. The spike synchronization value is the computed as the total number
 of coincidences divided by the total number of spikes:</p>
 <div class="math">
 \[SYNC = \sum_n C_n / N.\]</div>
+<p>Valid call structures:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">spike_sync</span><span class="p">(</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">)</span>  <span class="c"># returns the bi-variate spike synchronization</span>
+<span class="n">spike_sync</span><span class="p">(</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">,</span> <span class="n">st3</span><span class="p">)</span>  <span class="c"># multi-variate result for 3 spike trains</span>
+
+<span class="n">spike_trains</span> <span class="o">=</span> <span class="p">[</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">,</span> <span class="n">st3</span><span class="p">,</span> <span class="n">st4</span><span class="p">]</span>  <span class="c"># list of spike trains</span>
+<span class="n">spike_sync</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">)</span>  <span class="c"># spike-sync of the list of spike trains</span>
+<span class="n">spike_sync</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>  <span class="c"># use only the spike trains</span>
+                                          <span class="c"># given by the indices</span>
+</pre></div>
+</div>
+<p>The multivariate SPIKE-Sync is again defined as the overall ratio of all
+coincidence values divided by the total number of spikes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The spike synchronization value.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><cite>double</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyspike.spike_sync.spike_sync_bi">
+<tt class="descclassname">pyspike.spike_sync.</tt><tt class="descname">spike_sync_bi</tt><big>(</big><em>spike_train1</em>, <em>spike_train2</em>, <em>interval=None</em>, <em>max_tau=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/spike_sync.html#spike_sync_bi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_sync.spike_sync_bi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specific function to compute a bivariate SPIKE-Sync value.
+This is a deprecated function and should not be called directly. Use
+<a class="reference internal" href="#pyspike.spike_sync.spike_sync" title="pyspike.spike_sync.spike_sync"><tt class="xref py py-func docutils literal"><span class="pre">spike_sync()</span></tt></a> to compute SPIKE-Sync values.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -989,8 +1144,9 @@ coincidence window has no upper bound.</li>
 <dl class="function">
 <dt id="pyspike.spike_sync.spike_sync_multi">
 <tt class="descclassname">pyspike.spike_sync.</tt><tt class="descname">spike_sync_multi</tt><big>(</big><em>spike_trains</em>, <em>indices=None</em>, <em>interval=None</em>, <em>max_tau=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/spike_sync.html#spike_sync_multi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_sync.spike_sync_multi" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the multi-variate spike synchronization value for a set of
-spike trains.</p>
+<dd><p>Specific function to compute a multivariate SPIKE-Sync value.
+This is a deprecated function and should not be called directly. Use
+<a class="reference internal" href="#pyspike.spike_sync.spike_sync" title="pyspike.spike_sync.spike_sync"><tt class="xref py py-func docutils literal"><span class="pre">spike_sync()</span></tt></a> to compute SPIKE-Sync values.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1018,11 +1174,46 @@ coincidence window has no upper bound.</li>
 
 <dl class="function">
 <dt id="pyspike.spike_sync.spike_sync_profile">
-<tt class="descclassname">pyspike.spike_sync.</tt><tt class="descname">spike_sync_profile</tt><big>(</big><em>spike_train1</em>, <em>spike_train2</em>, <em>max_tau=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/spike_sync.html#spike_sync_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_sync.spike_sync_profile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the spike-synchronization profile S_sync(t) of the two given
-spike trains. Returns the profile as a DiscreteFunction object. The S_sync
-values are either 1 or 0, indicating the presence or absence of a
-coincidence.</p>
+<tt class="descclassname">pyspike.spike_sync.</tt><tt class="descname">spike_sync_profile</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pyspike/spike_sync.html#spike_sync_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_sync.spike_sync_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the spike-synchronization profile S_sync(t) of the given
+spike trains. Returns the profile as a DiscreteFunction object. In the
+bivariate case, he S_sync values are either 1 or 0, indicating the presence
+or absence of a coincidence. For multi-variate cases, each spike in the set
+of spike trains, the profile is defined as the number of coincidences
+divided by the number of spike trains pairs involving the spike train of
+containing this spike, which is the number of spike trains minus one (N-1).</p>
+<p>Valid call structures:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">spike_sync_profile</span><span class="p">(</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">)</span>  <span class="c"># returns the bi-variate profile</span>
+<span class="n">spike_sync_profile</span><span class="p">(</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">,</span> <span class="n">st3</span><span class="p">)</span>  <span class="c"># multi-variate profile of 3 sts</span>
+
+<span class="n">sts</span> <span class="o">=</span> <span class="p">[</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">,</span> <span class="n">st3</span><span class="p">,</span> <span class="n">st4</span><span class="p">]</span>  <span class="c"># list of spike trains</span>
+<span class="n">spike_sync_profile</span><span class="p">(</span><span class="n">sts</span><span class="p">)</span>  <span class="c"># profile of the list of spike trains</span>
+<span class="n">spike_sync_profile</span><span class="p">(</span><span class="n">sts</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>  <span class="c"># use only the spike trains</span>
+                                         <span class="c"># given by the indices</span>
+</pre></div>
+</div>
+<p>In the multivariate case, the profile is defined as the number of
+coincidences for each spike in the set of spike trains divided by the
+number of spike trains pairs involving the spike train of containing this
+spike, which is the number of spike trains minus one (N-1).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The spike-sync profile <span class="math">\(S_{sync}(t)\)</span>.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">pyspike.function.DiscreteFunction</span></tt></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyspike.spike_sync.spike_sync_profile_bi">
+<tt class="descclassname">pyspike.spike_sync.</tt><tt class="descname">spike_sync_profile_bi</tt><big>(</big><em>spike_train1</em>, <em>spike_train2</em>, <em>max_tau=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/spike_sync.html#spike_sync_profile_bi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_sync.spike_sync_profile_bi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specific function to compute a bivariate SPIKE-Sync-profile. This is a
+deprecated function and should not be called directly. Use
+<a class="reference internal" href="#pyspike.spike_sync.spike_sync_profile" title="pyspike.spike_sync.spike_sync_profile"><tt class="xref py py-func docutils literal"><span class="pre">spike_sync_profile()</span></tt></a> to compute SPIKE-Sync-profiles.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1035,7 +1226,7 @@ coincidence window has no upper bound.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The spike-distance profile <span class="math">\(S_{sync}(t)\)</span>.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The spike-sync profile <span class="math">\(S_{sync}(t)\)</span>.</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><tt class="xref py py-class docutils literal"><span class="pre">pyspike.function.DiscreteFunction</span></tt></p>
@@ -1048,11 +1239,9 @@ coincidence window has no upper bound.</li>
 <dl class="function">
 <dt id="pyspike.spike_sync.spike_sync_profile_multi">
 <tt class="descclassname">pyspike.spike_sync.</tt><tt class="descname">spike_sync_profile_multi</tt><big>(</big><em>spike_trains</em>, <em>indices=None</em>, <em>max_tau=None</em><big>)</big><a class="reference internal" href="_modules/pyspike/spike_sync.html#spike_sync_profile_multi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_sync.spike_sync_profile_multi" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the multi-variate spike synchronization profile for a set of
-spike trains. For each spike in the set of spike trains, the multi-variate
-profile is defined as the number of coincidences divided by the number of
-spike trains pairs involving the spike train of containing this spike,
-which is the number of spike trains minus one (N-1).</p>
+<dd><p>Specific function to compute a multivariate SPIKE-Sync-profile.
+This is a deprecated function and should not be called directly. Use
+<a class="reference internal" href="#pyspike.spike_sync.spike_sync_profile" title="pyspike.spike_sync.spike_sync_profile"><tt class="xref py py-func docutils literal"><span class="pre">spike_sync_profile()</span></tt></a> to compute SPIKE-Sync-profiles.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1134,7 +1323,7 @@ interval, if they are not yet present.</li>
 
 <dl class="function">
 <dt id="pyspike.spikes.load_spike_trains_from_txt">
-<tt class="descclassname">pyspike.spikes.</tt><tt class="descname">load_spike_trains_from_txt</tt><big>(</big><em>file_name</em>, <em>edges</em>, <em>separator=' '</em>, <em>comment='#'</em>, <em>is_sorted=False</em><big>)</big><a class="reference internal" href="_modules/pyspike/spikes.html#load_spike_trains_from_txt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spikes.load_spike_trains_from_txt" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">pyspike.spikes.</tt><tt class="descname">load_spike_trains_from_txt</tt><big>(</big><em>file_name</em>, <em>edges</em>, <em>separator=' '</em>, <em>comment='#'</em>, <em>is_sorted=False</em>, <em>ignore_empty_lines=True</em><big>)</big><a class="reference internal" href="_modules/pyspike/spikes.html#load_spike_trains_from_txt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spikes.load_spike_trains_from_txt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads a number of spike trains from a text file. Each line of the text
 file should contain one spike train as a sequence of spike times separated
 by <cite>separator</cite>. Empty lines as well as lines starting with <cite>comment</cite> are
@@ -1274,7 +1463,7 @@ if False, spike times are sorted with <cite>np.sort</cite></li>
         <li class="right" >
           <a href="index.html" title="PySpike"
              >previous</a> |</li>
-        <li><a href="index.html">PySpike 0.3.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">PySpike 0.5.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
