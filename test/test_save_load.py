@@ -24,7 +24,7 @@ def test_save_load():
     N = 10
     # generate some spike trains
     spike_trains = []
-    for n in xrange(N):
+    for n in range(N):
         spike_trains.append(spk.generate_poisson_spikes(1.0, [0, 100]))
 
     # save them into txt file
@@ -33,7 +33,7 @@ def test_save_load():
     # load again
     spike_trains_loaded = spk.load_spike_trains_from_txt(file_name, [0, 100])
 
-    for n in xrange(N):
+    for n in range(N):
         assert_array_equal(spike_trains[n].spikes,
                            spike_trains_loaded[n].spikes)
 
