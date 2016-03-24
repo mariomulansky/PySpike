@@ -75,7 +75,7 @@ def save_spike_trains_to_txt(spike_trains, file_name,
     :param file_name: The name of the text file.
     """
     # format string to print the spike times with given precision
-    format_str = "{:0.%de}" % precision
+    format_str = "{0:.%de}" % precision
     with open(file_name, 'w') as spike_file:
         for st in spike_trains:
             s = separator.join(map(format_str.format, st.spikes))
