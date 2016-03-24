@@ -2,6 +2,7 @@
 # Copyright 2014, Mario Mulansky <mario.mulansky@gmx.net>
 # Distributed under the BSD License
 
+
 import numpy as np
 from pyspike import SpikeTrain
 
@@ -25,7 +26,7 @@ def spike_train_from_string(s, edges, sep=' ', is_sorted=False):
 
 
 ############################################################
-# load_spike_trains_txt
+# load_spike_trains_from_txt
 ############################################################
 def load_spike_trains_from_txt(file_name, edges,
                                separator=' ', comment='#', is_sorted=False,
@@ -47,14 +48,34 @@ def load_spike_trains_from_txt(file_name, edges,
     :returns: list of :class:`.SpikeTrain`
     """
     spike_trains = []
-    spike_file = open(file_name, 'r')
-    for line in spike_file:
-        if len(line) > 1 and not line.startswith(comment):
-            # use only the lines with actual data and not commented
-            spike_train = spike_train_from_string(line, edges,
-                                                  separator, is_sorted)
-            spike_trains.append(spike_train)
+    with open(file_name, 'r') as spike_file:
+        for line in spike_file:
+            if len(line) > 1 and not line.startswith(comment):
+                # use only the lines with actual data and not commented
+                spike_train = spike_train_from_string(line, edges,
+                                                      separator, is_sorted)
+                spike_trains.append(spike_train)
     return spike_trains
+
+
+############################################################
+# save_spike_trains_to_txt
+############################################################
+def save_spike_trains_to_txt(spike_trains, file_name,
+                             separator=' ', precision=8):
+    """ Saves the given spike trains into a file with the given file name.
+    Each spike train will be stored in one line in the text file with the times
+    separated by `separator`.
+
+    :param spike_trains: List of :class:`.SpikeTrain` objects
+    :param file_name: The name of the text file.
+    """
+    # format string to print the spike times with given precision
+    format_str = "{:0.%de}" % precision
+    with open(file_name, 'w') as spike_file:
+        for st in spike_trains:
+            s = separator.join(map(format_str.format, st.spikes))
+            spike_file.write(s+'\n')
 
 
 ############################################################

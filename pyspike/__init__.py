@@ -23,8 +23,8 @@ from .spike_sync import spike_sync_profile, spike_sync,\
     spike_sync_profile_multi, spike_sync_multi, spike_sync_matrix
 from .psth import psth
 
-from .spikes import load_spike_trains_from_txt, spike_train_from_string, \
-    merge_spike_trains, generate_poisson_spikes
+from .spikes import load_spike_trains_from_txt, save_spike_trains_to_txt, \
+    spike_train_from_string, merge_spike_trains, generate_poisson_spikes
 
 # define the __version__ following
 # http://stackoverflow.com/questions/17583443
