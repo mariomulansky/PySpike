@@ -50,11 +50,15 @@ def load_spike_trains_from_txt(file_name, edges,
     spike_trains = []
     with open(file_name, 'r') as spike_file:
         for line in spike_file:
-            if len(line) > 1 and not line.startswith(comment):
-                # use only the lines with actual data and not commented
-                spike_train = spike_train_from_string(line, edges,
-                                                      separator, is_sorted)
-                spike_trains.append(spike_train)
+            if not line.startswith(comment):  # ignore comments
+                if len(line) > 1:
+                    # ignore empty lines
+                    spike_train = spike_train_from_string(line, edges,
+                                                          separator, is_sorted)
+                    spike_trains.append(spike_train)
+                elif not(ignore_empty_lines):
+                    # add empty spike train
+                    spike_trains.append(SpikeTrain([], edges))
     return spike_trains
 
 
