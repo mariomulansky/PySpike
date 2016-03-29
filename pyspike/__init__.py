@@ -24,8 +24,8 @@ from .spike_sync import spike_sync_profile, spike_sync,\
     filter_by_spike_sync
 from .psth import psth
 
-from .spikes import load_spike_trains_from_txt, spike_train_from_string, \
-    merge_spike_trains, generate_poisson_spikes
+from .spikes import load_spike_trains_from_txt, save_spike_trains_to_txt, \
+    spike_train_from_string, merge_spike_trains, generate_poisson_spikes
 
 from .spike_directionality import spike_directionality, \
     spike_directionality_profiles, spike_directionality_matrix, \

@@ -628,9 +628,4 @@ def coincidence_value_cython(double[:] spikes1, double[:] spikes2,
             mp += 2
             coinc += 2
 
-    if coinc == 0 and mp == 0:
-        # empty spike trains -> spike sync = 1 by definition
-        coinc = 1
-        mp = 1
-
     return coinc, mp
