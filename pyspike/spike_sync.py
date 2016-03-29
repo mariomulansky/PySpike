@@ -323,7 +323,7 @@ Falling back to slow python backend.")
 
     for i, st in enumerate(spike_trains):
         coincidences = np.zeros_like(st)
-        for j in xrange(N):
+        for j in range(N):
             if i == j:
                 continue
             coincidences += coincidence_impl(st.spikes, spike_trains[j].spikes,

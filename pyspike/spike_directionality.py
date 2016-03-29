@@ -3,8 +3,9 @@
 # Copyright 2015, Mario Mulansky <mario.mulansky@gmx.net>
 # Distributed under the BSD License
 
+from __future__ import absolute_import
+
 import numpy as np
-from math import exp
 import pyspike
 from pyspike import DiscreteFunc
 from functools import partial
@@ -22,7 +23,7 @@ def spike_directionality(spike_train1, spike_train2, normalize=True,
         # distance over the whole interval is requested: use specific function
         # for optimal performance
         try:
-            from cython.cython_directionality import \
+            from .cython.cython_directionality import \
                 spike_directionality_cython as spike_directionality_impl
             if max_tau is None:
                 max_tau = 0.0
@@ -95,7 +96,7 @@ def spike_directionality_profiles(spike_trains, indices=None,
 
     # cython implementation
     try:
-        from cython.cython_directionality import \
+        from .cython.cython_directionality import \
             spike_directionality_profiles_cython as profile_impl
     except ImportError:
         if not(pyspike.disable_backend_warning):
@@ -103,7 +104,7 @@ def spike_directionality_profiles(spike_trains, indices=None,
 PySpike is installed by running\n 'python setup.py build_ext --inplace'!\n \
 Falling back to slow python backend.")
         # use python backend
-        from cython.directionality_python_backend import \
+        from .cython.directionality_python_backend import \
             spike_directionality_profile_python as profile_impl
 
     if max_tau is None:
@@ -143,7 +144,7 @@ def spike_train_order_profile(spike_train1, spike_train2, max_tau=None):
 
     # cython implementation
     try:
-        from cython.cython_directionality import \
+        from .cython.cython_directionality import \
             spike_train_order_profile_cython as \
             spike_train_order_profile_impl
     except ImportError:
@@ -153,7 +154,7 @@ def spike_train_order_profile(spike_train1, spike_train2, max_tau=None):
 PySpike is installed by running\n 'python setup.py build_ext --inplace'!\n \
 Falling back to slow python backend.")
         # use python backend
-        from cython.directionality_python_backend import \
+        from .cython.directionality_python_backend import \
             spike_train_order_profile_python as spike_train_order_profile_impl
 
     if max_tau is None:
@@ -180,7 +181,7 @@ def spike_train_order(spike_train1, spike_train2, normalize=True,
         # distance over the whole interval is requested: use specific function
         # for optimal performance
         try:
-            from cython.cython_directionality import \
+            from .cython.cython_directionality import \
                 spike_train_order_cython as spike_train_order_impl
             if max_tau is None:
                 max_tau = 0.0
@@ -246,7 +247,7 @@ def optimal_spike_train_order_from_matrix(D, full_output=False):
     T_end = 1E-5 * T_start   # final temperature
     alpha = 0.9              # cooling factor
 
-    from cython.cython_simulated_annealing import sim_ann_cython as sim_ann
+    from .cython.cython_simulated_annealing import sim_ann_cython as sim_ann
 
     p, A, total_iter = sim_ann(D, T_start, T_end, alpha)
 
@@ -305,8 +306,8 @@ def permutate_matrix(D, p):
     """
     N = len(D)
     D_p = np.empty_like(D)
-    for n in xrange(N):
-        for m in xrange(N):
+    for n in range(N):
+        for m in range(N):
             D_p[n, m] = D[p[n], p[m]]
     return D_p
 
