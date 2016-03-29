@@ -82,7 +82,7 @@ def test_spike_train_order():
 
     expected_x = np.array([0, 100, 105, 195, 200, 205, 300, 500, 1000])
     expected_y = np.array([2, 2, 2, -2, 0, 0, 0, 0, 0])
-    expected_mp = np.array([2, 2, 4, 2, 2, 2, 4, 2, 4])
+    expected_mp = np.array([2, 2, 4, 2, 2, 2, 4, 2, 2])
 
     assert_array_equal(f.x, expected_x)
     assert_array_equal(f.y, expected_y)
