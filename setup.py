@@ -4,7 +4,7 @@ to compile cython files:
 python setup.py build_ext --inplace
 
 
-Copyright 2014-2015, Mario Mulansky <mario.mulansky@gmx.net>
+Copyright 2014-2016, Mario Mulansky <mario.mulansky@gmx.net>
 
 Distributed under the BSD License
 
@@ -65,7 +65,7 @@ elif use_c:  # c files are there, compile to binaries
 setup(
     name='pyspike',
     packages=find_packages(exclude=['doc']),
-    version='0.3.0',
+    version='0.5.1',
     cmdclass=cmdclass,
     ext_modules=ext_modules,
     include_dirs=[numpy.get_include()],
@@ -94,12 +94,9 @@ train similarity',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
-    ],
-    package_data={
-        'pyspike': ['cython/cython_add.c', 'cython/cython_profiles.c',
-                    'cython/cython_distances.c',
-                    'cython/cython_directionality.c',
-                    'cython/cython_simulated_annealing.c'],
-        'test': ['Spike_testdata.txt']
-    }
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+    ]
 )

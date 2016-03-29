@@ -24,11 +24,11 @@ t_loading = time.clock()
 
 print("Number of spike trains: %d" % len(spike_trains))
 num_of_spikes = sum([len(spike_trains[i])
-                     for i in xrange(len(spike_trains))])
+                     for i in range(len(spike_trains))])
 print("Number of spikes: %d" % num_of_spikes)
 
 # calculate the multivariate spike distance
-f = spk.spike_profile_multi(spike_trains)
+f = spk.spike_profile(spike_trains)
 
 t_spike = time.clock()
 
@@ -39,7 +39,7 @@ print("Spike distance from average: %.8f" % avrg)
 t_avrg = time.clock()
 
 # compute average distance directly, should give the same result as above
-spike_dist = spk.spike_distance_multi(spike_trains)
+spike_dist = spk.spike_distance(spike_trains)
 print("Spike distance directly:     %.8f" % spike_dist)
 
 t_dist = time.clock()

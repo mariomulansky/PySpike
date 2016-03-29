@@ -29,7 +29,7 @@ print("Average ISI distance:", f.avrg())
 print()
 
 # compute the multivariate ISI profile
-f = spk.isi_profile_multi(spike_trains)
+f = spk.isi_profile(spike_trains)
 
 t = 1200
 print("Multivariate ISI value at t =", t, ":", f(t))
@@ -56,7 +56,7 @@ print("Average SPIKE distance:", f.avrg())
 print()
 
 # compute the multivariate SPIKE profile
-f = spk.spike_profile_multi(spike_trains)
+f = spk.spike_profile(spike_trains)
 
 # SPIKE values at certain points
 t = 1200
