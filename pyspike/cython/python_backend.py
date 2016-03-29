@@ -443,7 +443,7 @@ def coincidence_single_python(spikes1, spikes2, t_start, t_end, max_tau):
     N2 = len(spikes2)
     j = -1
     c = np.zeros(N1)   # coincidences
-    for i in xrange(N1):
+    for i in range(N1):
         while j < N2-1 and spikes2[j+1] < spikes1[i]:
             # move forward until spikes2[j] is the last spike before spikes1[i]
             # note that if spikes2[j] is after spikes1[i] we dont do anything
