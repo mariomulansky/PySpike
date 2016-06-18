@@ -20,6 +20,7 @@ import os
 TEST_PATH = os.path.dirname(os.path.realpath(__file__))
 TEST_DATA = os.path.join(TEST_PATH, "..", "SPIKE_Sync_Test.txt")
 
+
 def test_regression_15_isi():
     # load spike trains
     spike_trains = spk.load_spike_trains_from_txt(TEST_DATA, edges=[0, 4000])

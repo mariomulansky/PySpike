@@ -7,8 +7,8 @@ PySpike
     :target: https://travis-ci.org/mariomulansky/PySpike
 
 PySpike is a Python library for the numerical analysis of spike train similarity. 
-Its core functionality is the implementation of the bivariate ISI_ and SPIKE_ distance [#]_ [#]_ as well as SPIKE-Synchronization_ [#]_.
-Additionally, it provides functions to compute multivariate profiles, distance matrices, as well as averaging and general spike train processing.
+Its core functionality is the implementation of the ISI_ and SPIKE_ distance [#]_ [#]_ as well as SPIKE-Synchronization_ [#]_.
+It provides functions to compute multivariate profiles, distance matrices, as well as averaging and general spike train processing.
 All computation intensive parts are implemented in C via cython_ to reach a competitive performance (factor 100-200 over plain Python).
 
 PySpike provides the same fundamental functionality as the SPIKY_ framework for Matlab, which additionally contains spike-train generators, more spike train distance measures and many visualization routines.
@@ -23,6 +23,8 @@ All source codes are available on `Github <https://github.com/mariomulansky/PySp
 
 Important Changelog
 -----------------------------
+
+With version 0.5.0, the interfaces have been unified and the specific functions for multivariate computations have become deprecated.
 
 With version 0.2.0, the :code:`SpikeTrain` class has been introduced to represent spike trains.
 This is a breaking change in the function interfaces.
@@ -76,7 +78,7 @@ Therefore, add your :code:`/path/to/PySpike` to the :code:`$PYTHONPATH` environm
 Examples
 -----------------------------
 
-The following code loads some exemplary spike trains, computes the dissimilarity profile of the ISI-distance of the first two :code:`SpikeTrain` s, and plots it with matplotlib:
+The following code loads some exemplary spike trains, computes the dissimilarity profile of the ISI-distance of the first two :code:`SpikeTrain` objects, and plots it with matplotlib:
 
 .. code:: python
 
@@ -92,15 +94,15 @@ The following code loads some exemplary spike trains, computes the dissimilarity
     plt.show()
 
 
-The following example computes the multivariate ISI-, SPIKE- and SPIKE-Sync-profile for a list of spike trains using the :code:`isi_profile_multi`, :code:`spike_profile_multi`, :code:`spike_sync_profile_multi` functions:
+The following example computes the multivariate ISI-, SPIKE- and SPIKE-Sync-profile for a list of spike trains loaded from a text file:
 
 .. code:: python
 
     spike_trains = spk.load_spike_trains_from_txt("PySpike_testdata.txt",
                                                   edges=(0, 4000))
-    avrg_isi_profile = spk.isi_profile_multi(spike_trains)
-    avrg_spike_profile = spk.spike_profile_multi(spike_trains)
-    avrg_spike_sync_profile = spk.spike_sync_profile_multi(spike_trains)
+    avrg_isi_profile = spk.isi_profile(spike_trains)
+    avrg_spike_profile = spk.spike_profile(spike_trains)
+    avrg_spike_sync_profile = spk.spike_sync_profile(spike_trains)
 
 More examples with detailed descriptions can be found in the `tutorial section <http://mariomulansky.github.io/PySpike/#tutorial>`_.
 
