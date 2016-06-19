@@ -20,4 +20,4 @@ install:
 script:
  - python setup.py build_ext --inplace
  - nosetests
- - nosetests test/numeric
+ - travis_wait 30 nosetests test/numeric
