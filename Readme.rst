@@ -7,7 +7,7 @@ PySpike
     :target: https://travis-ci.org/mariomulansky/PySpike
 
 PySpike is a Python library for the numerical analysis of spike train similarity. 
-Its core functionality is the implementation of the ISI_ and SPIKE_ distance [#]_ [#]_ as well as SPIKE-Synchronization_ [#]_.
+Its core functionality is the implementation of the ISI_\-distance [#]_ and SPIKE_ distance [#]_ as well as SPIKE-Synchronization_ [#]_.
 It provides functions to compute multivariate profiles, distance matrices, as well as averaging and general spike train processing.
 All computation intensive parts are implemented in C via cython_ to reach a competitive performance (factor 100-200 over plain Python).
 
@@ -20,13 +20,13 @@ Citing PySpike
 If you use PySpike in your research, please cite our SoftwareX publication on PySpike:
     Mario Mulansky, Thomas Kreuz, *PySpike - A Python library for analyzing spike train synchrony*, SoftwareX, (2016), ISSN 2352-7110, http://dx.doi.org/10.1016/j.softx.2016.07.006.
 
-Additionally, depending on the methods you are using you should consider citation one or more of the following articles:
+Additionally, depending on the used methods: ISI-distance [1], SPIKE-distance [2] or SPIKE-Synchronization [3], please cite one or more of the following publications:
 
 .. [#] Kreuz T, Haas JS, Morelli A, Abarbanel HDI, Politi A, *Measuring spike train synchrony.* J Neurosci Methods 165, 151 (2007) `[pdf] <http://wwwold.fi.isc.cnr.it/users/thomas.kreuz/images/Kreuz_JNeurosciMethods_2007_Spike-Train-Synchrony.pdf>`_
 
 .. [#] Kreuz T, Chicharro D, Houghton C, Andrzejak RG, Mormann F, *Monitoring spike train synchrony.* J Neurophysiol 109, 1457 (2013) `[pdf] <http://wwwold.fi.isc.cnr.it/users/thomas.kreuz/images/Kreuz_JNeurophysiol_2013_SPIKE-distance.pdf>`_
 
-.. [#] Kreuz T, Mulansky M and Bozanic N, *SPIKY: A graphical user interface for monitoring spike train synchrony*, J Neurophysiol, in press (2015)
+.. [#] Kreuz T, Mulansky M and Bozanic N, *SPIKY: A graphical user interface for monitoring spike train synchrony*, J Neurophysiol, JNeurophysiol 113, 3432 (2015)
 
 Important Changelog
 -----------------------------
