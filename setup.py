@@ -12,7 +12,6 @@ Distributed under the BSD License
 from setuptools import setup, find_packages
 from distutils.extension import Extension
 import os.path
-import numpy
 
 try:
     from Cython.Distutils import build_ext
@@ -20,6 +19,14 @@ except ImportError:
     use_cython = False
 else:
     use_cython = True
+
+
+class numpy_include(object):
+    """Defers import of numpy until install_requires is through"""
+    def __str__(self):
+        import numpy
+        return numpy.get_include()
+
 
 if os.path.isfile("pyspike/cython/cython_add.c") and \
    os.path.isfile("pyspike/cython/cython_profiles.c") and \
@@ -58,7 +65,7 @@ setup(
     version='0.5.2',
     cmdclass=cmdclass,
     ext_modules=ext_modules,
-    include_dirs=[numpy.get_include()],
+    include_dirs=[numpy_include()],
     description='A Python library for the numerical analysis of spike\
 train similarity',
     author='Mario Mulansky',
