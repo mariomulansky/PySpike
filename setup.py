@@ -62,14 +62,14 @@ elif use_c:  # c files are there, compile to binaries
 setup(
     name='pyspike',
     packages=find_packages(exclude=['doc']),
-    version='0.5.2',
+    version='0.5.3',
     cmdclass=cmdclass,
     ext_modules=ext_modules,
     include_dirs=[numpy_include()],
     description='A Python library for the numerical analysis of spike\
 train similarity',
     author='Mario Mulansky',
-    author_email='mario.mulanskygmx.net',
+    author_email='mario.mulansky@gmx.net',
     license='BSD',
     url='https://github.com/mariomulansky/PySpike',
     install_requires=['numpy'],
@@ -79,7 +79,7 @@ train similarity',
         #   3 - Alpha
         #   4 - Beta
         #   5 - Production/Stable
-        'Development Status :: 3 - Beta',
+        'Development Status :: 4 - Beta',
 
         # Indicate who your project is intended for
         'Intended Audience :: Science/Research',
