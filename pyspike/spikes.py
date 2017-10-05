@@ -2,6 +2,7 @@
 # Copyright 2014, Mario Mulansky <mario.mulansky@gmx.net>
 # Distributed under the BSD License
 
+
 import numpy as np
 from pyspike import SpikeTrain
 
@@ -25,7 +26,7 @@ def spike_train_from_string(s, edges, sep=' ', is_sorted=False):
 
 
 ############################################################
-# load_spike_trains_txt
+# load_spike_trains_from_txt
 ############################################################
 def load_spike_trains_from_txt(file_name, edges,
                                separator=' ', comment='#', is_sorted=False,
@@ -47,14 +48,63 @@ def load_spike_trains_from_txt(file_name, edges,
     :returns: list of :class:`.SpikeTrain`
     """
     spike_trains = []
-    spike_file = open(file_name, 'r')
-    for line in spike_file:
-        if len(line) > 1 and not line.startswith(comment):
-            # use only the lines with actual data and not commented
-            spike_train = spike_train_from_string(line, edges,
-                                                  separator, is_sorted)
-            spike_trains.append(spike_train)
+    with open(file_name, 'r') as spike_file:
+        for line in spike_file:
+            if not line.startswith(comment):  # ignore comments
+                if len(line) > 1:
+                    # ignore empty lines
+                    spike_train = spike_train_from_string(line, edges,
+                                                          separator, is_sorted)
+                    spike_trains.append(spike_train)
+                elif not(ignore_empty_lines):
+                    # add empty spike train
+                    spike_trains.append(SpikeTrain([], edges))
     return spike_trains
+
+
+def import_spike_trains_from_time_series(file_name, start_time, time_bin,
+                                         separator=None, comment='#'):
+    """ Imports spike trains from time series consisting of 0 and 1 denoting
+    the absence or presence of a spike. Each line in the data file represents
+    one spike train.
+
+    :param file_name: The name of the data file containing the time series.
+    :param edges: A pair (T_start, T_end) of values representing the
+                  start and end time of the spike train measurement
+                  or a single value representing the end time, the
+                  T_start is then assuemd as 0.
+    :param separator: The character used to seprate the values in the text file
+    :param comment: Lines starting with this character are ignored.
+
+    """
+    data = np.loadtxt(file_name, comments=comment, delimiter=separator)
+    time_points = start_time + time_bin + np.arange(len(data[0, :]))*time_bin
+    spike_trains = []
+    for time_series in data:
+        spike_trains.append(SpikeTrain(time_points[time_series > 0],
+                                       edges=[start_time,
+                                              time_points[-1]]))
+    return spike_trains
+
+
+############################################################
+# save_spike_trains_to_txt
+############################################################
+def save_spike_trains_to_txt(spike_trains, file_name,
+                             separator=' ', precision=8):
+    """ Saves the given spike trains into a file with the given file name.
+    Each spike train will be stored in one line in the text file with the times
+    separated by `separator`.
+
+    :param spike_trains: List of :class:`.SpikeTrain` objects
+    :param file_name: The name of the text file.
+    """
+    # format string to print the spike times with given precision
+    format_str = "{0:.%de}" % precision
+    with open(file_name, 'w') as spike_file:
+        for st in spike_trains:
+            s = separator.join(map(format_str.format, st.spikes))
+            spike_file.write(s+'\n')
 
 
 ############################################################

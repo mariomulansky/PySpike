@@ -1,10 +1,10 @@
 language: python
 python:
- - "2.6"
  - "2.7"
  - "3.3"
  - "3.4"
  - "3.5"
+ - "3.6"
 env:
  - CYTHON_INSTALL="pip install -q cython"
  - CYTHON_INSTALL=""
@@ -20,4 +20,4 @@ install:
 script:
  - python setup.py build_ext --inplace
  - nosetests
- - nosetests test/numeric
+ - travis_wait 30 nosetests test/numeric

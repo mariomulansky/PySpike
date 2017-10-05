@@ -215,7 +215,10 @@ def spike_sync_bi(spike_train1, spike_train2, interval=None, max_tau=None):
 
     """
     c, mp = _spike_sync_values(spike_train1, spike_train2, interval, max_tau)
-    return 1.0*c/mp
+    if mp == 0:
+        return 1.0
+    else:
+        return 1.0*c/mp
 
 
 ############################################################
@@ -257,7 +260,10 @@ def spike_sync_multi(spike_trains, indices=None, interval=None, max_tau=None):
         coincidence += c
         mp += m
 
-    return coincidence/mp
+    if mp == 0.0:
+        return 1.0
+    else:
+        return coincidence/mp
 
 
 ############################################################
