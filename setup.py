@@ -69,7 +69,7 @@ setup(
     description='A Python library for the numerical analysis of spike\
 train similarity',
     author='Mario Mulansky',
-    author_email='mario.mulanskygmx.net',
+    author_email='mario.mulansky@gmx.net',
     license='BSD',
     url='https://github.com/mariomulansky/PySpike',
     install_requires=['numpy'],
