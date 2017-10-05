@@ -1,3 +1,9 @@
+PySpike v0.5:
+	* First beta release
+	* Python 2.6 support removed
+	* Python 3.6 support added
+	* several bugfixes
+
 PySpike v0.4:
 	* Python 3 support (thanks to Igor Gnatenko)
 	* list interface to SpikeTrain class

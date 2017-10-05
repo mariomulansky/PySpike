@@ -170,10 +170,6 @@ expected."
                     start_ind, end_ind = get_indices(ival)
                     value += np.sum(self.y[start_ind:end_ind])
                     multiplicity += np.sum(self.mp[start_ind:end_ind])
-        if multiplicity == 0.0:
-            # empty profile, return spike sync of 1
-            value = 1.0
-            multiplicity = 1.0
         return (value, multiplicity)
 
     def avrg(self, interval=None, normalize=True):
@@ -190,7 +186,10 @@ expected."
         """
         val, mp = self.integral(interval)
         if normalize:
-            return val/mp
+            if mp > 0:
+                return val/mp
+            else:
+                return 1.0
         else:
             return val
 

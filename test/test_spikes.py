@@ -17,6 +17,10 @@ import os
 TEST_PATH = os.path.dirname(os.path.realpath(__file__))
 TEST_DATA = os.path.join(TEST_PATH, "PySpike_testdata.txt")
 
+TIME_SERIES_DATA = os.path.join(TEST_PATH, "time_series.txt")
+TIME_SERIES_SPIKES = os.path.join(TEST_PATH, "time_series_spike_trains.txt")
+
+
 def test_load_from_txt():
     spike_trains = spk.load_spike_trains_from_txt(TEST_DATA, edges=(0, 4000))
     assert len(spike_trains) == 40
@@ -31,6 +35,21 @@ def test_load_from_txt():
     for spike_train in spike_trains:
         assert spike_train.t_start == 0.0
         assert spike_train.t_end == 4000
+
+
+def test_load_time_series():
+    spike_trains = spk.import_spike_trains_from_time_series(TIME_SERIES_DATA,
+                                                            start_time=0,
+                                                            time_bin=1)
+    assert len(spike_trains) == 40
+    spike_trains_check = spk.load_spike_trains_from_txt(TIME_SERIES_SPIKES,
+                                                        edges=(0, 4000))
+
+    # check spike trains
+    for n in range(len(spike_trains)):
+        assert_equal(spike_trains[n].spikes, spike_trains_check[n].spikes)
+        assert_equal(spike_trains[n].t_start, 0)
+        assert_equal(spike_trains[n].t_end, 4000)
 
 
 def check_merged_spikes(merged_spikes, spike_trains):
