@@ -85,6 +85,16 @@ def test_merge_spike_trains():
     check_merged_spikes(merged_spikes.spikes,
                         [st.spikes for st in spike_trains])
 
+def test_merge_empty_spike_trains():
+    # first load the data
+    spike_trains = spk.load_spike_trains_from_txt(TEST_DATA, edges=(0, 4000))
+    # take two non-empty trains, and one empty one
+    empty = spk.SpikeTrain([],[spike_trains[0].t_start,spike_trains[0].t_end])
+    merged_spikes = spk.merge_spike_trains([spike_trains[0], empty, spike_trains[1]])
+    # test if result is sorted
+    assert((merged_spikes.spikes == np.sort(merged_spikes.spikes)).all())
+    # we don't need to check more, that's done by test_merge_spike_trains
+
 
 if __name__ == "main":
     test_load_from_txt()

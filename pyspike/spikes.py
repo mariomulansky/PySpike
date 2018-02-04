@@ -116,24 +116,10 @@ def merge_spike_trains(spike_trains):
     :param spike_trains: list of :class:`.SpikeTrain`
     :returns: spike train with the merged spike times
     """
-    # get the lengths of the spike trains
-    lens = np.array([len(st.spikes) for st in spike_trains])
-    merged_spikes = np.empty(np.sum(lens))
-    index = 0                             # the index for merged_spikes
-    indices = np.zeros_like(lens)         # indices of the spike trains
-    index_list = np.arange(len(indices))  # indices of indices of spike trains
-                                          # that have not yet reached the end
-    # list of the possible events in the spike trains
-    vals = [spike_trains[i].spikes[indices[i]] for i in index_list]
-    while len(index_list) > 0:
-        i = np.argmin(vals)             # the next spike is the minimum
-        merged_spikes[index] = vals[i]  # put it to the merged spike train
-        i = index_list[i]
-        index += 1                      # next index of merged spike train
-        indices[i] += 1                 # next index for the chosen spike train
-        if indices[i] >= lens[i]:       # remove spike train index if ended
-            index_list = index_list[index_list != i]
-        vals = [spike_trains[n].spikes[indices[n]] for n in index_list]
+    # concatenating and sorting with numpy is fast, it also means we can handle
+    # empty spike trains
+    merged_spikes = np.concatenate([st.spikes for st in spike_trains])
+    merged_spikes.sort()
     return SpikeTrain(merged_spikes, [spike_trains[0].t_start,
                                       spike_trains[0].t_end])
 
