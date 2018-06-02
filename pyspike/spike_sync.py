@@ -306,7 +306,7 @@ def filter_by_spike_sync(spike_trains, threshold, indices=None, max_tau=None,
 
     # cython implementation
     try:
-        from cython.cython_profiles import coincidence_single_profile_cython \
+        from .cython.cython_profiles import coincidence_single_profile_cython \
             as coincidence_impl
     except ImportError:
         if not(pyspike.disable_backend_warning):
@@ -315,7 +315,7 @@ sure that PySpike is installed by running\n \
 'python setup.py build_ext --inplace'!\n \
 Falling back to slow python backend.")
         # use python backend
-        from cython.python_backend import coincidence_single_python \
+        from .cython.python_backend import coincidence_single_python \
             as coincidence_impl
 
     if max_tau is None:
