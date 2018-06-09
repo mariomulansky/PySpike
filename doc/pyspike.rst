@@ -64,6 +64,11 @@ PSTH
     :undoc-members:
     :show-inheritance:
 
+Directionality
+.. automodule:: pyspike.spike_directionality
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 Helper functions
 ........................................
