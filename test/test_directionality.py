@@ -1,6 +1,6 @@
-""" test_spike_delay_asymmetry.py
+""" test_directionality.py
 
-Tests the asymmetry functions
+Tests the directionality functions
 
 Copyright 2015, Mario Mulansky <mario.mulansky@gmx.net>
 
