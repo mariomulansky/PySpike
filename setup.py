@@ -30,7 +30,9 @@ class numpy_include(object):
 
 if os.path.isfile("pyspike/cython/cython_add.c") and \
    os.path.isfile("pyspike/cython/cython_profiles.c") and \
-   os.path.isfile("pyspike/cython/cython_distances.c"):
+   os.path.isfile("pyspike/cython/cython_distances.c") and \
+   os.path.isfile("pyspike/cython/cython_directionality.c") and \
+   os.path.isfile("pyspike/cython/cython_simulated_annealing.c"):
     use_c = True
 else:
     use_c = False
@@ -45,7 +47,11 @@ if use_cython:  # Cython is available, compile .pyx -> .c
         Extension("pyspike.cython.cython_profiles",
                   ["pyspike/cython/cython_profiles.pyx"]),
         Extension("pyspike.cython.cython_distances",
-                  ["pyspike/cython/cython_distances.pyx"])
+                  ["pyspike/cython/cython_distances.pyx"]),
+        Extension("pyspike.cython.cython_directionality",
+                  ["pyspike/cython/cython_directionality.pyx"]),
+        Extension("pyspike.cython.cython_simulated_annealing",
+                  ["pyspike/cython/cython_simulated_annealing.pyx"])
     ]
     cmdclass.update({'build_ext': build_ext})
 elif use_c:  # c files are there, compile to binaries
@@ -55,7 +61,11 @@ elif use_c:  # c files are there, compile to binaries
         Extension("pyspike.cython.cython_profiles",
                   ["pyspike/cython/cython_profiles.c"]),
         Extension("pyspike.cython.cython_distances",
-                  ["pyspike/cython/cython_distances.c"])
+                  ["pyspike/cython/cython_distances.c"]),
+        Extension("pyspike.cython.cython_directionality",
+                  ["pyspike/cython/cython_directionality.c"]),
+        Extension("pyspike.cython.cython_simulated_annealing",
+                  ["pyspike/cython/cython_simulated_annealing.c"])
     ]
 # neither cython nor c files available -> automatic fall-back to python backend
 
@@ -90,11 +100,17 @@ train similarity',
 
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
-
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6'
-    ]
+    ],
+    package_data={
+        'pyspike': ['cython/cython_add.c', 'cython/cython_profiles.c',
+                    'cython/cython_distances.c',
+                    'cython/cython_directionality.c',
+                    'cython/cython_simulated_annealing.c'],
+        'test': ['Spike_testdata.txt']
+    }
 )
