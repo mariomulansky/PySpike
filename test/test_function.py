@@ -10,6 +10,7 @@ Distributed under the BSD License
 from __future__ import print_function
 import numpy as np
 from copy import copy
+from nose.tools import raises
 from numpy.testing import assert_equal, assert_almost_equal, \
     assert_array_equal, assert_array_almost_equal
 
@@ -49,6 +50,8 @@ def test_pwc():
     assert_almost_equal(a, (0.5-0.5+0.5*1.5+1.0*0.75)/3.0, decimal=16)
     a = f.avrg([1.5, 3.5])
     assert_almost_equal(a, (-0.5*0.5+0.5*1.5+1.0*0.75)/2.0, decimal=16)
+    a = f.avrg([1.0, 2.0])
+    assert_almost_equal(a, (1.0*-0.5)/1.0, decimal=16)
     a = f.avrg([1.0, 3.5])
     assert_almost_equal(a, (-0.5*1.0+0.5*1.5+1.0*0.75)/2.5, decimal=16)
     a = f.avrg([1.0, 4.0])
@@ -119,6 +122,48 @@ def test_pwc_avrg():
     y_expected = [0.75, 1.0, 0.25, 0.625, 0.375, 1.125]
     assert_array_almost_equal(f1.x, x_expected, decimal=16)
     assert_array_almost_equal(f1.y, y_expected, decimal=16)
+
+def test_pwc_integral():
+    # some random data
+    x = [0.0, 1.0, 2.0, 2.5, 4.0]
+    y = [1.0, -0.5, 1.5, 0.75]
+    f1 = spk.PieceWiseConstFunc(x, y)
+
+    # test full interval
+    full = 1.0*1.0 + 1.0*-0.5 + 0.5*1.5 + 1.5*0.75;
+    assert_equal(f1.integral(), full)
+    assert_equal(f1.integral((np.min(x),np.max(x))), full)
+    # test part interval, spanning an edge
+    assert_equal(f1.integral((0.5,1.5)), 0.5*1.0 + 0.5*-0.5)
+    # test part interval, just over two edges
+    assert_almost_equal(f1.integral((1.0-1e-16,2+1e-16)), 1.0*-0.5, decimal=16)
+    # test part interval, between two edges
+    assert_equal(f1.integral((1.0,2.0)), 1.0*-0.5)
+    assert_equal(f1.integral((1.2,1.7)), (1.7-1.2)*-0.5)
+
+@raises(AssertionError)
+def test_pwc_integral_bad_bounds_inv():
+    # some random data
+    x = [0.0, 1.0, 2.0, 2.5, 4.0]
+    y = [1.0, -0.5, 1.5, 0.75]
+    f1 = spk.PieceWiseConstFunc(x, y)
+    f1.integral((3,2))
+
+@raises(AssertionError)
+def test_pwc_integral_bad_bounds_oob_1():
+    # some random data
+    x = [0.0, 1.0, 2.0, 2.5, 4.0]
+    y = [1.0, -0.5, 1.5, 0.75]
+    f1 = spk.PieceWiseConstFunc(x, y)
+    f1.integral((1,6))
+
+@raises(AssertionError)
+def test_pwc_integral_bad_bounds_oob_2():
+    # some random data
+    x = [0.0, 1.0, 2.0, 2.5, 4.0]
+    y = [1.0, -0.5, 1.5, 0.75]
+    f1 = spk.PieceWiseConstFunc(x, y)
+    f1.integral((-1,3))
 
 
 def test_pwl():
