@@ -129,19 +129,22 @@ class PieceWiseConstFunc(object):
             # no interval given, integrate over the whole spike train
             a = np.sum((self.x[1:]-self.x[:-1]) * self.y)
         else:
-            # find the indices corresponding to the interval
-            start_ind = np.searchsorted(self.x, interval[0], side='right')
-            end_ind = np.searchsorted(self.x, interval[1], side='left')-1
-            assert start_ind > 0 and end_ind < len(self.x), \
-                "Invalid averaging interval"
-            # first the contribution from between the indices
-            a = np.sum((self.x[start_ind+1:end_ind+1] -
-                        self.x[start_ind:end_ind]) *
-                       self.y[start_ind:end_ind])
-            # correction from start to first index
-            a += (self.x[start_ind]-interval[0]) * self.y[start_ind-1]
-            # correction from last index to end
-            a += (interval[1]-self.x[end_ind]) * self.y[end_ind]
+            assert interval[0]<interval[1], \
+                    "Invalid averaging interval: interval[0]>=interval[1]"
+            # add temporary new edges matching the interval
+            x = self.x
+            x = np.insert(x, np.searchsorted(x, interval[0]), interval[0])
+            x = np.insert(x, np.searchsorted(x, interval[1]), interval[1])
+            # get the indices that match these new edges
+            x0 = np.searchsorted(x, interval[0], side='right') - 1
+            x1 = np.searchsorted(x, interval[1], side='left')  + 1
+            assert x0 > 0 and x1 < len(x), \
+                    "Invalid averaging interval: beyond lower or upper bounds"
+            # get the indices for y to compute the integral
+            y0 = np.searchsorted(self.x, interval[0], side='right') - 1
+            y1 = np.searchsorted(self.x, interval[1], side='left')
+            # compute integral
+            a = np.sum((x[x0+1:x1] - x[x0:x1-1]) * self.y[y0:y1])
         return a
 
     def avrg(self, interval=None):
