@@ -92,8 +92,6 @@ def test_spike_train_order():
 
     # We can also compute the synfire indicator from the Directionality Matrix:
     D_matrix = spk.spike_directionality_matrix([st1, st2, st3], normalize=False)
-    print D_matrix
     num_spikes = np.sum(len(st) for st in [st1, st2, st3])
-    print f.avrg(), num_spikes
     syn_fire = np.sum(np.triu(D_matrix)) / num_spikes
     assert_almost_equal(f.avrg(), syn_fire)
