@@ -45,9 +45,9 @@ def spike_sync_profile(*args, **kwargs):
     if len(args) == 1:
         return spike_sync_profile_multi(args[0], **kwargs)
     elif len(args) == 2:
-        return spike_sync_profile_bi(args[0], args[1])
+        return spike_sync_profile_bi(args[0], args[1], **kwargs)
     else:
-        return spike_sync_profile_multi(args)
+        return spike_sync_profile_multi(args, **kwargs)
 
 
 ############################################################

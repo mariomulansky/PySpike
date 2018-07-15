@@ -14,7 +14,6 @@ from numpy.testing import assert_equal, assert_almost_equal, \
 
 import pyspike as spk
 from pyspike import SpikeTrain, DiscreteFunc
-# from pyspike.spike_directionality import _spike_directionality_profile
 
 
 def test_spike_directionality():
@@ -39,7 +38,7 @@ def test_spike_directionality():
     D_expected = np.array([[0, 2.0, 0.0], [-2.0, 0.0, -1.0], [0.0, 1.0, 0.0]])
     assert_array_equal(D, D_expected)
 
-    dir_profs = spk.spike_directionality_profiles([st1, st2, st3])
+    dir_profs = spk.spike_directionality_values([st1, st2, st3])
     assert_array_equal(dir_profs[0], [1.0, 0.0, 0.0])
     assert_array_equal(dir_profs[1], [-0.5, -1.0, 0.0])
 
@@ -87,3 +86,14 @@ def test_spike_train_order():
     assert_array_equal(f.x, expected_x)
     assert_array_equal(f.y, expected_y)
     assert_array_equal(f.mp, expected_mp)
+
+    # Averaging the profile should be the same as computing the synfire indicator directly.
+    assert_almost_equal(f.avrg(), spk.spike_train_order([st1, st2, st3]))
+
+    # We can also compute the synfire indicator from the Directionality Matrix:
+    D_matrix = spk.spike_directionality_matrix([st1, st2, st3], normalize=False)
+    print D_matrix
+    num_spikes = np.sum(len(st) for st in [st1, st2, st3])
+    print f.avrg(), num_spikes
+    syn_fire = np.sum(np.triu(D_matrix)) / num_spikes
+    assert_almost_equal(f.avrg(), syn_fire)
