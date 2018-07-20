@@ -129,6 +129,12 @@ class PieceWiseConstFunc(object):
             # no interval given, integrate over the whole spike train
             a = np.sum((self.x[1:]-self.x[:-1]) * self.y)
         else:
+            if interval[0]>interval[1]:
+                raise ValueError("Invalid averaging interval: interval[0]>=interval[1]")
+            if interval[0]<self.x[0]:
+                raise ValueError("Invalid averaging interval: interval[0]<self.x[0]")
+            if interval[1]>self.x[-1]:
+                raise ValueError("Invalid averaging interval: interval[0]<self.x[-1]")
             # find the indices corresponding to the interval
             start_ind = np.searchsorted(self.x, interval[0], side='right')
             end_ind = np.searchsorted(self.x, interval[1], side='left')-1
