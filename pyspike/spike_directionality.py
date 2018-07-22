@@ -328,7 +328,7 @@ def _spike_train_order_impl(spike_train1, spike_train2,
         except ImportError:
             # Cython backend not available: fall back to profile averaging
             c, mp = spike_train_order_profile(spike_train1, spike_train2,
-                                              max_tau).integral(interval)
+                                              max_tau=max_tau).integral(interval)
         return c, mp
     else:
         # some specific interval is provided: not yet implemented
