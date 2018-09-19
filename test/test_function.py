@@ -136,7 +136,7 @@ def test_pwc_integral():
     # test part interval, spanning an edge
     assert_equal(f1.integral((0.5,1.5)), 0.5*1.0 + 0.5*-0.5)
     # test part interval, just over two edges
-    assert_almost_equal(f1.integral((1.0-1e-16,2+1e-16)), 1.0*-0.5, decimal=16)
+    assert_almost_equal(f1.integral((1.0-1e-16,2+1e-16)), 1.0*-0.5, decimal=14)
     # test part interval, between two edges
     assert_equal(f1.integral((1.0,2.0)), 1.0*-0.5)
     assert_equal(f1.integral((1.2,1.7)), (1.7-1.2)*-0.5)
@@ -212,6 +212,18 @@ def test_pwl():
     a = f.avrg([1.0, 4.0])
     assert_almost_equal(a, (-0.45 + 0.75 + 1.5*0.5) / 3.0, decimal=16)
 
+    # interval between support points
+    a = f.avrg([1.1, 1.5])
+    assert_almost_equal(a, (-0.5+0.1*0.1 - 0.45) * 0.5, decimal=14)
+
+    # starting at a support point
+    a = f.avrg([1.0, 1.5])
+    assert_almost_equal(a, (-0.5 - 0.45) * 0.5, decimal=14)
+
+    # start and end at support point
+    a = f.avrg([1.0, 2.0])
+    assert_almost_equal(a, (-0.5 - 0.4) * 0.5, decimal=14)
+    
     # averaging over multiple intervals
     a = f.avrg([(0.5, 1.5), (1.5, 2.5)])
     assert_almost_equal(a, (1.375*0.5 - 0.45 + 0.75)/2.0, decimal=16)
