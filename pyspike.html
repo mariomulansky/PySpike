@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pyspike package &mdash; PySpike 0.5.1 documentation</title>
+    <title>pyspike package &mdash; PySpike 0.5.3 documentation</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.5.1',
+        VERSION:     '0.5.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="PySpike 0.5.1 documentation" href="index.html" />
+    <link rel="top" title="PySpike 0.5.3 documentation" href="index.html" />
     <link rel="prev" title="PySpike" href="index.html" /> 
   </head>
   <body role="document">
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="index.html" title="PySpike"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PySpike 0.5.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PySpike 0.5.3 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -1049,6 +1049,13 @@ if None all given spike trains are used (default=None)</li>
 <div class="section" id="module-pyspike.spike_sync">
 <span id="spike-synchronization"></span><h3>SPIKE-synchronization<a class="headerlink" href="#module-pyspike.spike_sync" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
+<dt id="pyspike.spike_sync.filter_by_spike_sync">
+<code class="descclassname">pyspike.spike_sync.</code><code class="descname">filter_by_spike_sync</code><span class="sig-paren">(</span><em>spike_trains</em>, <em>threshold</em>, <em>indices=None</em>, <em>max_tau=None</em>, <em>return_removed_spikes=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyspike/spike_sync.html#filter_by_spike_sync"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_sync.filter_by_spike_sync" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes the spikes with a multi-variate spike_sync value below
+threshold.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="pyspike.spike_sync.spike_sync">
 <code class="descclassname">pyspike.spike_sync.</code><code class="descname">spike_sync</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyspike/spike_sync.html#spike_sync"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_sync.spike_sync" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the spike synchronization value SYNC of the given spike
@@ -1292,6 +1299,133 @@ events. The <code class="code docutils literal"><span class="pre">bin_size</span
 </dd></dl>
 
 </div>
+<div class="section" id="module-pyspike.spike_directionality">
+<span id="directionality"></span><h3>Directionality<a class="headerlink" href="#module-pyspike.spike_directionality" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="pyspike.spike_directionality.optimal_spike_train_order">
+<code class="descclassname">pyspike.spike_directionality.</code><code class="descname">optimal_spike_train_order</code><span class="sig-paren">(</span><em>spike_trains</em>, <em>indices=None</em>, <em>interval=None</em>, <em>max_tau=None</em>, <em>full_output=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyspike/spike_directionality.html#optimal_spike_train_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_directionality.optimal_spike_train_order" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the best sorting of the given spike trains by computing the spike
+directionality matrix and optimize the order using simulated annealing.
+For a detailed description of the algorithm see:
+<cite>http://iopscience.iop.org/article/10.1088/1367-2630/aa68c3/meta</cite></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>spike_trains</strong> &#8211; list of <a class="reference internal" href="#pyspike.SpikeTrain.SpikeTrain" title="pyspike.SpikeTrain.SpikeTrain"><code class="xref py py-class docutils literal"><span class="pre">SpikeTrain</span></code></a></li>
+<li><strong>indices</strong> (<em>list or None</em>) &#8211; list of indices defining which spike trains to use,
+if None all given spike trains are used (default=None)</li>
+<li><strong>interval</strong> (<em>Pair of floats or None.</em>) &#8211; time interval filter given as a pair of floats, if None
+the full spike trains are used (default=None).</li>
+<li><strong>max_tau</strong> &#8211; Maximum coincidence window size. If 0 or <cite>None</cite>, the
+coincidence window has no upper bound (default=None).</li>
+<li><strong>full_output</strong> &#8211; If true, then function will additionally return the
+number of performed iterations (default=False)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(p, F) - tuple with the optimal permutation and synfire indicator.
+if <a href="#id1"><span class="problematic" id="id2">`</span></a>full_output=True</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyspike.spike_directionality.optimal_spike_train_order_from_matrix">
+<code class="descclassname">pyspike.spike_directionality.</code><code class="descname">optimal_spike_train_order_from_matrix</code><span class="sig-paren">(</span><em>D</em>, <em>full_output=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyspike/spike_directionality.html#optimal_spike_train_order_from_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_directionality.optimal_spike_train_order_from_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>finds the best sorting via simulated annealing.
+Returns the optimal permutation p and A value.
+Internal function, don&#8217;t call directly! Use optimal_asymmetry_order
+instead.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyspike.spike_directionality.spike_directionality">
+<code class="descclassname">pyspike.spike_directionality.</code><code class="descname">spike_directionality</code><span class="sig-paren">(</span><em>spike_train1</em>, <em>spike_train2</em>, <em>normalize=True</em>, <em>interval=None</em>, <em>max_tau=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyspike/spike_directionality.html#spike_directionality"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_directionality.spike_directionality" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the overall spike directionality for two spike trains.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyspike.spike_directionality.spike_directionality_matrix">
+<code class="descclassname">pyspike.spike_directionality.</code><code class="descname">spike_directionality_matrix</code><span class="sig-paren">(</span><em>spike_trains</em>, <em>normalize=True</em>, <em>indices=None</em>, <em>interval=None</em>, <em>max_tau=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyspike/spike_directionality.html#spike_directionality_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_directionality.spike_directionality_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the spike directionaity matrix for the given spike trains.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyspike.spike_directionality.spike_directionality_profiles">
+<code class="descclassname">pyspike.spike_directionality.</code><code class="descname">spike_directionality_profiles</code><span class="sig-paren">(</span><em>spike_trains</em>, <em>indices=None</em>, <em>interval=None</em>, <em>max_tau=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyspike/spike_directionality.html#spike_directionality_profiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_directionality.spike_directionality_profiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the spike directionality value for each spike in each spike
+train.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyspike.spike_directionality.spike_train_order">
+<code class="descclassname">pyspike.spike_directionality.</code><code class="descname">spike_train_order</code><span class="sig-paren">(</span><em>spike_train1</em>, <em>spike_train2</em>, <em>normalize=True</em>, <em>interval=None</em>, <em>max_tau=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyspike/spike_directionality.html#spike_train_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_directionality.spike_train_order" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the overall spike delay asymmetry value for two spike trains.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyspike.spike_directionality.spike_train_order_profile">
+<code class="descclassname">pyspike.spike_directionality.</code><code class="descname">spike_train_order_profile</code><span class="sig-paren">(</span><em>spike_train1</em>, <em>spike_train2</em>, <em>max_tau=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyspike/spike_directionality.html#spike_train_order_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_directionality.spike_train_order_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the spike train order profile P(t) of the two given
+spike trains. Returns the profile as a DiscreteFunction object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>spike_train1</strong> (<a class="reference internal" href="#module-pyspike.SpikeTrain" title="pyspike.SpikeTrain"><code class="xref py py-class docutils literal"><span class="pre">pyspike.SpikeTrain</span></code></a>) &#8211; First spike train.</li>
+<li><strong>spike_train2</strong> (<a class="reference internal" href="#module-pyspike.SpikeTrain" title="pyspike.SpikeTrain"><code class="xref py py-class docutils literal"><span class="pre">pyspike.SpikeTrain</span></code></a>) &#8211; Second spike train.</li>
+<li><strong>max_tau</strong> &#8211; Maximum coincidence window size. If 0 or <cite>None</cite>, the
+coincidence window has no upper bound.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The spike-distance profile <span class="math">\(S_{sync}(t)\)</span>.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">pyspike.function.DiscreteFunction</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyspike.spike_directionality.spike_train_order_profile_multi">
+<code class="descclassname">pyspike.spike_directionality.</code><code class="descname">spike_train_order_profile_multi</code><span class="sig-paren">(</span><em>spike_trains</em>, <em>indices=None</em>, <em>max_tau=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyspike/spike_directionality.html#spike_train_order_profile_multi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_directionality.spike_train_order_profile_multi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the multi-variate spike delay asymmetry profile for a set of
+spike trains. For each spike in the set of spike trains, the multi-variate
+profile is defined as the sum of asymmetry values divided by the number of
+spike trains pairs involving the spike train of containing this spike,
+which is the number of spike trains minus one (N-1).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>spike_trains</strong> &#8211; list of <a class="reference internal" href="#module-pyspike.SpikeTrain" title="pyspike.SpikeTrain"><code class="xref py py-class docutils literal"><span class="pre">pyspike.SpikeTrain</span></code></a></li>
+<li><strong>indices</strong> (<em>list or None</em>) &#8211; list of indices defining which spike trains to use,
+if None all given spike trains are used (default=None)</li>
+<li><strong>max_tau</strong> &#8211; Maximum coincidence window size. If 0 or <cite>None</cite>, the
+coincidence window has no upper bound.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The multi-variate spike sync profile <span class="math">\(&lt;S_{sync}&gt;(t)\)</span></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">pyspike.function.DiscreteFunction</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
 <div class="section" id="module-pyspike.spikes">
 <span id="helper-functions"></span><h3>Helper functions<a class="headerlink" href="#module-pyspike.spikes" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
@@ -1315,6 +1449,31 @@ interval, if they are not yet present.</li>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Poisson spike train as a <a class="reference internal" href="#pyspike.SpikeTrain.SpikeTrain" title="pyspike.SpikeTrain.SpikeTrain"><code class="xref py py-class docutils literal"><span class="pre">SpikeTrain</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyspike.spikes.import_spike_trains_from_time_series">
+<code class="descclassname">pyspike.spikes.</code><code class="descname">import_spike_trains_from_time_series</code><span class="sig-paren">(</span><em>file_name</em>, <em>start_time</em>, <em>time_bin</em>, <em>separator=None</em>, <em>comment='#'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyspike/spikes.html#import_spike_trains_from_time_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spikes.import_spike_trains_from_time_series" title="Permalink to this definition">¶</a></dt>
+<dd><p>Imports spike trains from time series consisting of 0 and 1 denoting
+the absence or presence of a spike. Each line in the data file represents
+one spike train.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>file_name</strong> &#8211; The name of the data file containing the time series.</li>
+<li><strong>edges</strong> &#8211; A pair (T_start, T_end) of values representing the
+start and end time of the spike train measurement
+or a single value representing the end time, the
+T_start is then assuemd as 0.</li>
+<li><strong>separator</strong> &#8211; The character used to seprate the values in the text file</li>
+<li><strong>comment</strong> &#8211; Lines starting with this character are ignored.</li>
+</ul>
 </td>
 </tr>
 </tbody>
@@ -1363,6 +1522,26 @@ T_start is then assuemd as 0.</li>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>spike_trains</strong> &#8211; list of <a class="reference internal" href="#pyspike.SpikeTrain.SpikeTrain" title="pyspike.SpikeTrain.SpikeTrain"><code class="xref py py-class docutils literal"><span class="pre">SpikeTrain</span></code></a></td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">spike train with the merged spike times</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyspike.spikes.save_spike_trains_to_txt">
+<code class="descclassname">pyspike.spikes.</code><code class="descname">save_spike_trains_to_txt</code><span class="sig-paren">(</span><em>spike_trains</em>, <em>file_name</em>, <em>separator=' '</em>, <em>precision=8</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyspike/spikes.html#save_spike_trains_to_txt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spikes.save_spike_trains_to_txt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves the given spike trains into a file with the given file name.
+Each spike train will be stored in one line in the text file with the times
+separated by <cite>separator</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>spike_trains</strong> &#8211; List of <a class="reference internal" href="#pyspike.SpikeTrain.SpikeTrain" title="pyspike.SpikeTrain.SpikeTrain"><code class="xref py py-class docutils literal"><span class="pre">SpikeTrain</span></code></a> objects</li>
+<li><strong>file_name</strong> &#8211; The name of the text file.</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
@@ -1419,6 +1598,7 @@ if False, spike times are sorted with <cite>np.sort</cite></li>
 <li><a class="reference internal" href="#module-pyspike.spike_distance">SPIKE-distance</a></li>
 <li><a class="reference internal" href="#module-pyspike.spike_sync">SPIKE-synchronization</a></li>
 <li><a class="reference internal" href="#module-pyspike.psth">PSTH</a></li>
+<li><a class="reference internal" href="#module-pyspike.spike_directionality">Directionality</a></li>
 <li><a class="reference internal" href="#module-pyspike.spikes">Helper functions</a></li>
 </ul>
 </li>
@@ -1465,11 +1645,11 @@ if False, spike times are sorted with <cite>np.sort</cite></li>
         <li class="right" >
           <a href="index.html" title="PySpike"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PySpike 0.5.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PySpike 0.5.3 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2014-2015, Mario Mulansky.
+        &copy; Copyright 2014-2017, Mario Mulansky.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.6.
     </div>
   </body>
