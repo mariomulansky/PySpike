@@ -146,31 +146,47 @@ class PieceWiseLinFunc:
 
         if interval is None:
             # no interval given, integrate over the whole spike train
-            integral = np.sum((self.x[1:]-self.x[:-1]) * 0.5*(self.y1+self.y2))
+            return np.sum((self.x[1:]-self.x[:-1]) * 0.5*(self.y1+self.y2))
+
+        # find the indices corresponding to the interval
+        start_ind = np.searchsorted(self.x, interval[0], side='right')
+        end_ind = np.searchsorted(self.x, interval[1], side='left')-1
+        assert start_ind > 0 and end_ind < len(self.x), \
+            "Invalid averaging interval"
+        if start_ind > end_ind:
+            print(start_ind, end_ind, self.x[start_ind])
+            # contribution from between two closest edges
+            y_x0 = intermediate_value(self.x[start_ind-1],
+                                        self.x[start_ind],
+                                        self.y1[start_ind-1],
+                                        self.y2[start_ind-1],
+                                        interval[0])
+            y_x1 = intermediate_value(self.x[start_ind-1],
+                                        self.x[start_ind],
+                                        self.y1[start_ind-1],
+                                        self.y2[start_ind-1],
+                                        interval[1])
+            print(y_x0, y_x1, interval[1] - interval[0])
+            integral = (y_x0 + y_x1) * 0.5 * (interval[1] - interval[0])
+            print(integral)
         else:
-            # find the indices corresponding to the interval
-            start_ind = np.searchsorted(self.x, interval[0], side='right')
-            end_ind = np.searchsorted(self.x, interval[1], side='left')-1
-            assert start_ind > 0 and end_ind < len(self.x), \
-                "Invalid averaging interval"
             # first the contribution from between the indices
             integral = np.sum((self.x[start_ind+1:end_ind+1] -
-                               self.x[start_ind:end_ind]) *
-                              0.5*(self.y1[start_ind:end_ind] +
-                                   self.y2[start_ind:end_ind]))
+                            self.x[start_ind:end_ind]) *
+                            0.5*(self.y1[start_ind:end_ind] +
+                                self.y2[start_ind:end_ind]))
             # correction from start to first index
             integral += (self.x[start_ind]-interval[0]) * 0.5 * \
                         (self.y2[start_ind-1] +
-                         intermediate_value(self.x[start_ind-1],
+                        intermediate_value(self.x[start_ind-1],
                                             self.x[start_ind],
                                             self.y1[start_ind-1],
                                             self.y2[start_ind-1],
-                                            interval[0]
-                                            ))
+                                            interval[0]))
             # correction from last index to end
             integral += (interval[1]-self.x[end_ind]) * 0.5 * \
                         (self.y1[end_ind] +
-                         intermediate_value(self.x[end_ind], self.x[end_ind+1],
+                        intermediate_value(self.x[end_ind], self.x[end_ind+1],
                                             self.y1[end_ind], self.y2[end_ind],
                                             interval[1]
                                             ))

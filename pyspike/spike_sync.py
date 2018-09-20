@@ -8,7 +8,7 @@ from __future__ import absolute_import
 import numpy as np
 from functools import partial
 import pyspike
-from pyspike import DiscreteFunc
+from pyspike import DiscreteFunc, SpikeTrain
 from pyspike.generic import _generic_profile_multi, _generic_distance_matrix
 
 
@@ -45,9 +45,9 @@ def spike_sync_profile(*args, **kwargs):
     if len(args) == 1:
         return spike_sync_profile_multi(args[0], **kwargs)
     elif len(args) == 2:
-        return spike_sync_profile_bi(args[0], args[1])
+        return spike_sync_profile_bi(args[0], args[1], **kwargs)
     else:
-        return spike_sync_profile_multi(args)
+        return spike_sync_profile_multi(args, **kwargs)
 
 
 ############################################################
@@ -290,3 +290,52 @@ def spike_sync_matrix(spike_trains, indices=None, interval=None, max_tau=None):
     dist_func = partial(spike_sync_bi, max_tau=max_tau)
     return _generic_distance_matrix(spike_trains, dist_func,
                                     indices, interval)
+
+
+############################################################
+# filter_by_spike_sync
+############################################################
+def filter_by_spike_sync(spike_trains, threshold, indices=None, max_tau=None,
+                         return_removed_spikes=False):
+    """ Removes the spikes with a multi-variate spike_sync value below
+    threshold.
+    """
+    N = len(spike_trains)
+    filtered_spike_trains = []
+    removed_spike_trains = []
+
+    # cython implementation
+    try:
+        from .cython.cython_profiles import coincidence_single_profile_cython \
+            as coincidence_impl
+    except ImportError:
+        if not(pyspike.disable_backend_warning):
+            print("Warning: coincidence_single_profile_cython not found. Make \
+sure that PySpike is installed by running\n \
+'python setup.py build_ext --inplace'!\n \
+Falling back to slow python backend.")
+        # use python backend
+        from .cython.python_backend import coincidence_single_python \
+            as coincidence_impl
+
+    if max_tau is None:
+        max_tau = 0.0
+
+    for i, st in enumerate(spike_trains):
+        coincidences = np.zeros_like(st)
+        for j in range(N):
+            if i == j:
+                continue
+            coincidences += coincidence_impl(st.spikes, spike_trains[j].spikes,
+                                             st.t_start, st.t_end, max_tau)
+        filtered_spikes = st[coincidences > threshold*(N-1)]
+        filtered_spike_trains.append(SpikeTrain(filtered_spikes,
+                                                [st.t_start, st.t_end]))
+        if return_removed_spikes:
+            removed_spikes = st[coincidences <= threshold*(N-1)]
+            removed_spike_trains.append(SpikeTrain(removed_spikes,
+                                                   [st.t_start, st.t_end]))
+    if return_removed_spikes:
+        return [filtered_spike_trains, removed_spike_trains]
+    else:
+        return filtered_spike_trains

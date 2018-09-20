@@ -129,19 +129,31 @@ class PieceWiseConstFunc(object):
             # no interval given, integrate over the whole spike train
             a = np.sum((self.x[1:]-self.x[:-1]) * self.y)
         else:
+            if interval[0]>interval[1]:
+                raise ValueError("Invalid averaging interval: interval[0]>=interval[1]")
+            if interval[0]<self.x[0]:
+                raise ValueError("Invalid averaging interval: interval[0]<self.x[0]")
+            if interval[1]>self.x[-1]:
+                raise ValueError("Invalid averaging interval: interval[0]<self.x[-1]")
             # find the indices corresponding to the interval
             start_ind = np.searchsorted(self.x, interval[0], side='right')
             end_ind = np.searchsorted(self.x, interval[1], side='left')-1
-            assert start_ind > 0 and end_ind < len(self.x), \
-                "Invalid averaging interval"
-            # first the contribution from between the indices
-            a = np.sum((self.x[start_ind+1:end_ind+1] -
-                        self.x[start_ind:end_ind]) *
-                       self.y[start_ind:end_ind])
-            # correction from start to first index
-            a += (self.x[start_ind]-interval[0]) * self.y[start_ind-1]
-            # correction from last index to end
-            a += (interval[1]-self.x[end_ind]) * self.y[end_ind]
+            if start_ind > end_ind:
+                # contribution from between two closest edges
+                a = (self.x[start_ind]-self.x[end_ind]) * self.y[end_ind]
+                # minus the part that is not within the interval
+                a -= ((interval[0]-self.x[end_ind])+(self.x[start_ind]-interval[1])) * self.y[end_ind]
+            else:
+                assert start_ind > 0 and end_ind < len(self.x), \
+                    "Invalid averaging interval"
+                # first the contribution from between the indices
+                a = np.sum((self.x[start_ind+1:end_ind+1] -
+                            self.x[start_ind:end_ind]) *
+                           self.y[start_ind:end_ind])
+                # correction from start to first index
+                a += (self.x[start_ind]-interval[0]) * self.y[start_ind-1]
+                # correction from last index to end
+                a += (interval[1]-self.x[end_ind]) * self.y[end_ind]
         return a
 
     def avrg(self, interval=None):

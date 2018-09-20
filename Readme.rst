@@ -31,18 +31,13 @@ Additionally, depending on the used methods: ISI-distance [1], SPIKE-distance [2
 Important Changelog
 -----------------------------
 
+With version 0.6.0, the spike directionality and spike train order function have been added.
+
 With version 0.5.0, the interfaces have been unified and the specific functions for multivariate computations have become deprecated.
 
 With version 0.2.0, the :code:`SpikeTrain` class has been introduced to represent spike trains.
 This is a breaking change in the function interfaces.
 Hence, programs written for older versions of PySpike (0.1.x) will not run with newer versions.
-
-
-Upcoming Functionality
--------------------------
-
-In an upcoming release, new functionality for analyzing Synfire patterns based on the new measures SPIKE-Order and Spike-Train-Order method will become part of the PySpike library.
-The new measures and algorithms are described in `this preprint <https://arxiv.org/abs/1610.07986>`_.
 
 Requirements and Installation
 -----------------------------

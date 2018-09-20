@@ -3,7 +3,7 @@
 Collection of python functions that can be used instead of the cython
 implementation.
 
-Copyright 2014, Mario Mulansky <mario.mulansky@gmx.net>
+Copyright 2014-2015, Mario Mulansky <mario.mulansky@gmx.net>
 
 Distributed under the BSD License
 
@@ -356,25 +356,26 @@ def cumulative_sync_python(spikes1, spikes2):
     return st, c
 
 
+def get_tau(spikes1, spikes2, i, j, max_tau, init_tau):
+    m = init_tau
+    if i < len(spikes1)-1 and i > -1:
+        m = min(m, spikes1[i+1]-spikes1[i])
+    if j < len(spikes2)-1 and j > -1:
+        m = min(m, spikes2[j+1]-spikes2[j])
+    if i > 0:
+        m = min(m, spikes1[i]-spikes1[i-1])
+    if j > 0:
+        m = min(m, spikes2[j]-spikes2[j-1])
+    m *= 0.5
+    if max_tau > 0.0:
+        m = min(m, max_tau)
+    return m
+
+
 ############################################################
 # coincidence_python
 ############################################################
 def coincidence_python(spikes1, spikes2, t_start, t_end, max_tau):
-
-    def get_tau(spikes1, spikes2, i, j, max_tau):
-        m = t_end - t_start   # use interval as initial tau
-        if i < len(spikes1)-1 and i > -1:
-            m = min(m, spikes1[i+1]-spikes1[i])
-        if j < len(spikes2)-1 and j > -1:
-            m = min(m, spikes2[j+1]-spikes2[j])
-        if i > 0:
-            m = min(m, spikes1[i]-spikes1[i-1])
-        if j > 0:
-            m = min(m, spikes2[j]-spikes2[j-1])
-        m *= 0.5
-        if max_tau > 0.0:
-            m = min(m, max_tau)
-        return m
 
     N1 = len(spikes1)
     N2 = len(spikes2)
@@ -388,7 +389,7 @@ def coincidence_python(spikes1, spikes2, t_start, t_end, max_tau):
         if (i < N1-1) and (j == N2-1 or spikes1[i+1] < spikes2[j+1]):
             i += 1
             n += 1
-            tau = get_tau(spikes1, spikes2, i, j, max_tau)
+            tau = get_tau(spikes1, spikes2, i, j, max_tau, t_end-t_start)
             st[n] = spikes1[i]
             if j > -1 and spikes1[i]-spikes2[j] < tau:
                 # coincidence between the current spike and the previous spike
@@ -398,7 +399,7 @@ def coincidence_python(spikes1, spikes2, t_start, t_end, max_tau):
         elif (j < N2-1) and (i == N1-1 or spikes1[i+1] > spikes2[j+1]):
             j += 1
             n += 1
-            tau = get_tau(spikes1, spikes2, i, j, max_tau)
+            tau = get_tau(spikes1, spikes2, i, j, max_tau, t_end-t_start)
             st[n] = spikes2[j]
             if i > -1 and spikes2[j]-spikes1[i] < tau:
                 # coincidence between the current spike and the previous spike
@@ -431,6 +432,36 @@ def coincidence_python(spikes1, spikes2, t_start, t_end, max_tau):
         c[1] = 1
 
     return st, c, mp
+
+
+############################################################
+# coincidence_single_profile_cython
+############################################################
+def coincidence_single_python(spikes1, spikes2, t_start, t_end, max_tau):
+
+    N1 = len(spikes1)
+    N2 = len(spikes2)
+    j = -1
+    c = np.zeros(N1)   # coincidences
+    for i in range(N1):
+        while j < N2-1 and spikes2[j+1] < spikes1[i]:
+            # move forward until spikes2[j] is the last spike before spikes1[i]
+            # note that if spikes2[j] is after spikes1[i] we dont do anything
+            j += 1
+        tau = get_tau(spikes1, spikes2, i, j, max_tau, t_end-t_start)
+        if j > -1 and abs(spikes1[i]-spikes2[j]) < tau:
+            # current spike in st1 is coincident
+            c[i] = 1
+        if j < N2-1 and (j < 0 or spikes2[j] < spikes1[i]):
+            # in case spikes2[j] is before spikes1[i] it has to be the first or
+            # the one right before (see above), hence we move one forward and
+            # also check the next spike
+            j += 1
+            tau = get_tau(spikes1, spikes2, i, j, max_tau, t_end-t_start)
+            if abs(spikes2[j]-spikes1[i]) < tau:
+                # current spike in st1 is coincident
+                c[i] = 1
+    return c
 
 
 ############################################################
