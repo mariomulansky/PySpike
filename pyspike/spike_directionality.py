@@ -501,7 +501,7 @@ def optimal_spike_train_sorting(spike_trains,  indices=None, interval=None,
     D = spike_directionality_matrix(spike_trains, normalize=False,
                                     indices=indices, interval=interval,
                                     max_tau=max_tau)
-    return _optimal_spike_train_order_from_matrix(D, full_output)
+    return _optimal_spike_train_sorting_from_matrix(D, full_output)
 
 ############################################################
 # permutate_matrix
