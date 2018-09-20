@@ -1302,8 +1302,8 @@ events. The <code class="code docutils literal"><span class="pre">bin_size</span
 <div class="section" id="module-pyspike.spike_directionality">
 <span id="directionality"></span><h3>Directionality<a class="headerlink" href="#module-pyspike.spike_directionality" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
-<dt id="pyspike.spike_directionality.optimal_spike_train_order">
-<code class="descclassname">pyspike.spike_directionality.</code><code class="descname">optimal_spike_train_order</code><span class="sig-paren">(</span><em>spike_trains</em>, <em>indices=None</em>, <em>interval=None</em>, <em>max_tau=None</em>, <em>full_output=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyspike/spike_directionality.html#optimal_spike_train_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_directionality.optimal_spike_train_order" title="Permalink to this definition">¶</a></dt>
+<dt id="pyspike.spike_directionality.optimal_spike_train_sorting">
+<code class="descclassname">pyspike.spike_directionality.</code><code class="descname">optimal_spike_train_sorting</code><span class="sig-paren">(</span><em>spike_trains</em>, <em>indices=None</em>, <em>interval=None</em>, <em>max_tau=None</em>, <em>full_output=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyspike/spike_directionality.html#optimal_spike_train_sorting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_directionality.optimal_spike_train_sorting" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds the best sorting of the given spike trains by computing the spike
 directionality matrix and optimize the order using simulated annealing.
 For a detailed description of the algorithm see:
@@ -1326,7 +1326,7 @@ number of performed iterations (default=False)</li>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(p, F) - tuple with the optimal permutation and synfire indicator.
-if <a href="#id1"><span class="problematic" id="id2">`</span></a>full_output=True</p>
+if <cite>full_output=True</cite> , (p, F, iter) is returned.</p>
 </td>
 </tr>
 </tbody>
@@ -1334,42 +1334,236 @@ if <a href="#id1"><span class="problematic" id="id2">`</span></a>full_output=Tru
 </dd></dl>
 
 <dl class="function">
-<dt id="pyspike.spike_directionality.optimal_spike_train_order_from_matrix">
-<code class="descclassname">pyspike.spike_directionality.</code><code class="descname">optimal_spike_train_order_from_matrix</code><span class="sig-paren">(</span><em>D</em>, <em>full_output=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyspike/spike_directionality.html#optimal_spike_train_order_from_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_directionality.optimal_spike_train_order_from_matrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>finds the best sorting via simulated annealing.
-Returns the optimal permutation p and A value.
-Internal function, don&#8217;t call directly! Use optimal_asymmetry_order
-instead.</p>
+<dt id="pyspike.spike_directionality.permutate_matrix">
+<code class="descclassname">pyspike.spike_directionality.</code><code class="descname">permutate_matrix</code><span class="sig-paren">(</span><em>D</em>, <em>p</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyspike/spike_directionality.html#permutate_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_directionality.permutate_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function that applies the permutation p to the columns and rows
+of matrix D. Return the permutated matrix <span class="math">\(D'[n,m] = D[p[n], p[m]]\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>D</strong> &#8211; The matrix.</li>
+<li><strong>d</strong> &#8211; The permutation.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The permuated matrix D&#8217;, ie <span class="math">\(D'[n,m] = D[p[n], p[m]]\)</span></p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="pyspike.spike_directionality.spike_directionality">
 <code class="descclassname">pyspike.spike_directionality.</code><code class="descname">spike_directionality</code><span class="sig-paren">(</span><em>spike_train1</em>, <em>spike_train2</em>, <em>normalize=True</em>, <em>interval=None</em>, <em>max_tau=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyspike/spike_directionality.html#spike_directionality"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_directionality.spike_directionality" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the overall spike directionality for two spike trains.</p>
+<dd><p>Computes the overall spike directionality of the first spike train with
+respect to the second spike train.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>spike_train1</strong> (<a class="reference internal" href="#module-pyspike.SpikeTrain" title="pyspike.SpikeTrain"><code class="xref py py-class docutils literal"><span class="pre">pyspike.SpikeTrain</span></code></a>) &#8211; First spike train.</li>
+<li><strong>spike_train2</strong> (<a class="reference internal" href="#module-pyspike.SpikeTrain" title="pyspike.SpikeTrain"><code class="xref py py-class docutils literal"><span class="pre">pyspike.SpikeTrain</span></code></a>) &#8211; Second spike train.</li>
+<li><strong>normalize</strong> &#8211; Normalize by the number of spikes (multiplicity).</li>
+<li><strong>max_tau</strong> &#8211; Maximum coincidence window size. If 0 or <cite>None</cite>, the
+coincidence window has no upper bound.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The spike train order profile <span class="math">\(E(t)\)</span>.</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="pyspike.spike_directionality.spike_directionality_matrix">
 <code class="descclassname">pyspike.spike_directionality.</code><code class="descname">spike_directionality_matrix</code><span class="sig-paren">(</span><em>spike_trains</em>, <em>normalize=True</em>, <em>indices=None</em>, <em>interval=None</em>, <em>max_tau=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyspike/spike_directionality.html#spike_directionality_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_directionality.spike_directionality_matrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the spike directionaity matrix for the given spike trains.</p>
+<dd><p>Computes the spike directionality matrix for the given spike trains.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>spike_trains</strong> (List of <a class="reference internal" href="#module-pyspike.SpikeTrain" title="pyspike.SpikeTrain"><code class="xref py py-class docutils literal"><span class="pre">pyspike.SpikeTrain</span></code></a>) &#8211; List of spike trains.</li>
+<li><strong>normalize</strong> &#8211; Normalize by the number of spikes (multiplicity).</li>
+<li><strong>indices</strong> (<em>list or None</em>) &#8211; list of indices defining which spike trains to use,
+if None all given spike trains are used (default=None)</li>
+<li><strong>max_tau</strong> &#8211; Maximum coincidence window size. If 0 or <cite>None</cite>, the
+coincidence window has no upper bound.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The spike-directionality values.</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
-<dt id="pyspike.spike_directionality.spike_directionality_profiles">
-<code class="descclassname">pyspike.spike_directionality.</code><code class="descname">spike_directionality_profiles</code><span class="sig-paren">(</span><em>spike_trains</em>, <em>indices=None</em>, <em>interval=None</em>, <em>max_tau=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyspike/spike_directionality.html#spike_directionality_profiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_directionality.spike_directionality_profiles" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the spike directionality value for each spike in each spike
-train.</p>
+<dt id="pyspike.spike_directionality.spike_directionality_values">
+<code class="descclassname">pyspike.spike_directionality.</code><code class="descname">spike_directionality_values</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyspike/spike_directionality.html#spike_directionality_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_directionality.spike_directionality_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the spike directionality value for each spike in
+each spike train. Returns a list containing an array of spike directionality
+values for every given spike train.</p>
+<p>Valid call structures:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">spike_directionality_values</span><span class="p">(</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">)</span>       <span class="c1"># returns the bi-variate profile</span>
+<span class="n">spike_directionality_values</span><span class="p">(</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">,</span> <span class="n">st3</span><span class="p">)</span>  <span class="c1"># multi-variate profile of 3</span>
+                                             <span class="c1"># spike trains</span>
+
+<span class="n">spike_trains</span> <span class="o">=</span> <span class="p">[</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">,</span> <span class="n">st3</span><span class="p">,</span> <span class="n">st4</span><span class="p">]</span>          <span class="c1"># list of spike trains</span>
+<span class="n">spike_directionality_values</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">)</span>    <span class="c1"># profile of the list of spike trains</span>
+<span class="n">spike_directionality_values</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>  <span class="c1"># use only the spike trains</span>
+                                                            <span class="c1"># given by the indices</span>
+</pre></div>
+</div>
+<p>Additonal arguments: 
+:param max_tau: Upper bound for coincidence window (default=None).
+:param indices: list of indices defining which spike trains to use,</p>
+<blockquote>
+<div>if None all given spike trains are used (default=None)</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The spike directionality values <span class="math">\(D^n_i\)</span> as a list of arrays.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="pyspike.spike_directionality.spike_train_order">
-<code class="descclassname">pyspike.spike_directionality.</code><code class="descname">spike_train_order</code><span class="sig-paren">(</span><em>spike_train1</em>, <em>spike_train2</em>, <em>normalize=True</em>, <em>interval=None</em>, <em>max_tau=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyspike/spike_directionality.html#spike_train_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_directionality.spike_train_order" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the overall spike delay asymmetry value for two spike trains.</p>
+<code class="descclassname">pyspike.spike_directionality.</code><code class="descname">spike_train_order</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyspike/spike_directionality.html#spike_train_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_directionality.spike_train_order" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the spike train order (Synfire Indicator) of the given
+spike trains.</p>
+<p>Valid call structures:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">spike_train_order</span><span class="p">(</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>  <span class="c1"># normalized bi-variate</span>
+                                              <span class="c1"># spike train order</span>
+<span class="n">spike_train_order</span><span class="p">(</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">,</span> <span class="n">st3</span><span class="p">)</span>  <span class="c1"># multi-variate result of 3 spike trains</span>
+
+<span class="n">spike_trains</span> <span class="o">=</span> <span class="p">[</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">,</span> <span class="n">st3</span><span class="p">,</span> <span class="n">st4</span><span class="p">]</span>       <span class="c1"># list of spike trains</span>
+<span class="n">spike_train_order</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">)</span>   <span class="c1"># result for the list of spike trains</span>
+<span class="n">spike_train_order</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>  <span class="c1"># use only the spike trains</span>
+                                                 <span class="c1"># given by the indices</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>Additonal arguments: </dt>
+<dd><ul class="first last simple">
+<li><cite>max_tau</cite> Upper bound for coincidence window, <cite>default=None</cite>.</li>
+<li><cite>normalize</cite> Flag indicating if the reslut should be normalized by the
+number of spikes , default=`False`</li>
+</ul>
+</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The spike train order value (Synfire Indicator)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyspike.spike_directionality.spike_train_order_bi">
+<code class="descclassname">pyspike.spike_directionality.</code><code class="descname">spike_train_order_bi</code><span class="sig-paren">(</span><em>spike_train1</em>, <em>spike_train2</em>, <em>normalize=True</em>, <em>interval=None</em>, <em>max_tau=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyspike/spike_directionality.html#spike_train_order_bi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_directionality.spike_train_order_bi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the overall spike train order value (Synfire Indicator)
+for two spike trains.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>spike_train1</strong> (<a class="reference internal" href="#module-pyspike.SpikeTrain" title="pyspike.SpikeTrain"><code class="xref py py-class docutils literal"><span class="pre">pyspike.SpikeTrain</span></code></a>) &#8211; First spike train.</li>
+<li><strong>spike_train2</strong> (<a class="reference internal" href="#module-pyspike.SpikeTrain" title="pyspike.SpikeTrain"><code class="xref py py-class docutils literal"><span class="pre">pyspike.SpikeTrain</span></code></a>) &#8211; Second spike train.</li>
+<li><strong>normalize</strong> &#8211; Normalize by the number of spikes (multiplicity).</li>
+<li><strong>max_tau</strong> &#8211; Maximum coincidence window size. If 0 or <cite>None</cite>, the
+coincidence window has no upper bound.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The spike train order value (Synfire Indicator)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyspike.spike_directionality.spike_train_order_multi">
+<code class="descclassname">pyspike.spike_directionality.</code><code class="descname">spike_train_order_multi</code><span class="sig-paren">(</span><em>spike_trains</em>, <em>indices=None</em>, <em>normalize=True</em>, <em>interval=None</em>, <em>max_tau=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyspike/spike_directionality.html#spike_train_order_multi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_directionality.spike_train_order_multi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the overall spike train order value (Synfire Indicator)
+for many spike trains.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>spike_trains</strong> &#8211; list of <a class="reference internal" href="#pyspike.SpikeTrain.SpikeTrain" title="pyspike.SpikeTrain.SpikeTrain"><code class="xref py py-class docutils literal"><span class="pre">SpikeTrain</span></code></a></li>
+<li><strong>indices</strong> &#8211; list of indices defining which spike trains to use,
+if None all given spike trains are used (default=None)</li>
+<li><strong>normalize</strong> &#8211; Normalize by the number of spike (multiplicity).</li>
+<li><strong>interval</strong> (<em>Pair of floats or None.</em>) &#8211; averaging interval given as a pair of floats, if None
+the average over the whole function is computed.</li>
+<li><strong>max_tau</strong> &#8211; Maximum coincidence window size. If 0 or <cite>None</cite>, the
+coincidence window has no upper bound.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Spike train order values (Synfire Indicator) F for the given spike trains.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">double</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="pyspike.spike_directionality.spike_train_order_profile">
-<code class="descclassname">pyspike.spike_directionality.</code><code class="descname">spike_train_order_profile</code><span class="sig-paren">(</span><em>spike_train1</em>, <em>spike_train2</em>, <em>max_tau=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyspike/spike_directionality.html#spike_train_order_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_directionality.spike_train_order_profile" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">pyspike.spike_directionality.</code><code class="descname">spike_train_order_profile</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyspike/spike_directionality.html#spike_train_order_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_directionality.spike_train_order_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the spike train order profile <span class="math">\(E(t)\)</span> of the given
+spike trains. Returns the profile as a DiscreteFunction object.</p>
+<p>Valid call structures:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">spike_train_order_profile</span><span class="p">(</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">)</span>       <span class="c1"># returns the bi-variate profile</span>
+<span class="n">spike_train_order_profile</span><span class="p">(</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">,</span> <span class="n">st3</span><span class="p">)</span>  <span class="c1"># multi-variate profile of 3</span>
+                                          <span class="c1"># spike trains</span>
+
+<span class="n">spike_trains</span> <span class="o">=</span> <span class="p">[</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">,</span> <span class="n">st3</span><span class="p">,</span> <span class="n">st4</span><span class="p">]</span>       <span class="c1"># list of spike trains</span>
+<span class="n">spike_train_order_profile</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">)</span>   <span class="c1"># profile of the list of spike trains</span>
+<span class="n">spike_train_order_profile</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>  <span class="c1"># use only the spike trains</span>
+                                                         <span class="c1"># given by the indices</span>
+</pre></div>
+</div>
+<p>Additonal arguments: 
+:param max_tau: Upper bound for coincidence window, <cite>default=None</cite>.
+:param indices: list of indices defining which spike trains to use,</p>
+<blockquote>
+<div>if None all given spike trains are used (default=None)</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The spike train order profile <span class="math">\(E(t)\)</span></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">DiscreteFunction</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyspike.spike_directionality.spike_train_order_profile_bi">
+<code class="descclassname">pyspike.spike_directionality.</code><code class="descname">spike_train_order_profile_bi</code><span class="sig-paren">(</span><em>spike_train1</em>, <em>spike_train2</em>, <em>max_tau=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyspike/spike_directionality.html#spike_train_order_profile_bi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_directionality.spike_train_order_profile_bi" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the spike train order profile P(t) of the two given
 spike trains. Returns the profile as a DiscreteFunction object.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1384,7 +1578,7 @@ coincidence window has no upper bound.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The spike-distance profile <span class="math">\(S_{sync}(t)\)</span>.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The spike train order profile <span class="math">\(E(t)\)</span>.</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">pyspike.function.DiscreteFunction</span></code></p>
@@ -1397,7 +1591,7 @@ coincidence window has no upper bound.</li>
 <dl class="function">
 <dt id="pyspike.spike_directionality.spike_train_order_profile_multi">
 <code class="descclassname">pyspike.spike_directionality.</code><code class="descname">spike_train_order_profile_multi</code><span class="sig-paren">(</span><em>spike_trains</em>, <em>indices=None</em>, <em>max_tau=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyspike/spike_directionality.html#spike_train_order_profile_multi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyspike.spike_directionality.spike_train_order_profile_multi" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the multi-variate spike delay asymmetry profile for a set of
+<dd><p>Computes the multi-variate spike train order profile for a set of
 spike trains. For each spike in the set of spike trains, the multi-variate
 profile is defined as the sum of asymmetry values divided by the number of
 spike trains pairs involving the spike train of containing this spike,

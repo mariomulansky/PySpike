@@ -363,6 +363,67 @@ The following example computes and plots the ISI- and SPIKE-distance matrix as w
 </pre></div>
 </div>
 </div>
+<div class="section" id="quantifying-leaders-and-followers-spike-train-order">
+<h2>Quantifying Leaders and Followers: Spike Train Order<a class="headerlink" href="#quantifying-leaders-and-followers-spike-train-order" title="Permalink to this headline">¶</a></h2>
+<p>PySpike provides functionality to quantify how much a set of spike trains
+resembles a synfire pattern (ie perfect leader-follower pattern). For details
+on the algorithms please see
+<a class="reference external" href="http://iopscience.iop.org/article/10.1088/1367-2630/aa68c3">our article in NJP</a>.</p>
+<p>The following example computes the Spike Order profile and Synfire Indicator
+of two Poissonian spike trains.</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">import</span> <span class="nn">pyspike</span> <span class="kn">as</span> <span class="nn">spk</span>
+
+
+<span class="n">st1</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">generate_poisson_spikes</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">])</span>
+<span class="n">st2</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">generate_poisson_spikes</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">])</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">spike_directionality</span><span class="p">(</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s2">&quot;Spike Directionality of two Poissonian spike trains:&quot;</span><span class="p">,</span> <span class="n">d</span>
+
+<span class="n">E</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">spike_train_order_profile</span><span class="p">(</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">E</span><span class="o">.</span><span class="n">get_plottable_data</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s1">&#39;-ob&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;t&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;E&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Spike Train Order Profile&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Additionally, PySpike can also compute the optimal ordering of the spike trains,
+ie the ordering that most resembles a synfire pattern. The following example
+computes the optimal order of a set of 20 Poissonian spike trains:</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="n">M</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">spike_trains</span> <span class="o">=</span> <span class="p">[</span><span class="n">spk</span><span class="o">.</span><span class="n">generate_poisson_spikes</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">])</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">M</span><span class="p">)]</span>
+
+<span class="n">F_init</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">spike_train_order</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">)</span>
+<span class="k">print</span> <span class="s2">&quot;Initial Synfire Indicator for 20 Poissonian spike trains:&quot;</span><span class="p">,</span> <span class="n">F_init</span>
+
+<span class="n">D_init</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">spike_directionality_matrix</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">)</span>
+<span class="n">phi</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">optimal_spike_train_sorting</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">)</span>
+<span class="n">F_opt</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">spike_train_order</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">phi</span><span class="p">)</span>
+<span class="k">print</span> <span class="s2">&quot;Synfire Indicator of optimized spike train sorting:&quot;</span><span class="p">,</span> <span class="n">F_opt</span>
+
+<span class="n">D_opt</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">permutate_matrix</span><span class="p">(</span><span class="n">D_init</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">D_init</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Initial Directionality Matrix&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">D_opt</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Optimized Directionality Matrix&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 </div>
 <div class="section" id="reference">
 <h1>Reference<a class="headerlink" href="#reference" title="Permalink to this headline">¶</a></h1>
@@ -415,6 +476,7 @@ The following example computes and plots the ISI- and SPIKE-distance matrix as w
 </ul>
 </li>
 <li><a class="reference internal" href="#computing-multivariate-profiles-and-distances">Computing multivariate profiles and distances</a></li>
+<li><a class="reference internal" href="#quantifying-leaders-and-followers-spike-train-order">Quantifying Leaders and Followers: Spike Train Order</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#reference">Reference</a></li>
