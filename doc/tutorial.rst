@@ -245,6 +245,7 @@ The following example computes the Spike Order profile and Synfire Indicator
 of two Poissonian spike trains.
 
 .. code:: python
+
     import numpy as np
     from matplotlib import pyplot as plt
     import pyspike as spk
