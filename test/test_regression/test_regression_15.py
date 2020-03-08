@@ -11,7 +11,7 @@ Distributed under the BSD License
 from __future__ import division
 
 import numpy as np
-from numpy.testing import assert_equal, assert_almost_equal, \
+from numpy.testing import assert_allclose, assert_almost_equal, \
     assert_array_almost_equal
 
 import pyspike as spk
@@ -28,15 +28,15 @@ def test_regression_15_isi():
     N = len(spike_trains)
 
     dist_mat = spk.isi_distance_matrix(spike_trains)
-    assert_equal(dist_mat.shape, (N, N))
+    assert_allclose(dist_mat.shape, (N, N))
 
     ind = np.arange(N//2)
     dist_mat = spk.isi_distance_matrix(spike_trains, ind)
-    assert_equal(dist_mat.shape, (N//2, N//2))
+    assert_allclose(dist_mat.shape, (N//2, N//2))
 
     ind = np.arange(N//2, N)
     dist_mat = spk.isi_distance_matrix(spike_trains, ind)
-    assert_equal(dist_mat.shape, (N//2, N//2))
+    assert_allclose(dist_mat.shape, (N//2, N//2))
 
 
 def test_regression_15_spike():
@@ -46,15 +46,15 @@ def test_regression_15_spike():
     N = len(spike_trains)
 
     dist_mat = spk.spike_distance_matrix(spike_trains)
-    assert_equal(dist_mat.shape, (N, N))
+    assert_allclose(dist_mat.shape, (N, N))
 
     ind = np.arange(N//2)
     dist_mat = spk.spike_distance_matrix(spike_trains, ind)
-    assert_equal(dist_mat.shape, (N//2, N//2))
+    assert_allclose(dist_mat.shape, (N//2, N//2))
 
     ind = np.arange(N//2, N)
     dist_mat = spk.spike_distance_matrix(spike_trains, ind)
-    assert_equal(dist_mat.shape, (N//2, N//2))
+    assert_allclose(dist_mat.shape, (N//2, N//2))
 
 
 def test_regression_15_sync():
@@ -64,15 +64,15 @@ def test_regression_15_sync():
     N = len(spike_trains)
 
     dist_mat = spk.spike_sync_matrix(spike_trains)
-    assert_equal(dist_mat.shape, (N, N))
+    assert_allclose(dist_mat.shape, (N, N))
 
     ind = np.arange(N//2)
     dist_mat = spk.spike_sync_matrix(spike_trains, ind)
-    assert_equal(dist_mat.shape, (N//2, N//2))
+    assert_allclose(dist_mat.shape, (N//2, N//2))
 
     ind = np.arange(N//2, N)
     dist_mat = spk.spike_sync_matrix(spike_trains, ind)
-    assert_equal(dist_mat.shape, (N//2, N//2))
+    assert_allclose(dist_mat.shape, (N//2, N//2))
 
 
 if __name__ == "__main__":

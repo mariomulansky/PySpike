@@ -11,7 +11,7 @@ Distributed under the BSD License
 from __future__ import print_function
 import numpy as np
 from copy import copy
-from numpy.testing import assert_equal, assert_almost_equal, \
+from numpy.testing import assert_allclose, assert_almost_equal, \
     assert_array_almost_equal
 
 import pyspike as spk
@@ -41,10 +41,10 @@ def test_isi():
     # print("ISI: ", f.y)
     print("ISI value:", expected_isi_val)
 
-    assert_equal(f.x, expected_times)
+    assert_allclose(f.x, expected_times)
     assert_array_almost_equal(f.y, expected_isi, decimal=15)
-    assert_equal(f.avrg(), expected_isi_val)
-    assert_equal(spk.isi_distance(t1, t2), expected_isi_val)
+    assert_allclose(f.avrg(), expected_isi_val)
+    assert_allclose(spk.isi_distance(t1, t2), expected_isi_val)
 
     # check with some equal spike times
     t1 = SpikeTrain([0.2, 0.4, 0.6], [0.0, 1.0])
@@ -60,10 +60,10 @@ def test_isi():
 
     f = spk.isi_profile(t1, t2)
 
-    assert_equal(f.x, expected_times)
+    assert_allclose(f.x, expected_times)
     assert_array_almost_equal(f.y, expected_isi, decimal=15)
-    assert_equal(f.avrg(), expected_isi_val)
-    assert_equal(spk.isi_distance(t1, t2), expected_isi_val)
+    assert_allclose(f.avrg(), expected_isi_val)
+    assert_allclose(spk.isi_distance(t1, t2), expected_isi_val)
 
 
 def test_spike():
@@ -75,7 +75,7 @@ def test_spike():
 
     f = spk.spike_profile(t1, t2)
 
-    assert_equal(f.x, expected_times)
+    assert_allclose(f.x, expected_times)
 
     # from SPIKY:
     y_all = np.array([0.000000000000000000, 0.555555555555555580,
@@ -89,7 +89,7 @@ def test_spike():
     assert_array_almost_equal(f.y2, y_all[1::2])
 
     assert_almost_equal(f.avrg(), 0.186309523809523814, decimal=15)
-    assert_equal(spk.spike_distance(t1, t2), f.avrg())
+    assert_allclose(spk.spike_distance(t1, t2), f.avrg())
 
     t1 = SpikeTrain([0.2, 0.4, 0.6, 0.7], 1.0)
     t2 = SpikeTrain([0.3, 0.45, 0.8, 0.9, 0.95], 1.0)
@@ -118,7 +118,7 @@ def test_spike():
 
     f = spk.spike_profile(t1, t2)
 
-    assert_equal(f.x, expected_times)
+    assert_allclose(f.x, expected_times)
     assert_array_almost_equal(f.y1, expected_y1, decimal=15)
     assert_array_almost_equal(f.y2, expected_y2, decimal=15)
     assert_almost_equal(f.avrg(), expected_spike_val, decimal=15)
@@ -157,7 +157,7 @@ def test_spike():
 
     f = spk.spike_profile(t1, t2)
 
-    assert_equal(f.x, expected_times)
+    assert_allclose(f.x, expected_times)
     assert_array_almost_equal(f.y1, expected_y1, decimal=14)
     assert_array_almost_equal(f.y2, expected_y2, decimal=14)
     assert_almost_equal(f.avrg(), expected_spike_val, decimal=16)
@@ -236,8 +236,8 @@ def test_spike_sync():
     f.add(f2)
     i12 = f.integral()
 
-    assert_equal(i1[0]+i2[0], i12[0])
-    assert_equal(i1[1]+i2[1], i12[1])
+    assert_allclose(i1[0]+i2[0], i12[0])
+    assert_allclose(i1[1]+i2[1], i12[1])
 
 
 def check_multi_profile(profile_func, profile_func_multi, dist_func_multi):
@@ -258,7 +258,7 @@ def check_multi_profile(profile_func, profile_func_multi, dist_func_multi):
     f_multi = profile_func_multi(spike_trains, [0, 1])
     assert f_multi.almost_equal(f12, decimal=14)
     d = dist_func_multi(spike_trains, [0, 1])
-    assert_equal(f_multi.avrg(), d)
+    assert_allclose(f_multi.avrg(), d)
 
     f_multi1 = profile_func_multi(spike_trains, [1, 2, 3])
     f_multi2 = profile_func_multi(spike_trains[1:])
@@ -329,11 +329,11 @@ def test_multi_spike_sync():
 
     f = spk.spike_sync_profile_multi(spike_trains)
 
-    assert_equal(spike_times, f.x[1:-1])
-    assert_equal(len(f.x), len(f.y))
+    assert_allclose(spike_times, f.x[1:-1])
+    assert_allclose(len(f.x), len(f.y))
 
-    assert_equal(np.sum(f.y[1:-1]), 39932)
-    assert_equal(np.sum(f.mp[1:-1]), 85554)
+    assert_allclose(np.sum(f.y[1:-1]), 39932)
+    assert_allclose(np.sum(f.mp[1:-1]), 85554)
 
     # example with 2 empty spike trains
     sts = []
@@ -365,16 +365,16 @@ def check_dist_matrix(dist_func, dist_matrix_func):
     f_matrix = dist_matrix_func(spike_trains)
     # check zero diagonal
     for i in range(4):
-        assert_equal(0.0, f_matrix[i, i])
+        assert_allclose(0.0, f_matrix[i, i])
     for i in range(4):
         for j in range(i+1, 4):
-            assert_equal(f_matrix[i, j], f_matrix[j, i])
-    assert_equal(f12, f_matrix[1, 0])
-    assert_equal(f13, f_matrix[2, 0])
-    assert_equal(f14, f_matrix[3, 0])
-    assert_equal(f23, f_matrix[2, 1])
-    assert_equal(f24, f_matrix[3, 1])
-    assert_equal(f34, f_matrix[3, 2])
+            assert_allclose(f_matrix[i, j], f_matrix[j, i])
+    assert_allclose(f12, f_matrix[1, 0])
+    assert_allclose(f13, f_matrix[2, 0])
+    assert_allclose(f14, f_matrix[3, 0])
+    assert_allclose(f23, f_matrix[2, 1])
+    assert_allclose(f24, f_matrix[3, 1])
+    assert_allclose(f34, f_matrix[3, 2])
 
 
 def test_isi_matrix():
@@ -397,13 +397,13 @@ def test_regression_spiky():
     isi_dist = spk.isi_distance(st1, st2)
     assert_almost_equal(isi_dist, 9.0909090909090939e-02, decimal=15)
     isi_profile = spk.isi_profile(st1, st2)
-    assert_equal(isi_profile.y, 0.1/1.1 * np.ones_like(isi_profile.y))
+    assert_allclose(isi_profile.y, 0.1/1.1 * np.ones_like(isi_profile.y))
 
     spike_dist = spk.spike_distance(st1, st2)
-    assert_equal(spike_dist, 0.211058782487353908)
+    assert_allclose(spike_dist, 0.211058782487353908)
 
     spike_sync = spk.spike_sync(st1, st2)
-    assert_equal(spike_sync, 8.6956521739130432e-01)
+    assert_allclose(spike_sync, 8.6956521739130432e-01)
 
     # multivariate check
 
@@ -414,7 +414,7 @@ def test_regression_spiky():
     assert_almost_equal(isi_dist, 0.17051816816999129656, decimal=15)
 
     spike_profile = spk.spike_profile_multi(spike_trains)
-    assert_equal(len(spike_profile.y1)+len(spike_profile.y2), 1252)
+    assert_allclose(len(spike_profile.y1)+len(spike_profile.y2), 1252)
 
     spike_dist = spk.spike_distance_multi(spike_trains)
     # get the full precision from SPIKY
@@ -422,7 +422,7 @@ def test_regression_spiky():
 
     spike_sync = spk.spike_sync_multi(spike_trains)
     # get the full precision from SPIKY
-    assert_equal(spike_sync, 0.7183531505298066)
+    assert_allclose(spike_sync, 0.7183531505298066)
 
     # Eero's edge correction example
     st1 = SpikeTrain([0.5, 1.5, 2.5], 6.0)
@@ -439,7 +439,7 @@ def test_regression_spiky():
     expected_y1 = y_all[::2]
     expected_y2 = y_all[1::2]
 
-    assert_equal(f.x, expected_times)
+    assert_allclose(f.x, expected_times)
     assert_array_almost_equal(f.y1, expected_y1, decimal=14)
     assert_array_almost_equal(f.y2, expected_y2, decimal=14)
 
@@ -452,15 +452,15 @@ def test_multi_variate_subsets():
 
     v1 = spk.isi_distance_multi(spike_trains_sub_set)
     v2 = spk.isi_distance_multi(spike_trains, sub_set)
-    assert_equal(v1, v2)
+    assert_allclose(v1, v2)
 
     v1 = spk.spike_distance_multi(spike_trains_sub_set)
     v2 = spk.spike_distance_multi(spike_trains, sub_set)
-    assert_equal(v1, v2)
+    assert_allclose(v1, v2)
 
     v1 = spk.spike_sync_multi(spike_trains_sub_set)
     v2 = spk.spike_sync_multi(spike_trains, sub_set)
-    assert_equal(v1, v2)
+    assert_allclose(v1, v2)
 
 
 if __name__ == "__main__":

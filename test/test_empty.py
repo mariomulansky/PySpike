@@ -10,7 +10,7 @@ Distributed under the BSD License
 
 from __future__ import print_function
 import numpy as np
-from numpy.testing import assert_equal, assert_almost_equal, \
+from numpy.testing import assert_allclose, assert_almost_equal, \
     assert_array_equal, assert_array_almost_equal
 
 import pyspike as spk
@@ -33,18 +33,18 @@ def test_isi_empty():
     st1 = SpikeTrain([], edges=(0.0, 1.0))
     st2 = SpikeTrain([], edges=(0.0, 1.0))
     d = spk.isi_distance(st1, st2)
-    assert_equal(d, 0.0)
+    assert_allclose(d, 0.0)
     prof = spk.isi_profile(st1, st2)
-    assert_equal(d, prof.avrg())
+    assert_allclose(d, prof.avrg())
     assert_array_equal(prof.x, [0.0, 1.0])
     assert_array_equal(prof.y, [0.0, ])
 
     st1 = SpikeTrain([], edges=(0.0, 1.0))
     st2 = SpikeTrain([0.4, ], edges=(0.0, 1.0))
     d = spk.isi_distance(st1, st2)
-    assert_equal(d, 0.6*0.4+0.4*0.6)
+    assert_allclose(d, 0.6*0.4+0.4*0.6)
     prof = spk.isi_profile(st1, st2)
-    assert_equal(d, prof.avrg())
+    assert_allclose(d, prof.avrg())
     assert_array_equal(prof.x, [0.0, 0.4, 1.0])
     assert_array_equal(prof.y, [0.6, 0.4])
 
@@ -53,7 +53,7 @@ def test_isi_empty():
     d = spk.isi_distance(st1, st2)
     assert_almost_equal(d, 0.2/0.6*0.4 + 0.0 + 0.2/0.6*0.4, decimal=15)
     prof = spk.isi_profile(st1, st2)
-    assert_equal(d, prof.avrg())
+    assert_allclose(d, prof.avrg())
     assert_array_almost_equal(prof.x, [0.0, 0.4, 0.6, 1.0], decimal=15)
     assert_array_almost_equal(prof.y, [0.2/0.6, 0.0, 0.2/0.6], decimal=15)
 
@@ -62,9 +62,9 @@ def test_spike_empty():
     st1 = SpikeTrain([], edges=(0.0, 1.0))
     st2 = SpikeTrain([], edges=(0.0, 1.0))
     d = spk.spike_distance(st1, st2)
-    assert_equal(d, 0.0)
+    assert_allclose(d, 0.0)
     prof = spk.spike_profile(st1, st2)
-    assert_equal(d, prof.avrg())
+    assert_allclose(d, prof.avrg())
     assert_array_equal(prof.x, [0.0, 1.0])
     assert_array_equal(prof.y1, [0.0, ])
     assert_array_equal(prof.y2, [0.0, ])
@@ -75,7 +75,7 @@ def test_spike_empty():
     d_expect = 2*0.4*0.4*1.0/(0.4+1.0)**2 + 2*0.6*0.4*1.0/(0.6+1.0)**2
     assert_almost_equal(d, d_expect, decimal=15)
     prof = spk.spike_profile(st1, st2)
-    assert_equal(d, prof.avrg())
+    assert_allclose(d, prof.avrg())
     assert_array_equal(prof.x, [0.0, 0.4, 1.0])
     assert_array_almost_equal(prof.y1, [2*0.4*1.0/(0.4+1.0)**2,
                                         2*0.4*1.0/(0.6+1.0)**2],
@@ -100,7 +100,7 @@ def test_spike_empty():
 
     assert_almost_equal(d, expected_spike_val, decimal=15)
     prof = spk.spike_profile(st1, st2)
-    assert_equal(d, prof.avrg())
+    assert_allclose(d, prof.avrg())
     assert_array_almost_equal(prof.x, [0.0, 0.4, 0.6, 1.0], decimal=15)
     assert_array_almost_equal(prof.y1, expected_y1, decimal=15)
     assert_array_almost_equal(prof.y2, expected_y2, decimal=15)
@@ -110,18 +110,18 @@ def test_spike_sync_empty():
     st1 = SpikeTrain([], edges=(0.0, 1.0))
     st2 = SpikeTrain([], edges=(0.0, 1.0))
     d = spk.spike_sync(st1, st2)
-    assert_equal(d, 1.0)
+    assert_allclose(d, 1.0)
     prof = spk.spike_sync_profile(st1, st2)
-    assert_equal(d, prof.avrg())
+    assert_allclose(d, prof.avrg())
     assert_array_equal(prof.x, [0.0, 1.0])
     assert_array_equal(prof.y, [1.0, 1.0])
 
     st1 = SpikeTrain([], edges=(0.0, 1.0))
     st2 = SpikeTrain([0.4, ], edges=(0.0, 1.0))
     d = spk.spike_sync(st1, st2)
-    assert_equal(d, 0.0)
+    assert_allclose(d, 0.0)
     prof = spk.spike_sync_profile(st1, st2)
-    assert_equal(d, prof.avrg())
+    assert_allclose(d, prof.avrg())
     assert_array_equal(prof.x, [0.0, 0.4, 1.0])
     assert_array_equal(prof.y, [0.0, 0.0, 0.0])
 
@@ -130,7 +130,7 @@ def test_spike_sync_empty():
     d = spk.spike_sync(st1, st2)
     assert_almost_equal(d, 1.0, decimal=15)
     prof = spk.spike_sync_profile(st1, st2)
-    assert_equal(d, prof.avrg())
+    assert_allclose(d, prof.avrg())
     assert_array_almost_equal(prof.x, [0.0, 0.4, 0.6, 1.0], decimal=15)
     assert_array_almost_equal(prof.y, [1.0, 1.0, 1.0, 1.0], decimal=15)
 
@@ -139,7 +139,7 @@ def test_spike_sync_empty():
     d = spk.spike_sync(st1, st2)
     assert_almost_equal(d, 0.0, decimal=15)
     prof = spk.spike_sync_profile(st1, st2)
-    assert_equal(d, prof.avrg())
+    assert_allclose(d, prof.avrg())
     assert_array_almost_equal(prof.x, [0.0, 0.2, 0.8, 1.0], decimal=15)
     assert_array_almost_equal(prof.y, [0.0, 0.0, 0.0, 0.0], decimal=15)
 
@@ -148,9 +148,9 @@ def test_spike_sync_empty():
     st2 = SpikeTrain([2.1, 7.0], [0, 10.0])
     st3 = SpikeTrain([5.1, 6.0], [0, 10.0])
     res = spk.spike_sync_profile(st1, st2).avrg(interval=[3.0, 4.0])
-    assert_equal(res, 1.0)
+    assert_allclose(res, 1.0)
     res = spk.spike_sync(st1, st2, interval=[3.0, 4.0])
-    assert_equal(res, 1.0)
+    assert_allclose(res, 1.0)
 
     sync_matrix = spk.spike_sync_matrix([st1, st2, st3], interval=[3.0, 4.0])
     assert_array_equal(sync_matrix, np.ones((3, 3)) - np.diag(np.ones(3)))

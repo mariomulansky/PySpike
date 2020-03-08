@@ -11,7 +11,7 @@ from __future__ import print_function
 import numpy as np
 from copy import copy
 from nose.tools import raises
-from numpy.testing import assert_equal, assert_almost_equal, \
+from numpy.testing import assert_allclose, assert_almost_equal, \
     assert_array_equal, assert_array_almost_equal
 
 import pyspike as spk
@@ -24,14 +24,14 @@ def test_pwc():
     f = spk.PieceWiseConstFunc(x, y)
 
     # function values
-    assert_equal(f(0.0), 1.0)
-    assert_equal(f(0.5), 1.0)
-    assert_equal(f(1.0), 0.25)
-    assert_equal(f(2.0), 0.5)
-    assert_equal(f(2.25), 1.5)
-    assert_equal(f(2.5), 2.25/2)
-    assert_equal(f(3.5), 0.75)
-    assert_equal(f(4.0), 0.75)
+    assert_allclose(f(0.0), 1.0)
+    assert_allclose(f(0.5), 1.0)
+    assert_allclose(f(1.0), 0.25)
+    assert_allclose(f(2.0), 0.5)
+    assert_allclose(f(2.25), 1.5)
+    assert_allclose(f(2.5), 2.25/2)
+    assert_allclose(f(3.5), 0.75)
+    assert_allclose(f(4.0), 0.75)
 
     assert_array_equal(f([0.0, 0.5, 1.0, 2.0, 2.25, 2.5, 3.5, 4.0]),
                        [1.0, 1.0, 0.25, 0.5, 1.5, 2.25/2, 0.75, 0.75])
@@ -131,21 +131,21 @@ def test_pwc_integral():
 
     # test full interval
     full = 1.0*1.0 + 1.0*-0.5 + 0.5*1.5 + 1.5*0.75;
-    assert_equal(f1.integral(), full)
-    assert_equal(f1.integral((np.min(x),np.max(x))), full)
+    assert_allclose(f1.integral(), full)
+    assert_allclose(f1.integral((np.min(x),np.max(x))), full)
     # test part interval, spanning an edge
-    assert_equal(f1.integral((0.5,1.5)), 0.5*1.0 + 0.5*-0.5)
+    assert_allclose(f1.integral((0.5,1.5)), 0.5*1.0 + 0.5*-0.5)
     # test part interval, just over two edges
     assert_almost_equal(f1.integral((1.0-1e-16,2+1e-16)), 1.0*-0.5, decimal=14)
     # test part interval, between two edges
-    assert_equal(f1.integral((1.0,2.0)), 1.0*-0.5)
-    assert_equal(f1.integral((1.2,1.7)), (1.7-1.2)*-0.5)
+    assert_allclose(f1.integral((1.0,2.0)), 1.0*-0.5)
+    assert_allclose(f1.integral((1.2,1.7)), (1.7-1.2)*-0.5)
     # test part interval, start to before and after edge
-    assert_equal(f1.integral((0.0,0.7)), 0.7*1.0)
-    assert_equal(f1.integral((0.0,1.1)), 1.0*1.0+0.1*-0.5)
+    assert_allclose(f1.integral((0.0,0.7)), 0.7*1.0)
+    assert_allclose(f1.integral((0.0,1.1)), 1.0*1.0+0.1*-0.5)
     # test part interval, before and after edge till end
-    assert_equal(f1.integral((2.6,4.0)), (4.0-2.6)*0.75)
-    assert_equal(f1.integral((2.4,4.0)), (2.5-2.4)*1.5+(4-2.5)*0.75)
+    assert_allclose(f1.integral((2.6,4.0)), (4.0-2.6)*0.75)
+    assert_allclose(f1.integral((2.4,4.0)), (2.5-2.4)*1.5+(4-2.5)*0.75)
 
 @raises(ValueError)
 def test_pwc_integral_bad_bounds_inv():
@@ -178,14 +178,14 @@ def test_pwl():
     f = spk.PieceWiseLinFunc(x, y1, y2)
 
     # function values
-    assert_equal(f(0.0), 1.0)
-    assert_equal(f(0.5), 1.25)
-    assert_equal(f(1.0), 0.5)
-    assert_equal(f(2.0), 1.1/2)
-    assert_equal(f(2.25), 1.5)
-    assert_equal(f(2.5), 2.25/2)
-    assert_equal(f(3.5), 0.75-0.5*1.0/1.5)
-    assert_equal(f(4.0), 0.25)
+    assert_allclose(f(0.0), 1.0)
+    assert_allclose(f(0.5), 1.25)
+    assert_allclose(f(1.0), 0.5)
+    assert_allclose(f(2.0), 1.1/2)
+    assert_allclose(f(2.25), 1.5)
+    assert_allclose(f(2.5), 2.25/2)
+    assert_allclose(f(3.5), 0.75-0.5*1.0/1.5)
+    assert_allclose(f(4.0), 0.25)
 
     assert_array_equal(f([0.0, 0.5, 1.0, 2.0, 2.25, 2.5, 3.5, 4.0]),
                        [1.0, 1.25, 0.5, 0.55, 1.5, 2.25/2, 0.75-0.5/1.5, 0.25])

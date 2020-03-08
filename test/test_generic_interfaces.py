@@ -9,7 +9,7 @@ Distributed under the BSD License
 """
 
 from __future__ import print_function
-from numpy.testing import assert_equal
+from numpy.testing import assert_allclose
 
 import pyspike as spk
 from pyspike import SpikeTrain
@@ -43,33 +43,33 @@ def check_func(dist_func):
 
     isi12 = dist_func(t1, t2)
     isi12_ = dist_func([t1, t2])
-    assert_equal(isi12, isi12_)
+    assert_allclose(isi12, isi12_)
 
     isi12_ = dist_func(spike_trains, indices=[0, 1])
-    assert_equal(isi12, isi12_)
+    assert_allclose(isi12, isi12_)
 
     isi123 = dist_func(t1, t2, t3)
     isi123_ = dist_func([t1, t2, t3])
-    assert_equal(isi123, isi123_)
+    assert_allclose(isi123, isi123_)
 
     isi123_ = dist_func(spike_trains, indices=[0, 1, 2])
-    assert_equal(isi123, isi123_)
+    assert_allclose(isi123, isi123_)
 
     # run the same test with an additional interval parameter
 
     isi12 = dist_func(t1, t2, interval=[0.0, 0.5])
     isi12_ = dist_func([t1, t2], interval=[0.0, 0.5])
-    assert_equal(isi12, isi12_)
+    assert_allclose(isi12, isi12_)
 
     isi12_ = dist_func(spike_trains, indices=[0, 1], interval=[0.0, 0.5])
-    assert_equal(isi12, isi12_)
+    assert_allclose(isi12, isi12_)
 
     isi123 = dist_func(t1, t2, t3, interval=[0.0, 0.5])
     isi123_ = dist_func([t1, t2, t3], interval=[0.0, 0.5])
-    assert_equal(isi123, isi123_)
+    assert_allclose(isi123, isi123_)
 
     isi123_ = dist_func(spike_trains, indices=[0, 1, 2], interval=[0.0, 0.5])
-    assert_equal(isi123, isi123_)
+    assert_allclose(isi123, isi123_)
 
 
 def test_isi_profile():
