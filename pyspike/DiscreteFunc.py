@@ -5,7 +5,7 @@
 from __future__ import absolute_import, print_function
 
 import numpy as np
-import collections
+import collections.abc
 import pyspike
 
 
@@ -155,11 +155,11 @@ class DiscreteFunc(object):
             multiplicity = np.sum(self.mp[1:-1])
         else:
             # check if interval is as sequence
-            assert isinstance(interval, collections.Sequence), \
+            assert isinstance(interval, collections.abc.Sequence), \
                 "Invalid value for `interval`. None, Sequence or Tuple \
 expected."
             # check if interval is a sequence of intervals
-            if not isinstance(interval[0], collections.Sequence):
+            if not isinstance(interval[0], collections.abc.Sequence):
                 # find the indices corresponding to the interval
                 start_ind, end_ind = get_indices(interval)
                 value = np.sum(self.y[start_ind:end_ind])
