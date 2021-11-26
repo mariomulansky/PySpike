@@ -22,9 +22,9 @@ If you use PySpike in your research, please cite our SoftwareX publication on Py
 
 Additionally, depending on the used methods: ISI-distance [1], SPIKE-distance [2] or SPIKE-Synchronization [3], please cite one or more of the following publications:
 
-.. [#] Kreuz T, Haas JS, Morelli A, Abarbanel HDI, Politi A, *Measuring spike train synchrony.* J Neurosci Methods 165, 151 (2007) `[pdf] <http://wwwold.fi.isc.cnr.it/users/thomas.kreuz/images/Kreuz_JNeurosciMethods_2007_Spike-Train-Synchrony.pdf>`_
+.. [#] Kreuz T, Haas JS, Morelli A, Abarbanel HDI, Politi A, *Measuring spike train synchrony.* J Neurosci Methods 165, 151 (2007) `[pdf] <https://drive.google.com/file/d/113cr1xUhKe0rMIiFc1vMoIQ7j9noobKW/view>`_
 
-.. [#] Kreuz T, Chicharro D, Houghton C, Andrzejak RG, Mormann F, *Monitoring spike train synchrony.* J Neurophysiol 109, 1457 (2013) `[pdf] <http://wwwold.fi.isc.cnr.it/users/thomas.kreuz/images/Kreuz_JNeurophysiol_2013_SPIKE-distance.pdf>`_
+.. [#] Kreuz T, Chicharro D, Houghton C, Andrzejak RG, Mormann F, *Monitoring spike train synchrony.* J Neurophysiol 109, 1457 (2013) `[pdf] <https://drive.google.com/file/d/1oppf86V4cBVakPiv6Mbn_WaoKoKWzmIl/view>`_
 
 .. [#] Kreuz T, Mulansky M and Bozanic N, *SPIKY: A graphical user interface for monitoring spike train synchrony*, J Neurophysiol, JNeurophysiol 113, 3432 (2015)
 
@@ -135,5 +135,5 @@ Curie Initial Training Network* `Neural Engineering Transformative Technologies
 .. _SPIKE: http://www.scholarpedia.org/article/SPIKE-distance
 .. _SPIKE-Synchronization: http://www.scholarpedia.org/article/Measures_of_spike_train_synchrony#SPIKE_synchronization
 .. _cython: http://www.cython.org
-.. _SPIKY: http://wwwold.fi.isc.cnr.it/users/thomas.kreuz/Source-Code/SPIKY.html
+.. _SPIKY: https://thomas-kreuz.complexworld.net/source-codes/spiky
 .. _BSD_License: http://opensource.org/licenses/BSD-2-Clause
