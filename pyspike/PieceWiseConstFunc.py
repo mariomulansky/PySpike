@@ -5,7 +5,7 @@
 from __future__ import absolute_import, print_function
 
 import numpy as np
-import collections
+import collections.abc
 import pyspike
 
 
@@ -39,7 +39,7 @@ class PieceWiseConstFunc(object):
 
         ind = np.searchsorted(self.x, t, side='right')
 
-        if isinstance(t, collections.Sequence):
+        if isinstance(t, collections.abc.Sequence):
             # t is a sequence of values
             # correct the cases t == x[0], t == x[-1]
             ind[ind == 0] = 1
@@ -173,10 +173,10 @@ class PieceWiseConstFunc(object):
             return self.integral() / (self.x[-1]-self.x[0])
 
         # check if interval is as sequence
-        assert isinstance(interval, collections.Sequence), \
+        assert isinstance(interval, collections.abc.Sequence), \
             "Invalid value for `interval`. None, Sequence or Tuple expected."
         # check if interval is a sequence of intervals
-        if not isinstance(interval[0], collections.Sequence):
+        if not isinstance(interval[0], collections.abc.Sequence):
             # just one interval
             a = self.integral(interval) / (interval[1]-interval[0])
         else:
