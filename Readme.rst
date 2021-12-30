@@ -31,6 +31,9 @@ Additionally, depending on the used methods: ISI-distance [1], SPIKE-distance [2
 Important Changelog
 -----------------------------
 
+With version 0.7.0, support for Python 2 was dropped, PySpike now officially supports
+Python 3.7, 3.8, 3.9, 3.10.
+
 With version 0.6.0, the spike directionality and spike train order function have been added.
 
 With version 0.5.0, the interfaces have been unified and the specific functions for multivariate computations have become deprecated.
