@@ -154,7 +154,6 @@ class PieceWiseLinFunc:
         assert start_ind > 0 and end_ind < len(self.x), \
             "Invalid averaging interval"
         if start_ind > end_ind:
-            print(start_ind, end_ind, self.x[start_ind])
             # contribution from between two closest edges
             y_x0 = intermediate_value(self.x[start_ind-1],
                                         self.x[start_ind],
@@ -166,9 +165,7 @@ class PieceWiseLinFunc:
                                         self.y1[start_ind-1],
                                         self.y2[start_ind-1],
                                         interval[1])
-            print(y_x0, y_x1, interval[1] - interval[0])
             integral = (y_x0 + y_x1) * 0.5 * (interval[1] - interval[0])
-            print(integral)
         else:
             # first the contribution from between the indices
             integral = np.sum((self.x[start_ind+1:end_ind+1] -
