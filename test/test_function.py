@@ -10,7 +10,7 @@ Distributed under the BSD License
 from __future__ import print_function
 import numpy as np
 from copy import copy
-from nose.tools import raises
+import pytest
 from numpy.testing import assert_allclose, assert_almost_equal, \
     assert_array_equal, assert_array_almost_equal
 
@@ -147,24 +147,27 @@ def test_pwc_integral():
     assert_allclose(f1.integral((2.6,4.0)), (4.0-2.6)*0.75)
     assert_allclose(f1.integral((2.4,4.0)), (2.5-2.4)*1.5+(4-2.5)*0.75)
 
-@raises(ValueError)
+#@raises(ValueError)
 def test_pwc_integral_bad_bounds_inv():
+  with pytest.raises(ValueError):
     # some random data
     x = [0.0, 1.0, 2.0, 2.5, 4.0]
     y = [1.0, -0.5, 1.5, 0.75]
     f1 = spk.PieceWiseConstFunc(x, y)
     f1.integral((3,2))
 
-@raises(ValueError)
+#@raises(ValueError)
 def test_pwc_integral_bad_bounds_oob_1():
+  with pytest.raises(ValueError):
     # some random data
     x = [0.0, 1.0, 2.0, 2.5, 4.0]
     y = [1.0, -0.5, 1.5, 0.75]
     f1 = spk.PieceWiseConstFunc(x, y)
     f1.integral((1,6))
 
-@raises(ValueError)
+#@raises(ValueError)
 def test_pwc_integral_bad_bounds_oob_2():
+  with pytest.raises(ValueError):
     # some random data
     x = [0.0, 1.0, 2.0, 2.5, 4.0]
     y = [1.0, -0.5, 1.5, 0.75]
