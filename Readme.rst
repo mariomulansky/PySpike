@@ -64,7 +64,7 @@ For that, make sure you have the following Python libraries installed:
 - numpy
 - cython
 - matplotlib (for the examples)
-- nosetests (for running the tests)
+- pytest (for running the tests)
 
 In particular, make sure that cython_ is configured properly and able to locate a C compiler, otherwise PySpike will use the much slower Python implementations.
 
@@ -76,11 +76,11 @@ To install PySpike, simply download the source, e.g. from Github, and run the :c
     cd PySpike
     python setup.py build_ext --inplace
 
-Then you can run the tests using the `nosetests` test framework:
+Then you can run the tests using the `pytest` test framework:
 
 .. code:: bash
 
-    nosetests
+    pytest
 
 Finally, you should make PySpike's installation folder known to Python to be able to import pyspike in your own projects.
 Therefore, add your :code:`/path/to/PySpike` to the :code:`$PYTHONPATH` environment variable.
