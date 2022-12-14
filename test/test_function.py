@@ -147,7 +147,6 @@ def test_pwc_integral():
     assert_allclose(f1.integral((2.6,4.0)), (4.0-2.6)*0.75)
     assert_allclose(f1.integral((2.4,4.0)), (2.5-2.4)*1.5+(4-2.5)*0.75)
 
-#@raises(ValueError)
 def test_pwc_integral_bad_bounds_inv():
   with pytest.raises(ValueError):
     # some random data
@@ -156,7 +155,6 @@ def test_pwc_integral_bad_bounds_inv():
     f1 = spk.PieceWiseConstFunc(x, y)
     f1.integral((3,2))
 
-#@raises(ValueError)
 def test_pwc_integral_bad_bounds_oob_1():
   with pytest.raises(ValueError):
     # some random data
@@ -165,7 +163,6 @@ def test_pwc_integral_bad_bounds_oob_1():
     f1 = spk.PieceWiseConstFunc(x, y)
     f1.integral((1,6))
 
-#@raises(ValueError)
 def test_pwc_integral_bad_bounds_oob_2():
   with pytest.raises(ValueError):
     # some random data

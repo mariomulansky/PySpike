@@ -18,12 +18,10 @@ spk.disable_backend_warning = True
 
 def test_regression_random():
 
-    spike_file = os.path.join("test","numeric","regression_random_spikes.mat")
-    #spike_file = os.path.join("numeric","regression_random_spikes.mat")
+    spike_file = os.path.join("test", "numeric", "regression_random_spikes.mat")
     spikes_name = "spikes"
     result_name = "Distances"
-    result_file = os.path.join("test","numeric","regression_random_results_cSPIKY.mat")
-    #result_file = os.path.join("numeric","regression_random_results_cSPIKY.mat")
+    result_file = os.path.join("test", "numeric", "regression_random_results_cSPIKY.mat")
 
     spike_train_sets = loadmat(spike_file)[spikes_name][0]
     results_cSPIKY = loadmat(result_file)[result_name]
