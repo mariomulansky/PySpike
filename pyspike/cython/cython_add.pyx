@@ -35,7 +35,7 @@ cimport numpy as np
 
 from libc.math cimport fabs
 
-DTYPE = float
+DTYPE = np.float
 ctypedef np.float_t DTYPE_t
 
 
