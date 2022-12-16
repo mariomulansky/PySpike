@@ -18,7 +18,7 @@ All source codes are available on `Github <https://github.com/mariomulansky/PySp
 Citing PySpike
 ----------------------------
 If you use PySpike in your research, please cite our SoftwareX publication on PySpike:
-    Mario Mulansky, Thomas Kreuz, *PySpike - A Python library for analyzing spike train synchrony*, SoftwareX, (2016), ISSN 2352-7110, http://dx.doi.org/10.1016/j.softx.2016.07.006.
+    Mario Mulansky, Thomas Kreuz, *PySpike - A Python library for analyzing spike train synchrony*, SoftwareX 5, 183 (2016), http://dx.doi.org/10.1016/j.softx.2016.07.006.
 
 Additionally, depending on the used methods: ISI-distance [1], SPIKE-distance [2] or SPIKE-Synchronization [3], please cite one or more of the following publications:
 
