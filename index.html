@@ -97,7 +97,7 @@ For that, make sure you have the following Python libraries installed:</p>
 <li><p>numpy</p></li>
 <li><p>cython</p></li>
 <li><p>matplotlib (for the examples)</p></li>
-<li><p>nosetests (for running the tests)</p></li>
+<li><p>pytest (for running the tests)</p></li>
 </ul>
 <p>In particular, make sure that <a class="reference external" href="http://www.cython.org">cython</a> is configured properly and able to locate a C compiler, otherwise PySpike will use the much slower Python implementations.</p>
 <p>To install PySpike, simply download the source, e.g. from Github, and run the <code class="code docutils literal notranslate"><span class="pre">setup.py</span></code> script:</p>
@@ -106,8 +106,8 @@ For that, make sure you have the following Python libraries installed:</p>
 python setup.py build_ext --inplace
 </pre></div>
 </div>
-<p>Then you can run the tests using the <cite>nosetests</cite> test framework:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>nosetests
+<p>Then you can run the tests using the <cite>pytest</cite> test framework:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest
 </pre></div>
 </div>
 <p>Finally, you should make PySpike’s installation folder known to Python to be able to import pyspike in your own projects.
