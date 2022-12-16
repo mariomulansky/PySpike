@@ -26,7 +26,7 @@ Additionally, depending on the used methods: ISI-distance [1], SPIKE-distance [2
 
 .. [#] Kreuz T, Chicharro D, Houghton C, Andrzejak RG, Mormann F, *Monitoring spike train synchrony.* J Neurophysiol 109, 1457 (2013) `[pdf] <https://drive.google.com/file/d/1oppf86V4cBVakPiv6Mbn_WaoKoKWzmIl/view>`_
 
-.. [#] Kreuz T, Mulansky M and Bozanic N, *SPIKY: A graphical user interface for monitoring spike train synchrony*, JNeurophysiol 113, 3432 (2015)
+.. [#] Kreuz T, Mulansky M and Bozanic N, *SPIKY: A graphical user interface for monitoring spike train synchrony*, J Neurophysiol, JNeurophysiol 113, 3432 (2015)
 
 Important Changelog
 -----------------------------
@@ -64,7 +64,7 @@ For that, make sure you have the following Python libraries installed:
 - numpy
 - cython
 - matplotlib (for the examples)
-- nosetests (for running the tests)
+- pytest (for running the tests)
 
 In particular, make sure that cython_ is configured properly and able to locate a C compiler, otherwise PySpike will use the much slower Python implementations.
 
@@ -76,11 +76,11 @@ To install PySpike, simply download the source, e.g. from Github, and run the :c
     cd PySpike
     python setup.py build_ext --inplace
 
-Then you can run the tests using the `nosetests` test framework:
+Then you can run the tests using the `pytest` test framework:
 
 .. code:: bash
 
-    nosetests
+    pytest
 
 Finally, you should make PySpike's installation folder known to Python to be able to import pyspike in your own projects.
 Therefore, add your :code:`/path/to/PySpike` to the :code:`$PYTHONPATH` environment variable.

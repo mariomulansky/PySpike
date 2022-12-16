@@ -38,7 +38,7 @@ from libc.math cimport fmod
 from libc.stdlib cimport rand
 from libc.stdlib cimport RAND_MAX
 
-DTYPE = np.float
+DTYPE = float
 ctypedef np.float_t DTYPE_t
 
 
