@@ -39,7 +39,6 @@ from libc.math cimport fmin
 #DTYPE = float
 #ctypedef np.float_t DTYPE_t
 
-
 ############################################################
 # isi_distance_cython
 ############################################################

@@ -18,7 +18,7 @@ All source codes are available on `Github <https://github.com/mariomulansky/PySp
 Citing PySpike
 ----------------------------
 If you use PySpike in your research, please cite our SoftwareX publication on PySpike:
-    Mario Mulansky, Thomas Kreuz, *PySpike - A Python library for analyzing spike train synchrony*, SoftwareX, (2016), ISSN 2352-7110, http://dx.doi.org/10.1016/j.softx.2016.07.006.
+    Mario Mulansky, Thomas Kreuz, *PySpike - A Python library for analyzing spike train synchrony*, Software X 5, 183 (2016) `[pdf] <https://drive.google.com/file/d/1vJA5q4eFCd2ASKGN8ANaDNBfQVpWBPXd/view>`_
 
 Additionally, depending on the used methods: ISI-distance [1], SPIKE-distance [2] or SPIKE-Synchronization [3], please cite one or more of the following publications:
 
@@ -26,7 +26,7 @@ Additionally, depending on the used methods: ISI-distance [1], SPIKE-distance [2
 
 .. [#] Kreuz T, Chicharro D, Houghton C, Andrzejak RG, Mormann F, *Monitoring spike train synchrony.* J Neurophysiol 109, 1457 (2013) `[pdf] <https://drive.google.com/file/d/1oppf86V4cBVakPiv6Mbn_WaoKoKWzmIl/view>`_
 
-.. [#] Kreuz T, Mulansky M and Bozanic N, *SPIKY: A graphical user interface for monitoring spike train synchrony*, J Neurophysiol 113, 3432 (2015)
+.. [#] Kreuz T, Mulansky M and Bozanic N, *SPIKY: A graphical user interface for monitoring spike train synchrony*, J Neurophysiol 113, 3432 (2015) `[pdf] <https://drive.google.com/file/d/16rdVbJFj7BypaaI10aHpXLk0WJuJ7reM/view>`_
 
 Important Changelog
 -----------------------------

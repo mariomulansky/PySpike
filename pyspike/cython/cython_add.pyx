@@ -38,7 +38,6 @@ from libc.math cimport fabs
 #DTYPE = float
 #ctypedef np.float_t DTYPE_t
 
-
 ############################################################
 # add_piece_wise_const_cython
 ############################################################
