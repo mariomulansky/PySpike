@@ -153,7 +153,7 @@ def test_spike_sync_empty():
     assert_allclose(res, 1.0)
 
     sync_matrix = spk.spike_sync_matrix([st1, st2, st3], interval=[3.0, 4.0])
-    assert_array_equal(sync_matrix, np.ones((3, 3)) - np.diag(np.ones(3)))
+    assert_array_equal(sync_matrix, np.ones((3, 3)))
 
 
 if __name__ == "__main__":

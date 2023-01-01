@@ -347,7 +347,7 @@ def test_multi_spike_sync():
                         decimal=15)
 
 
-def check_dist_matrix(dist_func, dist_matrix_func):
+def check_dist_matrix(dist_func, dist_matrix_func, Diagonal=0.):
     # generate spike trains:
     t1 = SpikeTrain([0.2, 0.4, 0.6, 0.7], 1.0)
     t2 = SpikeTrain([0.3, 0.45, 0.8, 0.9, 0.95], 1.0)
@@ -363,9 +363,9 @@ def check_dist_matrix(dist_func, dist_matrix_func):
     f34 = dist_func(t3, t4)
 
     f_matrix = dist_matrix_func(spike_trains)
-    # check zero diagonal
+    # check diagonal
     for i in range(4):
-        assert_allclose(0.0, f_matrix[i, i])
+        assert_allclose(Diagonal, f_matrix[i, i])
     for i in range(4):
         for j in range(i+1, 4):
             assert_allclose(f_matrix[i, j], f_matrix[j, i])
@@ -386,7 +386,7 @@ def test_spike_matrix():
 
 
 def test_spike_sync_matrix():
-    check_dist_matrix(spk.spike_sync, spk.spike_sync_matrix)
+    check_dist_matrix(spk.spike_sync, spk.spike_sync_matrix, Diagonal=1.)
 
 
 def test_regression_spiky():

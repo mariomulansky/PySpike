@@ -38,9 +38,8 @@ from libc.math cimport fmod
 from libc.stdlib cimport rand
 from libc.stdlib cimport RAND_MAX
 
-DTYPE = float
-ctypedef np.float_t DTYPE_t
-
+#DTYPE = float
+#ctypedef np.float_t DTYPE_t
 
 def sim_ann_cython(double[:, :] D, double T_start, double T_end, double alpha):
 

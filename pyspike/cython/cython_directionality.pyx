@@ -35,9 +35,8 @@ from libc.math cimport fmin
 
 # from pyspike.cython.cython_distances cimport get_tau
 
-DTYPE = float
-ctypedef np.float_t DTYPE_t
-
+#DTYPE = float
+#ctypedef np.float_t DTYPE_t
 
 ############################################################
 # get_tau

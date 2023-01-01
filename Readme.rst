@@ -65,7 +65,7 @@ For that, make sure you have the following Python libraries installed:
 - cython
 - matplotlib (for the examples)
 - pytest (for running the tests)
-- scipy (for tests)
+- scipy (also for the tests)
 
 In particular, make sure that cython_ is configured properly and able to locate a C compiler, otherwise PySpike will use the much slower Python implementations.
 

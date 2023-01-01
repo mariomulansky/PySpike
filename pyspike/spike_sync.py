@@ -288,8 +288,13 @@ def spike_sync_matrix(spike_trains, indices=None, interval=None, max_tau=None):
 
     """
     dist_func = partial(spike_sync_bi, max_tau=max_tau)
-    return _generic_distance_matrix(spike_trains, dist_func,
+    ShouldBeSync =  _generic_distance_matrix(spike_trains, dist_func,
                                     indices, interval)
+    # These elements are not really distances, but spike-sync values
+    #   The diagonal needs to reflect that:
+    for i in range(ShouldBeSync.shape[0]):
+        ShouldBeSync[i][i] = 1.0
+    return ShouldBeSync
 
 
 ############################################################

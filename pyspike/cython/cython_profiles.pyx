@@ -36,9 +36,8 @@ from libc.math cimport fabs
 from libc.math cimport fmax
 from libc.math cimport fmin
 
-DTYPE = float
-ctypedef np.float_t DTYPE_t
-
+#DTYPE = float
+#ctypedef np.float_t DTYPE_t
 
 ############################################################
 # isi_profile_cython
