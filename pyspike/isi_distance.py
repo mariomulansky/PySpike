@@ -74,10 +74,8 @@ def isi_profile_bi(spike_train1, spike_train2):
         from .cython.cython_profiles import isi_profile_cython \
             as isi_profile_impl
     except ImportError:
-        if not(pyspike.disable_backend_warning):
-            print("Warning: isi_profile_cython not found. Make sure that \
-PySpike is installed by running\n 'python setup.py build_ext --inplace'!\n \
-Falling back to slow python backend.")
+        pyspike.NoCythonWarn()
+
         # use python backend
         from .cython.python_backend import isi_distance_python \
             as isi_profile_impl

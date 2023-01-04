@@ -208,11 +208,8 @@ expected."
             from .cython.cython_add import add_discrete_function_cython as \
                 add_discrete_function_impl
         except ImportError:
-            if not(pyspike.disable_backend_warning):
-                print("Warning: add_discrete_function_cython not found. Make \
-sure that PySpike is installed by running\n\
-'python setup.py build_ext --inplace'! \
-\n Falling back to slow python backend.")
+            pyspike.NoCythonWarn()
+
             # use python backend
             from .cython.python_backend import add_discrete_function_python as \
                 add_discrete_function_impl
