@@ -159,3 +159,25 @@ def generate_poisson_spikes(rate, interval):
     spikes = T_start + np.cumsum(intervals)
     spikes = spikes[spikes < T_end]
     return SpikeTrain(spikes, interval)
+
+def reconcile_spike_trains(spike_trains):
+    """ make sure that Spike trains meet PySpike rules
+            In: spike_trains - a list of SpikeTrain objects
+            Out: spike_trains - same list with some fixes:
+              1) t_start and t_end are the same for every train
+              2) The spike times are sorted
+              3) No duplicate times in any train  
+    """
+    ## handle sorting and uniqueness first (np.unique() does a sort)
+    spike_trains = [SpikeTrain(np.unique(s.spikes), 
+                               [s.t_start, s.t_end], 
+                               is_sorted=True) for s in spike_trains]
+
+    ## find global start and end times
+    Starts = [[s.t_start, s.spikes[0]]  for s in spike_trains if len(s.spikes)>0]
+    tStart = min(min(Starts))
+    Ends   = [[s.t_end,   s.spikes[-1]] for s in spike_trains if len(s.spikes)>0]
+    tEnd = max(max(Ends))
+
+    ## Apply start and end times to every train
+    return [SpikeTrain(s.spikes, [tStart, tEnd], is_sorted=True) for s in spike_trains]

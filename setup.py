@@ -38,10 +38,11 @@ else:
     use_c = False
 
 if not use_cython and not use_c:
-    Ans = input('Cython not installed. Programs will be slow. Abort? (Y/N)\n')
-    if len(Ans)>0 and (Ans[0]=='Y' or Ans[0]=='y'):
-        print("\nAborting\n")
-        raise RuntimeError('User termination')
+    print('Cython not installed. Programs will be slow.')
+    # Ans = input('Abort? (Y/N)\n')
+    # if len(Ans)>0 and (Ans[0]=='Y' or Ans[0]=='y'):
+    #     print("\nAborting\n")
+    #     raise RuntimeError('User termination')
 
 cmdclass = {}
 ext_modules = []
