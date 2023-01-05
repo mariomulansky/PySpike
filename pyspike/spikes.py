@@ -174,10 +174,10 @@ def reconcile_spike_trains(spike_trains):
                                is_sorted=True) for s in spike_trains]
 
     ## find global start and end times
-    Starts = [[s.t_start, s.spikes[0]]  for s in spike_trains if len(s.spikes)>0]
-    tStart = min(min(Starts))
-    Ends   = [[s.t_end,   s.spikes[-1]] for s in spike_trains if len(s.spikes)>0]
-    tEnd = max(max(Ends))
+    Starts = [s.t_start  for s in spike_trains]
+    tStart = min(Starts)
+    Ends   = [s.t_end for s in spike_trains if len(s.spikes)>0]
+    tEnd = max(Ends)
 
     ## Apply start and end times to every train
     return [SpikeTrain(s.spikes, [tStart, tEnd], is_sorted=True) for s in spike_trains]
