@@ -41,13 +41,21 @@ Computing bivariate distances profiles
 
 ------------------------------
 
-    Spike trains are expected to be *sorted*! 
-    For performance reasons, the PySpike distance functions do not check if the spike trains provided are indeed sorted.
-    Make sure that all your spike trains are sorted, which is ensured if you use the :func:`.load_spike_trains_from_txt` function with the parameter `is_sorted=False` (default).
-    If in doubt, use :meth:`.SpikeTrain.sort()` to ensure a correctly sorted spike train.
+Spike trains are expected to be *sorted*! 
+For performance reasons, the PySpike distance functions do not check if the spike trains provided are indeed sorted.
+Make sure that all your spike trains are sorted, which is ensured if you use the :func:`.load_spike_trains_from_txt` function with the parameter `is_sorted=False` (default).
+If in doubt, use :meth:`.SpikeTrain.sort()` to ensure a correctly sorted spike train.
 
-    If you need to copy a spike train, use the :meth:`.SpikeTrain.copy()` method.
-    Simple assignment `t2 = t1` does not create a copy of the spike train data, but a reference as `numpy.array` is used for storing the data.
+Alternatively the function :func:'.reconcile_spike_trains' applies three fixes to a list of SpikeTrain objects. It sorts
+the times, it removes all but one of any duplicated time, and it ensures all t_start and t_end values are compatible
+
+.. code:: python
+
+    from pyspike.spikes import reconcile_spike_trains
+    spike_trains = reconcile_spike_trains(spike_trains)
+
+If you need to copy a spike train, use the :meth:`.SpikeTrain.copy()` method.
+Simple assignment `t2 = t1` does not create a copy of the spike train data, but a reference as `numpy.array` is used for storing the data.
     
 ------------------------------
 

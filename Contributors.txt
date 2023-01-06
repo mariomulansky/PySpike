@@ -1,6 +1,7 @@
 Python/C Programming:
 - Mario Mulansky
 - Igor Gnatenko
+- Edmund Butler
 
 Scientific Methods:
 - Thomas Kreuz
