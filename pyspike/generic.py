@@ -15,7 +15,7 @@ import numpy as np
 ############################################################
 # _generic_profile_multi
 ############################################################
-def _generic_profile_multi(spike_trains, pair_distance_func, indices=None):
+def _generic_profile_multi(spike_trains, pair_distance_func, indices=None, Athresh=0):
     """ Internal implementation detail, don't call this function directly,
     use isi_profile_multi or spike_profile_multi instead.
 
@@ -42,14 +42,14 @@ def _generic_profile_multi(spike_trains, pair_distance_func, indices=None):
                                             pairs1[L1//2:])
         else:
             dist_prof1 = pair_distance_func(spike_trains[pairs1[0][0]],
-                                            spike_trains[pairs1[0][1]])
+                                            spike_trains[pairs1[0][1]], Athresh=Athresh)
         L2 = len(pairs2)
         if L2 > 1:
             dist_prof2 = divide_and_conquer(pairs2[:L2//2],
                                             pairs2[L2//2:])
         else:
             dist_prof2 = pair_distance_func(spike_trains[pairs2[0][0]],
-                                            spike_trains[pairs2[0][1]])
+                                            spike_trains[pairs2[0][1]], Athresh=Athresh)
         dist_prof1.add(dist_prof2)
         return dist_prof1
 
@@ -70,7 +70,7 @@ def _generic_profile_multi(spike_trains, pair_distance_func, indices=None):
                                        pairs[len(pairs)//2:])
     else:
         avrg_dist = pair_distance_func(spike_trains[pairs[0][0]],
-                                       spike_trains[pairs[0][1]])
+                                       spike_trains[pairs[0][1]], Athresh=Athresh)
 
     return avrg_dist, L
 
@@ -79,7 +79,7 @@ def _generic_profile_multi(spike_trains, pair_distance_func, indices=None):
 # _generic_distance_multi
 ############################################################
 def _generic_distance_multi(spike_trains, pair_distance_func,
-                            indices=None, interval=None):
+                            indices=None, interval=None, Athresh=0):
     """ Internal implementation detail, don't call this function directly,
     use isi_distance_multi or spike_distance_multi instead.
 
@@ -110,7 +110,7 @@ def _generic_distance_multi(spike_trains, pair_distance_func,
     avrg_dist = 0.0
     for (i, j) in pairs:
         avrg_dist += pair_distance_func(spike_trains[i], spike_trains[j],
-                                        interval)
+                                        interval, Athresh=Athresh)
 
     return avrg_dist/len(pairs)
 
@@ -119,7 +119,7 @@ def _generic_distance_multi(spike_trains, pair_distance_func,
 # generic_distance_matrix
 ############################################################
 def _generic_distance_matrix(spike_trains, dist_function,
-                             indices=None, interval=None):
+                             indices=None, interval=None, Athresh=0):
     """ Internal implementation detail. Don't use this function directly.
     Instead use isi_distance_matrix or spike_distance_matrix.
     Computes the time averaged distance of all pairs of spike-trains.
@@ -144,7 +144,7 @@ def _generic_distance_matrix(spike_trains, dist_function,
     distance_matrix = np.zeros((len(indices), len(indices)))
     for i, j in pairs:
         d = dist_function(spike_trains[indices[i]], spike_trains[indices[j]],
-                          interval)
+                          interval, Athresh=Athresh)
         distance_matrix[i, j] = d
         distance_matrix[j, i] = d
     return distance_matrix

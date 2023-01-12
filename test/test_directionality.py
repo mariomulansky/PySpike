@@ -15,8 +15,8 @@ from numpy.testing import assert_equal, assert_almost_equal, \
 import pyspike as spk
 from pyspike import SpikeTrain, DiscreteFunc
 
-
 def test_spike_directionality():
+    
     st1 = SpikeTrain([100, 200, 300], [0, 1000])
     st2 = SpikeTrain([105, 205, 300], [0, 1000])
     assert_almost_equal(spk.spike_directionality(st1, st2), 2.0/3.0)
