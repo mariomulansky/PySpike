@@ -1,0 +1,1 @@
+cdef double get_tau(double[:], double[:], int, int, double, double)
