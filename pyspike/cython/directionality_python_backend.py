@@ -16,7 +16,7 @@ from pyspike.cython.python_backend import get_tau
 # spike_train_order_python
 ############################################################
 def spike_directionality_profile_python(spikes1, spikes2, t_start, t_end,
-                                        max_tau, Athresh=0.):
+                                        max_tau, MRTS=0.):
     true_max = t_end - t_start
     if max_tau > 0:
         true_max = min(true_max, 2*max_tau)
@@ -30,7 +30,7 @@ def spike_directionality_profile_python(spikes1, spikes2, t_start, t_end,
     while i + j < N1 + N2 - 2:
         if (i < N1-1) and (j == N2-1 or spikes1[i+1] < spikes2[j+1]):
             i += 1
-            tau = get_tau(spikes1, spikes2, i, j, true_max, Athresh)
+            tau = get_tau(spikes1, spikes2, i, j, true_max, MRTS)
             if j > -1 and spikes1[i]-spikes2[j] < tau:
                 # coincidence between the current spike and the previous spike
                 # spike in first spike train occurs after second
@@ -38,7 +38,7 @@ def spike_directionality_profile_python(spikes1, spikes2, t_start, t_end,
                 d2[j] = +1
         elif (j < N2-1) and (i == N1-1 or spikes1[i+1] > spikes2[j+1]):
             j += 1
-            tau = get_tau(spikes1, spikes2, i, j, true_max, Athresh)
+            tau = get_tau(spikes1, spikes2, i, j, true_max, MRTS)
             if i > -1 and spikes2[j]-spikes1[i] < tau:
                 # coincidence between the current spike and the previous spike
                 # spike in second spike train occurs after first
@@ -58,7 +58,7 @@ def spike_directionality_profile_python(spikes1, spikes2, t_start, t_end,
 # spike_train_order_python
 ############################################################
 def spike_train_order_profile_python(spikes1, spikes2, t_start, t_end,
-                                     max_tau, Athresh=0.):
+                                     max_tau, MRTS=0.):
     true_max = t_end - t_start
     if max_tau > 0:
         true_max = min(true_max, 2*max_tau)
@@ -75,7 +75,7 @@ def spike_train_order_profile_python(spikes1, spikes2, t_start, t_end,
         if (i < N1-1) and (j == N2-1 or spikes1[i+1] < spikes2[j+1]):
             i += 1
             n += 1
-            tau = get_tau(spikes1, spikes2, i, j, true_max, Athresh)
+            tau = get_tau(spikes1, spikes2, i, j, true_max, MRTS)
             st[n] = spikes1[i]
             if j > -1 and spikes1[i]-spikes2[j] < tau:
                 # coincidence between the current spike and the previous spike
@@ -85,7 +85,7 @@ def spike_train_order_profile_python(spikes1, spikes2, t_start, t_end,
         elif (j < N2-1) and (i == N1-1 or spikes1[i+1] > spikes2[j+1]):
             j += 1
             n += 1
-            tau = get_tau(spikes1, spikes2, i, j, true_max, Athresh)
+            tau = get_tau(spikes1, spikes2, i, j, true_max, MRTS)
             st[n] = spikes2[j]
             if i > -1 and spikes2[j]-spikes1[i] < tau:
                 # coincidence between the current spike and the previous spike

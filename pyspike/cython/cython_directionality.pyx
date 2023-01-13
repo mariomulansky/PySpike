@@ -44,7 +44,7 @@ from pyspike.cython.cython_get_tau cimport get_tau
 def spike_train_order_profile_cython(double[:] spikes1, double[:] spikes2,
                                      double t_start, double t_end,
                                      double max_tau,
-                                     double Athresh = 0.):
+                                     double MRTS = 0.):
 
     cdef int N1 = len(spikes1)
     cdef int N2 = len(spikes2)
@@ -65,7 +65,7 @@ def spike_train_order_profile_cython(double[:] spikes1, double[:] spikes2,
         if (i < N1-1) and (j == N2-1 or spikes1[i+1] < spikes2[j+1]):
             i += 1
             n += 1
-            tau = get_tau(spikes1, spikes2, i, j, true_max, Athresh)
+            tau = get_tau(spikes1, spikes2, i, j, true_max, MRTS)
             st[n] = spikes1[i]
             if j > -1 and spikes1[i]-spikes2[j] < tau:
                 # coincidence between the current spike and the previous spike
@@ -76,7 +76,7 @@ def spike_train_order_profile_cython(double[:] spikes1, double[:] spikes2,
         elif (j < N2-1) and (i == N1-1 or spikes1[i+1] > spikes2[j+1]):
             j += 1
             n += 1
-            tau = get_tau(spikes1, spikes2, i, j, true_max, Athresh)
+            tau = get_tau(spikes1, spikes2, i, j, true_max, MRTS)
             st[n] = spikes2[j]
             if i > -1 and spikes2[j]-spikes1[i] < tau:
                 # coincidence between the current spike and the previous spike
@@ -117,7 +117,7 @@ def spike_train_order_profile_cython(double[:] spikes1, double[:] spikes2,
 ############################################################
 def spike_train_order_cython(double[:] spikes1, double[:] spikes2,
                              double t_start, double t_end, double max_tau,
-                             double Athresh = 0.):
+                             double MRTS = 0.):
 
     cdef int N1 = len(spikes1)
     cdef int N2 = len(spikes2)
@@ -136,7 +136,7 @@ def spike_train_order_cython(double[:] spikes1, double[:] spikes2,
         if (i < N1-1) and (j == N2-1 or spikes1[i+1] < spikes2[j+1]):
             i += 1
             mp += 1
-            tau = get_tau(spikes1, spikes2, i, j, true_max, Athresh)
+            tau = get_tau(spikes1, spikes2, i, j, true_max, MRTS)
             if j > -1 and spikes1[i]-spikes2[j] < tau:
                 # coincidence between the current spike and the previous spike
                 # spike in spike train 2 appeared before spike in spike train 1
@@ -145,7 +145,7 @@ def spike_train_order_cython(double[:] spikes1, double[:] spikes2,
         elif (j < N2-1) and (i == N1-1 or spikes1[i+1] > spikes2[j+1]):
             j += 1
             mp += 1
-            tau = get_tau(spikes1, spikes2, i, j, true_max, Athresh)
+            tau = get_tau(spikes1, spikes2, i, j, true_max, MRTS)
             if i > -1 and spikes2[j]-spikes1[i] < tau:
                 # coincidence between the current spike and the previous spike
                 # spike in spike train 1 appeared before spike in spike train 2
@@ -173,7 +173,7 @@ def spike_directionality_profiles_cython(double[:] spikes1,
                                          double[:] spikes2,
                                          double t_start, double t_end,
                                          double max_tau,
-                                         double Athresh = 0.):
+                                         double MRTS = 0.):
 
     cdef int N1 = len(spikes1)
     cdef int N2 = len(spikes2)
@@ -191,7 +191,7 @@ def spike_directionality_profiles_cython(double[:] spikes1,
     while i + j < N1 + N2 - 2:
         if (i < N1-1) and (j == N2-1 or spikes1[i+1] < spikes2[j+1]):
             i += 1
-            tau = get_tau(spikes1, spikes2, i, j, true_max, Athresh)
+            tau = get_tau(spikes1, spikes2, i, j, true_max, MRTS)
             if j > -1 and spikes1[i]-spikes2[j] < tau:
                 # coincidence between the current spike and the previous spike
                 # spike from spike train 1 after spike train 2
@@ -200,7 +200,7 @@ def spike_directionality_profiles_cython(double[:] spikes1,
                 d2[j] = +1
         elif (j < N2-1) and (i == N1-1 or spikes1[i+1] > spikes2[j+1]):
             j += 1
-            tau = get_tau(spikes1, spikes2, i, j, true_max, Athresh)
+            tau = get_tau(spikes1, spikes2, i, j, true_max, MRTS)
             if i > -1 and spikes2[j]-spikes1[i] < tau:
                 # coincidence between the current spike and the previous spike
                 # spike from spike train 1 before spike train 2
@@ -225,7 +225,7 @@ def spike_directionality_cython(double[:] spikes1,
                                 double[:] spikes2,
                                 double t_start, double t_end,
                                 double max_tau,
-                                double Athresh = 0.):
+                                double MRTS = 0.):
 
     cdef int N1 = len(spikes1)
     cdef int N2 = len(spikes2)
@@ -242,7 +242,7 @@ def spike_directionality_cython(double[:] spikes1,
     while i + j < N1 + N2 - 2:
         if (i < N1-1) and (j == N2-1 or spikes1[i+1] < spikes2[j+1]):
             i += 1
-            tau = get_tau(spikes1, spikes2, i, j, true_max, Athresh)
+            tau = get_tau(spikes1, spikes2, i, j, true_max, MRTS)
             if j > -1 and spikes1[i]-spikes2[j] < tau:
                 # coincidence between the current spike and the previous spike
                 # spike from spike train 1 after spike train 2
@@ -250,7 +250,7 @@ def spike_directionality_cython(double[:] spikes1,
                 d -= 1
         elif (j < N2-1) and (i == N1-1 or spikes1[i+1] > spikes2[j+1]):
             j += 1
-            tau = get_tau(spikes1, spikes2, i, j, true_max, Athresh)
+            tau = get_tau(spikes1, spikes2, i, j, true_max, MRTS)
             if i > -1 and spikes2[j]-spikes1[i] < tau:
                 # coincidence between the current spike and the previous spike
                 # spike from spike train 1 before spike train 2

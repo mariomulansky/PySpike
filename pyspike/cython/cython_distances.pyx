@@ -46,7 +46,7 @@ from libc.math cimport fmin
 ############################################################
 def isi_distance_cython(double[:] s1, double[:] s2,
                         double t_start, double t_end,
-                        double Athresh=0.):
+                        double MRTS=0.):
 
     cdef double isi_value
     cdef int index1, index2, index
@@ -82,7 +82,7 @@ def isi_distance_cython(double[:] s1, double[:] s2,
         index2 = 0
 
     last_t = t_start
-    curr_isi = fabs(nu1-nu2)/fmax(Athresh, fmax(nu1, nu2))
+    curr_isi = fabs(nu1-nu2)/fmax(MRTS, fmax(nu1, nu2))
     index = 1
 
     with nogil: # release the interpreter to allow multithreading
@@ -130,7 +130,7 @@ def isi_distance_cython(double[:] s1, double[:] s2,
                           else t_end-s2[index2]
             # compute the corresponding isi-distance
             isi_value += curr_isi * (curr_t - last_t)
-            curr_isi = fabs(nu1 - nu2) / fmax(Athresh, fmax(nu1, nu2))
+            curr_isi = fabs(nu1 - nu2) / fmax(MRTS, fmax(nu1, nu2))
             last_t = curr_t
             index += 1
 
@@ -178,12 +178,12 @@ cdef inline double get_min_dist_cython(double spike_time,
 # isi_avrg_cython
 ############################################################
 cdef inline double isi_avrg_cython(double isi1, double isi2, 
-                                   double Athresh) nogil:
+                                   double MRTS) nogil:
     #return 0.5*(isi1+isi2)*(isi1+isi2)
-    if Athresh < .5*(isi1+isi2):
+    if MRTS < .5*(isi1+isi2):
         return .5*(isi1+isi2)*(isi1+isi2)
     else:
-        return (isi1+isi2)*(Athresh)
+        return (isi1+isi2)*(MRTS)
 
 
 ############################################################
@@ -191,7 +191,7 @@ cdef inline double isi_avrg_cython(double isi1, double isi2,
 ############################################################
 def spike_distance_cython(double[:] t1, double[:] t2,
                           double t_start, double t_end,
-                          double Athresh=0.):
+                          double MRTS=0.):
 
     cdef int N1, N2, index1, index2, index
     cdef double t_p1, t_f1, t_p2, t_f2, dt_p1, dt_p2, dt_f1, dt_f2
@@ -254,7 +254,7 @@ def spike_distance_cython(double[:] t1, double[:] t2,
             s2 = dt_p2
             index2 = 0
 
-        y_start = (s1*isi2 + s2*isi1) / isi_avrg_cython(isi1, isi2, Athresh)
+        y_start = (s1*isi2 + s2*isi1) / isi_avrg_cython(isi1, isi2, MRTS)
         index = 1
 
         while index1+index2 < N1+N2-2:
@@ -273,7 +273,7 @@ def spike_distance_cython(double[:] t1, double[:] t2,
                     t_f1 = t_aux1[1]
                 t_curr =  t_p1
                 s2 = (dt_p2*(t_f2-t_p1) + dt_f2*(t_p1-t_p2)) / isi2
-                y_end = (s1*isi2 + s2*isi1)/isi_avrg_cython(isi1, isi2, Athresh)
+                y_end = (s1*isi2 + s2*isi1)/isi_avrg_cython(isi1, isi2, MRTS)
 
                 spike_value += 0.5*(y_start + y_end) * (t_curr - t_last)
 
@@ -292,7 +292,7 @@ def spike_distance_cython(double[:] t1, double[:] t2,
                     # Eero's correction: no adjustment
                     s1 = dt_p1
                 # s2 is the same as above, thus we can compute y2 immediately
-                y_start = (s1*isi2 + s2*isi1)/isi_avrg_cython(isi1, isi2, Athresh)
+                y_start = (s1*isi2 + s2*isi1)/isi_avrg_cython(isi1, isi2, MRTS)
             elif (index2 < N2-1) and (t_f1 > t_f2 or index1 == N1-1):
                 index2 += 1
                 # first calculate the previous interval end value
@@ -307,7 +307,7 @@ def spike_distance_cython(double[:] t1, double[:] t2,
                     t_f2 = t_aux2[1]
                 t_curr = t_p2
                 s1 = (dt_p1*(t_f1-t_p2) + dt_f1*(t_p2-t_p1)) / isi1
-                y_end = (s1*isi2 + s2*isi1) / isi_avrg_cython(isi1, isi2, Athresh)
+                y_end = (s1*isi2 + s2*isi1) / isi_avrg_cython(isi1, isi2, MRTS)
 
                 spike_value += 0.5*(y_start + y_end) * (t_curr - t_last)
 
@@ -326,7 +326,7 @@ def spike_distance_cython(double[:] t1, double[:] t2,
                     # Eero's correction: no adjustment
                     s2 = dt_p2
                 # s1 is the same as above, thus we can compute y2 immediately
-                y_start = (s1*isi2 + s2*isi1)/isi_avrg_cython(isi1, isi2, Athresh)
+                y_start = (s1*isi2 + s2*isi1)/isi_avrg_cython(isi1, isi2, MRTS)
 
             else: # t_f1 == t_f2 - generate only one event
                 index1 += 1
@@ -365,7 +365,7 @@ def spike_distance_cython(double[:] t1, double[:] t2,
         # isi2 = max(t_end-t2[N2-1], t2[N2-1]-t2[N2-2])
         s1 = dt_f1 # *(t_end-t1[N1-1])/isi1
         s2 = dt_f2 # *(t_end-t2[N2-1])/isi2
-        y_end = (s1*isi2 + s2*isi1) / isi_avrg_cython(isi1, isi2, Athresh)
+        y_end = (s1*isi2 + s2*isi1) / isi_avrg_cython(isi1, isi2, MRTS)
 
         spike_value += 0.5*(y_start + y_end) * (t_end - t_last)
     # end nogil
@@ -554,7 +554,7 @@ def spike_distance_rf_cython(double[:] t1, double[:] t2,
 ############################################################
 def coincidence_value_cython(double[:] spikes1, double[:] spikes2,
                              double t_start, double t_end, double max_tau,
-                             double Athresh = 0.):
+                             double MRTS = 0.):
 
     cdef int N1 = len(spikes1)
     cdef int N2 = len(spikes2)
@@ -573,7 +573,7 @@ def coincidence_value_cython(double[:] spikes1, double[:] spikes2,
         if (i < N1-1) and (j == N2-1 or spikes1[i+1] < spikes2[j+1]):
             i += 1
             mp += 1
-            tau = get_tau(spikes1, spikes2, i, j, true_max, Athresh)
+            tau = get_tau(spikes1, spikes2, i, j, true_max, MRTS)
             if j > -1 and spikes1[i]-spikes2[j] < tau:
                 # coincidence between the current spike and the previous spike
                 # both get marked with 1
@@ -581,7 +581,7 @@ def coincidence_value_cython(double[:] spikes1, double[:] spikes2,
         elif (j < N2-1) and (i == N1-1 or spikes1[i+1] > spikes2[j+1]):
             j += 1
             mp += 1
-            tau = get_tau(spikes1, spikes2, i, j, true_max, Athresh)
+            tau = get_tau(spikes1, spikes2, i, j, true_max, MRTS)
             if i > -1 and spikes2[j]-spikes1[i] < tau:
                 # coincidence between the current spike and the previous spike
                 # both get marked with 1

@@ -14,7 +14,7 @@ import numpy as np
 ############################################################
 # isi_distance_python
 ############################################################
-def isi_distance_python(s1, s2, t_start, t_end, Athresh=0.):
+def isi_distance_python(s1, s2, t_start, t_end, MRTS=0.):
     """ Plain Python implementation of the isi distance.
         Out: spike_events - times from s1 and s2 merged, 
                              except beginning and end reflects t_start and t_end
@@ -43,7 +43,7 @@ def isi_distance_python(s1, s2, t_start, t_end, Athresh=0.):
         nu2 = s2[1] - s2[0] if N2 > 1 else t_end-s2[0]
         index2 = 0
 
-    isi_values[0] = abs(nu1 - nu2) / max([nu1, nu2, Athresh])
+    isi_values[0] = abs(nu1 - nu2) / max([nu1, nu2, MRTS])
     index = 1
     while index1+index2 < N1+N2-2:
         # check which spike is next - from s1 or s2
@@ -86,7 +86,7 @@ def isi_distance_python(s1, s2, t_start, t_end, Athresh=0.):
                     else t_end-s2[N2-1]
         # compute the corresponding isi-distance
         isi_values[index] = abs(nu1 - nu2) / \
-            max([nu1, nu2, Athresh])
+            max([nu1, nu2, MRTS])
         index += 1
     # the last event is the interval end
     if spike_events[index-1] == t_end:
@@ -126,7 +126,7 @@ def get_min_dist(spike_time, spike_train, start_index, t_start, t_end):
 ############################################################
 # spike_distance_python
 ############################################################
-def spike_distance_python(spikes1, spikes2, t_start, t_end, Athresh=0.):
+def spike_distance_python(spikes1, spikes2, t_start, t_end, MRTS=0.):
     """ Computes the instantaneous spike-distance S_spike (t) of the two given
     spike trains. The spike trains are expected to have auxiliary spikes at the
     beginning and end of the interval. Use the function add_auxiliary_spikes to
@@ -197,7 +197,7 @@ def spike_distance_python(spikes1, spikes2, t_start, t_end, Athresh=0.):
         isi2 = t_f2-t2[0]
         s2 = dt_p2
         index2 = 0
-    denominator = (isi1+isi2)*max(.5*(isi1+isi2), Athresh)
+    denominator = (isi1+isi2)*max(.5*(isi1+isi2), MRTS)
     y_starts[0] = (s1*isi2 + s2*isi1) / denominator
     index = 1
 
@@ -217,7 +217,7 @@ def spike_distance_python(spikes1, spikes2, t_start, t_end, Athresh=0.):
                 t_f1 = t_aux1[1]
             spike_events[index] = t_p1
             s2 = (dt_p2*(t_f2-t_p1) + dt_f2*(t_p1-t_p2)) / isi2
-            denominator = (isi1+isi2)*max(.5*(isi1+isi2), Athresh)
+            denominator = (isi1+isi2)*max(.5*(isi1+isi2), MRTS)
             y_ends[index-1] = (s1*isi2 + s2*isi1) / denominator
             # now the next interval start value
             if index1 < N1-1:
@@ -233,7 +233,7 @@ def spike_distance_python(spikes1, spikes2, t_start, t_end, Athresh=0.):
                 # Eero's correction: no adjustment
                 s1 = dt_p1
             # s2 is the same as above, thus we can compute y2 immediately
-            denominator = (isi1+isi2)*max(.5*(isi1+isi2), Athresh)
+            denominator = (isi1+isi2)*max(.5*(isi1+isi2), MRTS)
             y_starts[index] = (s1*isi2 + s2*isi1) / denominator
         elif (index2 < N2-1) and (t_f1 > t_f2 or index1 == N1-1):
             index2 += 1
@@ -249,7 +249,7 @@ def spike_distance_python(spikes1, spikes2, t_start, t_end, Athresh=0.):
                 t_f2 = t_aux2[1]
             spike_events[index] = t_p2
             s1 = (dt_p1*(t_f1-t_p2) + dt_f1*(t_p2-t_p1)) / isi1
-            denominator = (isi1+isi2)*max(.5*(isi1+isi2), Athresh)
+            denominator = (isi1+isi2)*max(.5*(isi1+isi2), MRTS)
             y_ends[index-1] = (s1*isi2 + s2*isi1) / denominator
             # now the next interval start value
             if index2 < N2-1:
@@ -265,7 +265,7 @@ def spike_distance_python(spikes1, spikes2, t_start, t_end, Athresh=0.):
                 # Eero's adjustment: no correction
                 s2 = dt_p2
             # s2 is the same as above, thus we can compute y2 immediately
-            denominator = (isi1+isi2)*max(.5*(isi1+isi2), Athresh)
+            denominator = (isi1+isi2)*max(.5*(isi1+isi2), MRTS)
             y_starts[index] = (s1*isi2 + s2*isi1) / denominator
         else:  # t_f1 == t_f2 - generate only one event
             index1 += 1
@@ -304,7 +304,7 @@ def spike_distance_python(spikes1, spikes2, t_start, t_end, Athresh=0.):
         spike_events[index] = t_end
         s1 = dt_f1  # *(t_end-t1[N1-1])/isi1
         s2 = dt_f2  # *(t_end-t2[N2-1])/isi2
-        denominator = (isi1+isi2)*max(.5*(isi1+isi2), Athresh)
+        denominator = (isi1+isi2)*max(.5*(isi1+isi2), MRTS)
         y_ends[index-1] = (s1*isi2 + s2*isi1) / denominator
 
     # use only the data added above
@@ -313,12 +313,12 @@ def spike_distance_python(spikes1, spikes2, t_start, t_end, Athresh=0.):
 
 
 
-def get_tau(spikes1, spikes2, i, j, max_tau, Athresh):
+def get_tau(spikes1, spikes2, i, j, max_tau, MRTS):
     """ Compute coincidence window
         In: spikes1, spikes2 - times of two spike trains
             i, j - indices into spikes1, spikes2 to compare
-            max_tau - maximum size of Athresh
-            Athresh - adaptation parameter  
+            max_tau - maximum size of MRTS
+            MRTS - adaptation parameter  
         out: combined coincidence window (Eq 19 in reference)
     """
     ## "distances" to neighbor: F/P=future/past, 1/2=N in spikesN.
@@ -337,7 +337,7 @@ def get_tau(spikes1, spikes2, i, j, max_tau, Athresh):
         mP2 = spikes2[j]-spikes2[j-1]
 
     mF1, mF2, mP1, mP2 = mF1/2., mF2/2., mP1/2., mP2/2.
-    Athresh /= 4
+    MRTS /= 4
 
     def Interpolate(a, b, t):
         """ thresholded interpolation
@@ -345,18 +345,18 @@ def get_tau(spikes1, spikes2, i, j, max_tau, Athresh):
             if t big, return b
             in between, return t      
         """
-        mab = min(a,b)         # no adaptation
+        mab = min(a,b)        
         if t<mab: return mab
         if t > b:  return b    
         return t               # interpolation
 
     if i<0 or j<0 or spikes1[i] <= spikes2[j]:
-        s1F = Interpolate(mP1, mF1, Athresh)
-        s2P = Interpolate(mF2, mP2, Athresh)
+        s1F = Interpolate(mP1, mF1, MRTS)
+        s2P = Interpolate(mF2, mP2, MRTS)
         return min(s1F, s2P)
     else:
-        s1P = Interpolate(mF1, mP1, Athresh)
-        s2F = Interpolate(mP2, mF2, Athresh)
+        s1P = Interpolate(mF1, mP1, MRTS)
+        s2F = Interpolate(mP2, mF2, MRTS)
         return min(s1P, s2F)
 
 
@@ -365,7 +365,7 @@ def get_tau(spikes1, spikes2, i, j, max_tau, Athresh):
 ############################################################
 # coincidence_python
 ############################################################
-def coincidence_python(spikes1, spikes2, t_start, t_end, max_tau, Athresh=0.):
+def coincidence_python(spikes1, spikes2, t_start, t_end, max_tau, MRTS=0.):
     true_max = t_end - t_start
     if max_tau > 0:
         true_max = min(true_max, 2*max_tau)
@@ -383,7 +383,7 @@ def coincidence_python(spikes1, spikes2, t_start, t_end, max_tau, Athresh=0.):
         if (i < N1-1) and (j == N2-1 or spikes1[i+1] < spikes2[j+1]):
             i += 1
             n += 1
-            tau = get_tau(spikes1, spikes2, i, j, true_max, Athresh)
+            tau = get_tau(spikes1, spikes2, i, j, true_max, MRTS)
             st[n] = spikes1[i]
             if j > -1 and spikes1[i]-spikes2[j] < tau:
                 # coincidence between the current spike and the previous spike
@@ -393,7 +393,7 @@ def coincidence_python(spikes1, spikes2, t_start, t_end, max_tau, Athresh=0.):
         elif (j < N2-1) and (i == N1-1 or spikes1[i+1] > spikes2[j+1]):
             j += 1
             n += 1
-            tau = get_tau(spikes1, spikes2, i, j, true_max, Athresh)
+            tau = get_tau(spikes1, spikes2, i, j, true_max, MRTS)
             st[n] = spikes2[j]
             if i > -1 and spikes2[j]-spikes1[i] < tau:
                 # coincidence between the current spike and the previous spike
@@ -431,7 +431,7 @@ def coincidence_python(spikes1, spikes2, t_start, t_end, max_tau, Athresh=0.):
 ############################################################
 # coincidence_single_profile_python
 ############################################################
-def coincidence_single_python(spikes1, spikes2, t_start, t_end, max_tau, Athresh=0.):
+def coincidence_single_python(spikes1, spikes2, t_start, t_end, max_tau, MRTS=0.):
     true_max = t_end - t_start
     if max_tau > 0:
         true_max = min(true_max, 2*max_tau)
@@ -445,7 +445,7 @@ def coincidence_single_python(spikes1, spikes2, t_start, t_end, max_tau, Athresh
             # move forward until spikes2[j] is the last spike before spikes1[i]
             # note that if spikes2[j] is after spikes1[i] we dont do anything
             j += 1
-        tau = get_tau(spikes1, spikes2, i, j, true_max, Athresh)
+        tau = get_tau(spikes1, spikes2, i, j, true_max, MRTS)
         if j > -1 and abs(spikes1[i]-spikes2[j]) < tau:
             # current spike in st1 is coincident
             c[i] = 1
@@ -454,7 +454,7 @@ def coincidence_single_python(spikes1, spikes2, t_start, t_end, max_tau, Athresh
             # the one right before (see above), hence we move one forward and
             # also check the next spike
             j += 1
-            tau = get_tau(spikes1, spikes2, i, j, true_max, Athresh)
+            tau = get_tau(spikes1, spikes2, i, j, true_max, MRTS)
             if abs(spikes2[j]-spikes1[i]) < tau:
                 # current spike in st1 is coincident
                 c[i] = 1

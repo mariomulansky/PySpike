@@ -50,7 +50,7 @@ def isi_profile(*args, **kwargs):
 ############################################################
 # isi_profile_bi
 ############################################################
-def isi_profile_bi(spike_train1, spike_train2, Athresh=0.):
+def isi_profile_bi(spike_train1, spike_train2, MRTS=0.):
     """ Specific function to compute a bivariate ISI-profile. This is a
     deprecated function and should not be called directly. Use
     :func:`.isi_profile` to compute ISI-profiles.
@@ -83,14 +83,14 @@ def isi_profile_bi(spike_train1, spike_train2, Athresh=0.):
     times, values = isi_profile_impl(spike_train1.get_spikes_non_empty(),
                                      spike_train2.get_spikes_non_empty(),
                                      spike_train1.t_start, spike_train1.t_end,
-                                     Athresh=Athresh)
+                                     MRTS=MRTS)
     return PieceWiseConstFunc(times, values)
 
 
 ############################################################
 # isi_profile_multi
 ############################################################
-def isi_profile_multi(spike_trains, indices=None, Athresh=0.):
+def isi_profile_multi(spike_trains, indices=None, MRTS=0.):
     """ Specific function to compute the multivariate ISI-profile for a set of
     spike trains. This is a deprecated function and should not be called
     directly. Use :func:`.isi_profile` to compute ISI-profiles.
@@ -104,7 +104,7 @@ def isi_profile_multi(spike_trains, indices=None, Athresh=0.):
     :rtype: :class:`.PieceWiseConstFunc`
     """
     average_dist, M = _generic_profile_multi(spike_trains, isi_profile_bi,
-                                             indices, Athresh=Athresh)
+                                             indices, MRTS=MRTS)
     average_dist.mul_scalar(1.0/M)  # normalize
     return average_dist
 
@@ -153,7 +153,7 @@ def isi_distance(*args, **kwargs):
 ############################################################
 # _isi_distance_bi
 ############################################################
-def isi_distance_bi(spike_train1, spike_train2, interval=None, Athresh=0.):
+def isi_distance_bi(spike_train1, spike_train2, interval=None, MRTS=0.):
     """ Specific function to compute the bivariate ISI-distance.
     This is a deprecated function and should not be called directly. Use
     :func:`.isi_distance` to compute ISI-distances.
@@ -179,19 +179,19 @@ def isi_distance_bi(spike_train1, spike_train2, interval=None, Athresh=0.):
             return isi_distance_impl(spike_train1.get_spikes_non_empty(),
                                      spike_train2.get_spikes_non_empty(),
                                      spike_train1.t_start, spike_train1.t_end,
-                                     Athresh=Athresh)
+                                     MRTS=MRTS)
         except ImportError:
             # Cython backend not available: fall back to profile averaging
-            return isi_profile_bi(spike_train1, spike_train2, Athresh=Athresh).avrg(interval)
+            return isi_profile_bi(spike_train1, spike_train2, MRTS=MRTS).avrg(interval)
     else:
         # some specific interval is provided: use profile
-        return isi_profile_bi(spike_train1, spike_train2, Athresh=Athresh).avrg(interval)
+        return isi_profile_bi(spike_train1, spike_train2, MRTS=MRTS).avrg(interval)
 
 
 ############################################################
 # isi_distance_multi
 ############################################################
-def isi_distance_multi(spike_trains, indices=None, interval=None, Athresh=0.):
+def isi_distance_multi(spike_trains, indices=None, interval=None, MRTS=0.):
     """ Specific function to compute the multivariate ISI-distance.
     This is a deprecfated function and should not be called directly. Use
     :func:`.isi_distance` to compute ISI-distances.
@@ -206,13 +206,13 @@ def isi_distance_multi(spike_trains, indices=None, interval=None, Athresh=0.):
     :rtype: double
     """
     return _generic_distance_multi(spike_trains, isi_distance_bi, indices,
-                                   interval, Athresh=Athresh)
+                                   interval, MRTS=MRTS)
 
 
 ############################################################
 # isi_distance_matrix
 ############################################################
-def isi_distance_matrix(spike_trains, indices=None, interval=None, Athresh=0.):
+def isi_distance_matrix(spike_trains, indices=None, interval=None, MRTS=0.):
     """ Computes the time averaged isi-distance of all pairs of spike-trains.
 
     :param spike_trains: list of :class:`.SpikeTrain`
@@ -228,4 +228,4 @@ def isi_distance_matrix(spike_trains, indices=None, interval=None, Athresh=0.):
     """
     return _generic_distance_matrix(spike_trains, isi_distance_bi,
                                     indices=indices, interval=interval,
-                                    Athresh=Athresh)
+                                    MRTS=MRTS)

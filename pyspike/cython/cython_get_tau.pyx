@@ -13,12 +13,12 @@ cdef double Interpolate(a, b, t):
     return t               # interpolation
 
 cdef double get_tau(double[:] spikes1, double[:] spikes2,
-                    int i, int j, double max_tau, double Athresh):
+                    int i, int j, double max_tau, double MRTS):
     """ Compute coincidence window
         In: spikes1, spikes2 - times of two spike trains
             i, j - indices into spikes1, spikes2 to compare
             max_tau - maximum size of threshold
-            Athresh - adaptation parameter  
+            MRTS - adaptation parameter  
         out: combined coincidence window (Eq 19 in reference)
     """
 
@@ -38,13 +38,13 @@ cdef double get_tau(double[:] spikes1, double[:] spikes2,
         mP2 = (spikes2[j]-spikes2[j-1])
 
     mF1, mF2, mP1, mP2 = mF1/2., mF2/2., mP1/2., mP2/2.
-    Athresh /= 4.
+    MRTS /= 4.
 
     if i<0 or j<0 or spikes1[i] <= spikes2[j]:
-        s1F = Interpolate(mP1, mF1, Athresh)
-        s2P = Interpolate(mF2, mP2, Athresh)
+        s1F = Interpolate(mP1, mF1, MRTS)
+        s2P = Interpolate(mF2, mP2, MRTS)
         return fmin(s1F, s2P)
     else:
-        s1P = Interpolate(mF1, mP1, Athresh)
-        s2F = Interpolate(mP2, mF2, Athresh)
+        s1P = Interpolate(mF1, mP1, MRTS)
+        s2F = Interpolate(mP2, mF2, MRTS)
         return fmin(s1P, s2F)

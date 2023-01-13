@@ -11,6 +11,7 @@ import pyspike
 from pyspike import DiscreteFunc, SpikeTrain
 from pyspike.generic import _generic_profile_multi, _generic_distance_matrix
 
+
 ############################################################
 # spike_sync_profile
 ############################################################
@@ -52,7 +53,7 @@ def spike_sync_profile(*args, **kwargs):
 ############################################################
 # spike_sync_profile_bi
 ############################################################
-def spike_sync_profile_bi(spike_train1, spike_train2, max_tau=None, Athresh=0.):
+def spike_sync_profile_bi(spike_train1, spike_train2, max_tau=None, MRTS=0.):
     """ Specific function to compute a bivariate SPIKE-Sync-profile. This is a
     deprecated function and should not be called directly. Use
     :func:`.spike_sync_profile` to compute SPIKE-Sync-profiles.
@@ -90,7 +91,7 @@ def spike_sync_profile_bi(spike_train1, spike_train2, max_tau=None, Athresh=0.):
     times, coincidences, multiplicity \
         = coincidence_profile_impl(spike_train1.spikes, spike_train2.spikes,
                                    spike_train1.t_start, spike_train1.t_end,
-                                   max_tau, Athresh=Athresh)
+                                   max_tau, MRTS=MRTS)
 
     return DiscreteFunc(times, coincidences, multiplicity)
 
@@ -98,7 +99,7 @@ def spike_sync_profile_bi(spike_train1, spike_train2, max_tau=None, Athresh=0.):
 ############################################################
 # spike_sync_profile_multi
 ############################################################
-def spike_sync_profile_multi(spike_trains, indices=None, max_tau=None, Athresh=0.):
+def spike_sync_profile_multi(spike_trains, indices=None, max_tau=None, MRTS=0.):
     """  Specific function to compute a multivariate SPIKE-Sync-profile.
     This is a deprecated function and should not be called directly. Use
     :func:`.spike_sync_profile` to compute SPIKE-Sync-profiles.
@@ -115,7 +116,7 @@ def spike_sync_profile_multi(spike_trains, indices=None, max_tau=None, Athresh=0
     """
     prof_func = partial(spike_sync_profile_bi, max_tau=max_tau)
     average_prof, M = _generic_profile_multi(spike_trains, prof_func,
-                                             indices, Athresh=Athresh)
+                                             indices, MRTS=MRTS)
     # average_dist.mul_scalar(1.0/M)  # no normalization here!
     return average_prof
 
@@ -123,14 +124,13 @@ def spike_sync_profile_multi(spike_trains, indices=None, max_tau=None, Athresh=0
 ############################################################
 # _spike_sync_values
 ############################################################
-def _spike_sync_values(spike_train1, spike_train2, interval, max_tau, Athresh=0):
+def _spike_sync_values(spike_train1, spike_train2, interval, max_tau, MRTS=0):
     """" Internal function. Computes the summed coincidences and multiplicity
     for spike synchronization of the two given spike trains.
 
     Do not call this function directly, use `spike_sync` or `spike_sync_multi`
     instead.
     """
-    
     if interval is None:
         # distance over the whole interval is requested: use specific function
         # for optimal performance
@@ -143,18 +143,16 @@ def _spike_sync_values(spike_train1, spike_train2, interval, max_tau, Athresh=0)
                                            spike_train2.spikes,
                                            spike_train1.t_start,
                                            spike_train1.t_end,
-                                           max_tau, Athresh=Athresh)
+                                           max_tau, MRTS=MRTS)
             return c, mp
         except ImportError:
             # Cython backend not available: fall back to profile averaging
-            c, mp = spike_sync_profile_bi(spike_train1, spike_train2,
-                                         max_tau, Athresh=Athresh).integral(interval)
-            return c, mp
+            return spike_sync_profile_bi(spike_train1, spike_train2,
+                                         max_tau, MRTS=MRTS).integral(interval)
     else:
         # some specific interval is provided: use profile
-        c, mp = spike_sync_profile_bi(spike_train1, spike_train2,
-                                     max_tau, Athresh=Athresh).integral(interval)
-        return c, mp
+        return spike_sync_profile_bi(spike_train1, spike_train2,
+                                     max_tau, MRTS=MRTS).integral(interval)
 
 
 ############################################################
@@ -196,7 +194,7 @@ def spike_sync(*args, **kwargs):
 ############################################################
 # spike_sync_bi
 ############################################################
-def spike_sync_bi(spike_train1, spike_train2, interval=None, max_tau=None, Athresh=0.):
+def spike_sync_bi(spike_train1, spike_train2, interval=None, max_tau=None, MRTS=0.):
     """ Specific function to compute a bivariate SPIKE-Sync value.
     This is a deprecated function and should not be called directly. Use
     :func:`.spike_sync` to compute SPIKE-Sync values.
@@ -214,7 +212,7 @@ def spike_sync_bi(spike_train1, spike_train2, interval=None, max_tau=None, Athre
     :rtype: `double`
 
     """
-    c, mp = _spike_sync_values(spike_train1, spike_train2, interval, max_tau, Athresh=Athresh)
+    c, mp = _spike_sync_values(spike_train1, spike_train2, interval, max_tau, MRTS=MRTS)
     if mp == 0:
         return 1.0
     else:
@@ -224,7 +222,7 @@ def spike_sync_bi(spike_train1, spike_train2, interval=None, max_tau=None, Athre
 ############################################################
 # spike_sync_multi
 ############################################################
-def spike_sync_multi(spike_trains, indices=None, interval=None, max_tau=None, Athresh=0.):
+def spike_sync_multi(spike_trains, indices=None, interval=None, max_tau=None, MRTS=0.):
     """ Specific function to compute a multivariate SPIKE-Sync value.
     This is a deprecated function and should not be called directly. Use
     :func:`.spike_sync` to compute SPIKE-Sync values.
@@ -256,7 +254,7 @@ def spike_sync_multi(spike_trains, indices=None, interval=None, max_tau=None, At
     mp = 0.0
     for (i, j) in pairs:
         c, m = _spike_sync_values(spike_trains[i], spike_trains[j],
-                                  interval, max_tau, Athresh=Athresh)
+                                  interval, max_tau, MRTS=MRTS)
         coincidence += c
         mp += m
 
@@ -269,7 +267,7 @@ def spike_sync_multi(spike_trains, indices=None, interval=None, max_tau=None, At
 ############################################################
 # spike_sync_matrix
 ############################################################
-def spike_sync_matrix(spike_trains, indices=None, interval=None, max_tau=None, Athresh=0.):
+def spike_sync_matrix(spike_trains, indices=None, interval=None, max_tau=None, MRTS=0.):
     """ Computes the overall spike-synchronization value of all pairs of
     spike-trains.
 
@@ -289,7 +287,7 @@ def spike_sync_matrix(spike_trains, indices=None, interval=None, max_tau=None, A
     """
     dist_func = partial(spike_sync_bi, max_tau=max_tau)
     ShouldBeSync =  _generic_distance_matrix(spike_trains, dist_func,
-                                    indices, interval, Athresh=Athresh)
+                                    indices, interval, MRTS=MRTS)
     # These elements are not really distances, but spike-sync values
     #   The diagonal needs to reflect that:
     for i in range(ShouldBeSync.shape[0]):
@@ -301,7 +299,7 @@ def spike_sync_matrix(spike_trains, indices=None, interval=None, max_tau=None, A
 # filter_by_spike_sync
 ############################################################
 def filter_by_spike_sync(spike_trains, threshold, indices=None, max_tau=None,
-                         return_removed_spikes=False, Athresh=0.):
+                         return_removed_spikes=False, MRTS=0.):
     """ Removes the spikes with a multi-variate spike_sync value below
     threshold.
     """
@@ -329,7 +327,7 @@ def filter_by_spike_sync(spike_trains, threshold, indices=None, max_tau=None,
             if i == j:
                 continue
             coincidences += coincidence_impl(st.spikes, spike_trains[j].spikes,
-                                             st.t_start, st.t_end, max_tau, Athresh=Athresh)
+                                             st.t_start, st.t_end, max_tau, MRTS=MRTS)
         filtered_spikes = st[coincidences > threshold*(N-1)]
         filtered_spike_trains.append(SpikeTrain(filtered_spikes,
                                                 [st.t_start, st.t_end]))
