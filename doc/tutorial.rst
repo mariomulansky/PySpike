@@ -67,10 +67,11 @@ Simple assignment `t2 = t1` does not create a copy of the spike train data, but 
 1) ISI-distance  (InterSpike Intervals)
 2) SPIKE-distance
 3) SPIKE sychronization
+4) MRTS (Minimum Relevant Time Scale, modifies any of the other algoritm)
+5) RIA  (Rate Independent Adaptive spike distance, a variation of SPIKE-distance)
 
-The two variations are new in version 0.8.0.
-4) MRTS (Minimum Relevant Time Scale)
-5) RIA  (Rate Independent Adaptive)
+The MRTS and RIA variations are new in version 0.8.0.
+
 
 MRTS
 ............
