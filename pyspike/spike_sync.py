@@ -9,7 +9,7 @@ import numpy as np
 from functools import partial
 import pyspike
 from pyspike import DiscreteFunc, SpikeTrain
-from pyspike.generic import _generic_profile_multi, _generic_distance_matrix
+from pyspike.generic import _generic_profile_multi, _generic_distance_matrix, resolve_keywords
 
 
 ############################################################
@@ -53,7 +53,7 @@ def spike_sync_profile(*args, **kwargs):
 ############################################################
 # spike_sync_profile_bi
 ############################################################
-def spike_sync_profile_bi(spike_train1, spike_train2, max_tau=None, MRTS=0.):
+def spike_sync_profile_bi(spike_train1, spike_train2, max_tau=None, **kwargs):
     """ Specific function to compute a bivariate SPIKE-Sync-profile. This is a
     deprecated function and should not be called directly. Use
     :func:`.spike_sync_profile` to compute SPIKE-Sync-profiles.
@@ -68,6 +68,7 @@ def spike_sync_profile_bi(spike_train1, spike_train2, max_tau=None, MRTS=0.):
     :rtype: :class:`pyspike.function.DiscreteFunction`
 
     """
+    MRTS, RIA = resolve_keywords(**kwargs)
     # check whether the spike trains are defined for the same interval
     assert spike_train1.t_start == spike_train2.t_start, \
         "Given spike trains are not defined on the same interval!"
@@ -91,7 +92,7 @@ def spike_sync_profile_bi(spike_train1, spike_train2, max_tau=None, MRTS=0.):
     times, coincidences, multiplicity \
         = coincidence_profile_impl(spike_train1.spikes, spike_train2.spikes,
                                    spike_train1.t_start, spike_train1.t_end,
-                                   max_tau, MRTS=MRTS)
+                                   max_tau, MRTS)
 
     return DiscreteFunc(times, coincidences, multiplicity)
 
@@ -99,7 +100,7 @@ def spike_sync_profile_bi(spike_train1, spike_train2, max_tau=None, MRTS=0.):
 ############################################################
 # spike_sync_profile_multi
 ############################################################
-def spike_sync_profile_multi(spike_trains, indices=None, max_tau=None, MRTS=0.):
+def spike_sync_profile_multi(spike_trains, indices=None, max_tau=None, **kwargs):
     """  Specific function to compute a multivariate SPIKE-Sync-profile.
     This is a deprecated function and should not be called directly. Use
     :func:`.spike_sync_profile` to compute SPIKE-Sync-profiles.
@@ -116,7 +117,7 @@ def spike_sync_profile_multi(spike_trains, indices=None, max_tau=None, MRTS=0.):
     """
     prof_func = partial(spike_sync_profile_bi, max_tau=max_tau)
     average_prof, M = _generic_profile_multi(spike_trains, prof_func,
-                                             indices, MRTS=MRTS)
+                                             indices, **kwargs)
     # average_dist.mul_scalar(1.0/M)  # no normalization here!
     return average_prof
 
@@ -124,13 +125,14 @@ def spike_sync_profile_multi(spike_trains, indices=None, max_tau=None, MRTS=0.):
 ############################################################
 # _spike_sync_values
 ############################################################
-def _spike_sync_values(spike_train1, spike_train2, interval, max_tau, MRTS=0):
+def _spike_sync_values(spike_train1, spike_train2, interval, max_tau, **kwargs):
     """" Internal function. Computes the summed coincidences and multiplicity
     for spike synchronization of the two given spike trains.
 
     Do not call this function directly, use `spike_sync` or `spike_sync_multi`
     instead.
     """
+    MRTS, RIA = resolve_keywords(**kwargs)
     if interval is None:
         # distance over the whole interval is requested: use specific function
         # for optimal performance
@@ -143,7 +145,7 @@ def _spike_sync_values(spike_train1, spike_train2, interval, max_tau, MRTS=0):
                                            spike_train2.spikes,
                                            spike_train1.t_start,
                                            spike_train1.t_end,
-                                           max_tau, MRTS=MRTS)
+                                           max_tau, MRTS)
             return c, mp
         except ImportError:
             # Cython backend not available: fall back to profile averaging
@@ -159,7 +161,7 @@ def _spike_sync_values(spike_train1, spike_train2, interval, max_tau, MRTS=0):
 # spike_sync
 ############################################################
 def spike_sync(*args, **kwargs):
-    """ Computes the spike synchronization value SYNC of the given spike
+    """ Computes the spike synchronization value of the given spike
     trains. The spike synchronization value is the computed as the total number
     of coincidences divided by the total number of spikes:
 
@@ -194,7 +196,7 @@ def spike_sync(*args, **kwargs):
 ############################################################
 # spike_sync_bi
 ############################################################
-def spike_sync_bi(spike_train1, spike_train2, interval=None, max_tau=None, MRTS=0.):
+def spike_sync_bi(spike_train1, spike_train2, interval=None, max_tau=None, **kwargs):
     """ Specific function to compute a bivariate SPIKE-Sync value.
     This is a deprecated function and should not be called directly. Use
     :func:`.spike_sync` to compute SPIKE-Sync values.
@@ -212,7 +214,7 @@ def spike_sync_bi(spike_train1, spike_train2, interval=None, max_tau=None, MRTS=
     :rtype: `double`
 
     """
-    c, mp = _spike_sync_values(spike_train1, spike_train2, interval, max_tau, MRTS=MRTS)
+    c, mp = _spike_sync_values(spike_train1, spike_train2, interval, max_tau, **kwargs)
     if mp == 0:
         return 1.0
     else:
@@ -222,7 +224,7 @@ def spike_sync_bi(spike_train1, spike_train2, interval=None, max_tau=None, MRTS=
 ############################################################
 # spike_sync_multi
 ############################################################
-def spike_sync_multi(spike_trains, indices=None, interval=None, max_tau=None, MRTS=0.):
+def spike_sync_multi(spike_trains, indices=None, interval=None, max_tau=None, **kwargs):
     """ Specific function to compute a multivariate SPIKE-Sync value.
     This is a deprecated function and should not be called directly. Use
     :func:`.spike_sync` to compute SPIKE-Sync values.
@@ -254,7 +256,7 @@ def spike_sync_multi(spike_trains, indices=None, interval=None, max_tau=None, MR
     mp = 0.0
     for (i, j) in pairs:
         c, m = _spike_sync_values(spike_trains[i], spike_trains[j],
-                                  interval, max_tau, MRTS=MRTS)
+                                  interval, max_tau, **kwargs)
         coincidence += c
         mp += m
 
@@ -267,7 +269,7 @@ def spike_sync_multi(spike_trains, indices=None, interval=None, max_tau=None, MR
 ############################################################
 # spike_sync_matrix
 ############################################################
-def spike_sync_matrix(spike_trains, indices=None, interval=None, max_tau=None, MRTS=0.):
+def spike_sync_matrix(spike_trains, indices=None, interval=None, max_tau=None, **kwargs):
     """ Computes the overall spike-synchronization value of all pairs of
     spike-trains.
 
@@ -287,7 +289,7 @@ def spike_sync_matrix(spike_trains, indices=None, interval=None, max_tau=None, M
     """
     dist_func = partial(spike_sync_bi, max_tau=max_tau)
     ShouldBeSync =  _generic_distance_matrix(spike_trains, dist_func,
-                                    indices, interval, MRTS=MRTS)
+                                    indices, interval, **kwargs)
     # These elements are not really distances, but spike-sync values
     #   The diagonal needs to reflect that:
     for i in range(ShouldBeSync.shape[0]):
@@ -299,10 +301,11 @@ def spike_sync_matrix(spike_trains, indices=None, interval=None, max_tau=None, M
 # filter_by_spike_sync
 ############################################################
 def filter_by_spike_sync(spike_trains, threshold, indices=None, max_tau=None,
-                         return_removed_spikes=False, MRTS=0.):
+                         return_removed_spikes=False, **kwargs):
     """ Removes the spikes with a multi-variate spike_sync value below
     threshold.
     """
+    MRTS, RIA = resolve_keywords(**kwargs)
     N = len(spike_trains)
     filtered_spike_trains = []
     removed_spike_trains = []
@@ -327,7 +330,7 @@ def filter_by_spike_sync(spike_trains, threshold, indices=None, max_tau=None,
             if i == j:
                 continue
             coincidences += coincidence_impl(st.spikes, spike_trains[j].spikes,
-                                             st.t_start, st.t_end, max_tau, MRTS=MRTS)
+                                             st.t_start, st.t_end, max_tau, MRTS)
         filtered_spikes = st[coincidences > threshold*(N-1)]
         filtered_spike_trains.append(SpikeTrain(filtered_spikes,
                                                 [st.t_start, st.t_end]))

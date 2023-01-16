@@ -46,7 +46,7 @@ For performance reasons, the PySpike distance functions do not check if the spik
 Make sure that all your spike trains are sorted, which is ensured if you use the :func:`.load_spike_trains_from_txt` function with the parameter `is_sorted=False` (default).
 If in doubt, use :meth:`.SpikeTrain.sort()` to ensure a correctly sorted spike train.
 
-Alternatively the function :func:'.reconcile_spike_trains' applies three fixes to a list of SpikeTrain objects. It sorts
+Alternatively the function :func:`.reconcile_spike_trains` applies three fixes to a list of SpikeTrain objects. It sorts
 the times, it removes all but one of any duplicated time, and it ensures all t_start and t_end values are compatible
 
 .. code:: python
@@ -58,6 +58,27 @@ If you need to copy a spike train, use the :meth:`.SpikeTrain.copy()` method.
 Simple assignment `t2 = t1` does not create a copy of the spike train data, but a reference as `numpy.array` is used for storing the data.
     
 ------------------------------
+
+   PySpike algorithms
+
+  PySpike supports three basic algorithms for comparing spike trains; it also supports two variations to the basic algorithms
+
+  The basic algorithms are:
+1) ISI-distance  (InterSpike Intervals)
+2) SPIKE-distance
+3) SPIKE sychronization
+
+The two variations are new in version 0.8.0.
+4) MRTS (Minimum Relevant Time Scale)
+5) RIA  (Rate Independent Adaptive)
+
+MRTS
+............
+MRTS=<value> is an optional parameter to all the API spike comparison functions. If <value> is greater than zero the basic algorithm is modified to reduce emphasis on smaller time differences
+
+RIA
+............
+RIA=True is an optional parameter to the API spike comparison functions for SPIKE-distance. It modifies the SPIKE-distance algorithm to emphasize spike train similarity despite differing basic rates.
 
 ISI-distance
 ............

@@ -9,7 +9,7 @@ import numpy as np
 import pyspike
 from pyspike import DiscreteFunc
 from functools import partial
-from pyspike.generic import _generic_profile_multi
+from pyspike.generic import _generic_profile_multi, resolve_keywords
 
 
 ############################################################
@@ -45,7 +45,7 @@ def spike_directionality_values(*args, **kwargs):
 
 
 def _spike_directionality_values_impl(spike_trains, indices=None,
-                                       interval=None, max_tau=None, MRTS=0.):
+                                       interval=None, max_tau=None, **kwargs):
     """ Computes the multi-variate spike directionality profile 
     of the given spike trains.
 
@@ -58,6 +58,9 @@ def _spike_directionality_values_impl(spike_trains, indices=None,
                     coincidence window has no upper bound.
     :returns: The spike-directionality values.
     """
+    ## get the keywords:
+    MRTS, RIA = resolve_keywords(**kwargs)
+
     if interval is not None:
         raise NotImplementedError("Parameter `interval` not supported.")
     if indices is None:
@@ -89,7 +92,7 @@ def _spike_directionality_values_impl(spike_trains, indices=None,
     for i, j in pairs:
         d1, d2 = profile_impl(spike_trains[i].spikes, spike_trains[j].spikes,
                               spike_trains[i].t_start, spike_trains[i].t_end,
-                              max_tau, MRTS=MRTS)
+                              max_tau, MRTS)
         asymmetry_list[i] += d1
         asymmetry_list[j] += d2
     for a in asymmetry_list:
@@ -101,7 +104,7 @@ def _spike_directionality_values_impl(spike_trains, indices=None,
 # spike_directionality
 ############################################################
 def spike_directionality(spike_train1, spike_train2, normalize=True,
-                         interval=None, max_tau=None, MRTS=0.):
+                         interval=None, max_tau=None, **kwargs):
     """ Computes the overall spike directionality of the first spike train with
     respect to the second spike train.
 
@@ -114,6 +117,8 @@ def spike_directionality(spike_train1, spike_train2, normalize=True,
                     coincidence window has no upper bound.
     :returns: The spike train order profile :math:`E(t)`.
     """
+    MRTS, RIA = resolve_keywords(**kwargs)
+
     if interval is None:
         # distance over the whole interval is requested: use specific function
         # for optimal performance
@@ -126,7 +131,7 @@ def spike_directionality(spike_train1, spike_train2, normalize=True,
                                           spike_train2.spikes,
                                           spike_train1.t_start,
                                           spike_train1.t_end,
-                                          max_tau, MRTS=MRTS)
+                                          max_tau, MRTS)
             c = len(spike_train1.spikes)
         except ImportError:
             pyspike.NoCythonWarn()
@@ -151,7 +156,7 @@ def spike_directionality(spike_train1, spike_train2, normalize=True,
 # spike_directionality_matrix
 ############################################################
 def spike_directionality_matrix(spike_trains, normalize=True, indices=None,
-                                interval=None, max_tau=None, MRTS=0.):
+                                interval=None, max_tau=None, **kwargs):
     """ Computes the spike directionality matrix for the given spike trains.
 
     :param spike_trains: List of spike trains.
@@ -177,7 +182,7 @@ def spike_directionality_matrix(spike_trains, normalize=True, indices=None,
     distance_matrix = np.zeros((len(indices), len(indices)))
     for i, j in pairs:
         d = spike_directionality(spike_trains[i], spike_trains[j], normalize,
-                                 interval, max_tau=max_tau, MRTS=MRTS)
+                                 interval, max_tau=max_tau, **kwargs)
         distance_matrix[i, j] = d
         distance_matrix[j, i] = -d
     return distance_matrix
@@ -221,7 +226,7 @@ def spike_train_order_profile(*args, **kwargs):
 # spike_train_order_profile_bi
 ############################################################
 def spike_train_order_profile_bi(spike_train1, spike_train2, 
-                                 max_tau=None, MRTS=0.):
+                                 max_tau=None, **kwargs):
     """ Computes the spike train order profile P(t) of the two given
     spike trains. Returns the profile as a DiscreteFunction object.
 
@@ -234,6 +239,8 @@ def spike_train_order_profile_bi(spike_train1, spike_train2,
     :returns: The spike train order profile :math:`E(t)`.
     :rtype: :class:`pyspike.function.DiscreteFunction`
     """
+    MRTS, RIA = resolve_keywords(**kwargs)
+
     # check whether the spike trains are defined for the same interval
     assert spike_train1.t_start == spike_train2.t_start, \
         "Given spike trains are not defined on the same interval!"
@@ -261,7 +268,7 @@ def spike_train_order_profile_bi(spike_train1, spike_train2,
                                          spike_train2.spikes,
                                          spike_train1.t_start,
                                          spike_train1.t_end,
-                                         max_tau, MRTS=MRTS)
+                                         max_tau, MRTS)
 
     return DiscreteFunc(times, coincidences, multiplicity)
 
@@ -270,7 +277,7 @@ def spike_train_order_profile_bi(spike_train1, spike_train2,
 # spike_train_order_profile_multi
 ############################################################
 def spike_train_order_profile_multi(spike_trains, indices=None,
-                                    max_tau=None, MRTS=0.):
+                                    max_tau=None, **kwargs):
     """ Computes the multi-variate spike train order profile for a set of
     spike trains. For each spike in the set of spike trains, the multi-variate
     profile is defined as the sum of asymmetry values divided by the number of
@@ -288,7 +295,7 @@ def spike_train_order_profile_multi(spike_trains, indices=None,
     """
     prof_func = partial(spike_train_order_profile_bi, max_tau=max_tau)
     average_prof, M = _generic_profile_multi(spike_trains, prof_func,
-                                             indices, MRTS=MRTS)
+                                             indices, **kwargs)
     return average_prof
 
 
@@ -297,7 +304,7 @@ def spike_train_order_profile_multi(spike_trains, indices=None,
 # _spike_train_order_impl
 ############################################################
 def _spike_train_order_impl(spike_train1, spike_train2,
-                            interval=None, max_tau=None, MRTS=0.):
+                            interval=None, max_tau=None, **kwargs):
     """ Implementation of bi-variatae spike train order value (Synfire Indicator).
 
     :param spike_train1: First spike train.
@@ -308,6 +315,7 @@ def _spike_train_order_impl(spike_train1, spike_train2,
                     coincidence window has no upper bound.
     :returns: The spike train order value (Synfire Indicator)
     """
+    MRTS, RIA = resolve_keywords(**kwargs)
     if interval is None:
         # distance over the whole interval is requested: use specific function
         # for optimal performance
@@ -370,7 +378,7 @@ def spike_train_order(*args, **kwargs):
 # spike_train_order_bi
 ############################################################
 def spike_train_order_bi(spike_train1, spike_train2, normalize=True,
-                         interval=None, max_tau=None, MRTS=0.):
+                         interval=None, max_tau=None, **kwargs):
     """ Computes the overall spike train order value (Synfire Indicator)
     for two spike trains.
 
@@ -383,7 +391,7 @@ def spike_train_order_bi(spike_train1, spike_train2, normalize=True,
                     coincidence window has no upper bound.
     :returns: The spike train order value (Synfire Indicator)
     """
-    c, mp = _spike_train_order_impl(spike_train1, spike_train2, interval, max_tau, MRTS=MRTS)
+    c, mp = _spike_train_order_impl(spike_train1, spike_train2, interval, max_tau, **kwargs)
     if normalize:
         return 1.0*c/mp
     else:
@@ -393,7 +401,7 @@ def spike_train_order_bi(spike_train1, spike_train2, normalize=True,
 # spike_train_order_multi
 ############################################################
 def spike_train_order_multi(spike_trains, indices=None, normalize=True,
-                            interval=None, max_tau=None, MRTS=0.):
+                            interval=None, max_tau=None, **kwargs):
     """ Computes the overall spike train order value (Synfire Indicator)
     for many spike trains.
 
@@ -423,7 +431,7 @@ def spike_train_order_multi(spike_trains, indices=None, normalize=True,
     m_total = 0.0
     for (i, j) in pairs:
         e, m = _spike_train_order_impl(spike_trains[i], spike_trains[j],
-                                       interval, max_tau, MRTS=MRTS)
+                                       interval, max_tau, **kwargs)
         e_total += e
         m_total += m
 
@@ -475,7 +483,7 @@ def _optimal_spike_train_sorting_from_matrix(D, full_output=False):
 # optimal_spike_train_sorting
 ############################################################
 def optimal_spike_train_sorting(spike_trains,  indices=None, interval=None,
-                                max_tau=None, full_output=False, MRTS=0.):
+                                max_tau=None, full_output=False, **kwargs):
     """ Finds the best sorting of the given spike trains by computing the spike
     directionality matrix and optimize the order using simulated annealing.
     For a detailed description of the algorithm see:
@@ -497,7 +505,7 @@ def optimal_spike_train_sorting(spike_trains,  indices=None, interval=None,
     """
     D = spike_directionality_matrix(spike_trains, normalize=False,
                                     indices=indices, interval=interval,
-                                    max_tau=max_tau, MRTS=MRTS)
+                                    max_tau=max_tau, **kwargs)
     return _optimal_spike_train_sorting_from_matrix(D, full_output)
 
 ############################################################

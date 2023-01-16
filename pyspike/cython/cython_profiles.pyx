@@ -171,22 +171,32 @@ cdef inline double get_min_dist_cython(double spike_time,
 
 
 ############################################################
-# isi_avrg_cython
+# dist_at_t
 ############################################################
-cdef inline double isi_avrg_cython(double isi1, double isi2, 
-                                   double MRTS) nogil:
-    #return 0.5*(isi1+isi2)*(isi1+isi2)
-    if MRTS < .5*(isi1+isi2):
-        return .5*(isi1+isi2)*(isi1+isi2)
+cdef inline double dist_at_t(double isi1, double isi2, 
+                              double s1, double s2,
+                              double MRTS, int RIA) nogil:
+    """ Compute instantaneous Spike Distance
+            In: isi1, isi2 - spike time differences around current times in each trains
+                s1, s2 - weighted spike time differences between trains
+                MRTS -minimum relevant time scal (0 for legacy logic)
+                RIA - Rate Independent Adaptive spike distance 
+                        (False for legacy SPIKE distance)
+            Out: Spike Distance at current time
+    """
+    cdef double meanISI = .5*(isi1+isi2)
+    cdef double limitedISI = max(MRTS, meanISI)
+    if RIA:
+        return .5*(s1+s2)/limitedISI
     else:
-        return (isi1+isi2)*(MRTS)
+        return .5*(s1*isi2 + s2*isi1)/(meanISI*limitedISI)
 
 ############################################################
 # spike_profile_cython
 ############################################################
 def spike_profile_cython(double[:] t1, double[:] t2,
                          double t_start, double t_end,
-                         double MRTS=0.):
+                         double MRTS=0., int RIA=0):
 
     cdef double[:] spike_events
     cdef double[:] y_starts
@@ -254,7 +264,7 @@ def spike_profile_cython(double[:] t1, double[:] t2,
             s2 = dt_p2
             index2 = 0
 
-        y_starts[0] = (s1*isi2 + s2*isi1) / isi_avrg_cython(isi1, isi2, MRTS)
+        y_starts[0] = dist_at_t(isi1, isi2, s1, s2, MRTS, RIA)
         index = 1
 
         while index1+index2 < N1+N2-2:
@@ -273,8 +283,7 @@ def spike_profile_cython(double[:] t1, double[:] t2,
                     t_f1 = t_aux1[1]
                 spike_events[index] = t_p1
                 s2 = (dt_p2*(t_f2-t_p1) + dt_f2*(t_p1-t_p2)) / isi2
-                y_ends[index-1] = (s1*isi2 + s2*isi1)/isi_avrg_cython(isi1,
-                                                                      isi2, MRTS)
+                y_ends[index-1] = dist_at_t(isi1, isi2, s1, s2, MRTS, RIA)
                 # now the next interval start value
                 if index1 < N1-1:
                     dt_f1 = get_min_dist_cython(t_f1, t2, N2, index2,
@@ -290,8 +299,7 @@ def spike_profile_cython(double[:] t1, double[:] t2,
                     # Eero's correction: no adjustment
                     s1 = dt_p1
                 # s2 is the same as above, thus we can compute y2 immediately
-                y_starts[index] = (s1*isi2 + s2*isi1)/isi_avrg_cython(isi1,
-                                                                      isi2, MRTS)
+                y_starts[index] = dist_at_t(isi1, isi2, s1, s2, MRTS, RIA)
             elif (index2 < N2-1) and (t_f1 > t_f2 or index1 == N1-1):
                 index2 += 1
                 # first calculate the previous interval end value
@@ -306,8 +314,7 @@ def spike_profile_cython(double[:] t1, double[:] t2,
                     t_f2 = t_aux2[1]
                 spike_events[index] = t_p2
                 s1 = (dt_p1*(t_f1-t_p2) + dt_f1*(t_p2-t_p1)) / isi1
-                y_ends[index-1] = (s1*isi2 + s2*isi1) / isi_avrg_cython(isi1,
-                                                                        isi2, MRTS)
+                y_ends[index-1] = dist_at_t(isi1, isi2, s1, s2, MRTS, RIA)
                 # now the next interval start value
                 if index2 < N2-1:
                     dt_f2 = get_min_dist_cython(t_f2, t1, N1, index1,
@@ -323,7 +330,7 @@ def spike_profile_cython(double[:] t1, double[:] t2,
                     # Eero's correction: no adjustment
                     s2 = dt_p2
                 # s2 is the same as above, thus we can compute y2 immediately
-                y_starts[index] = (s1*isi2 + s2*isi1)/isi_avrg_cython(isi1, isi2, MRTS)
+                y_starts[index] = dist_at_t(isi1, isi2, s1, s2, MRTS, RIA)
             else: # t_f1 == t_f2 - generate only one event
                 index1 += 1
                 index2 += 1
@@ -362,7 +369,7 @@ def spike_profile_cython(double[:] t1, double[:] t2,
             spike_events[index] = t_end
             s1 = dt_f1
             s2 = dt_f2
-            y_ends[index-1] = (s1*isi2 + s2*isi1) / isi_avrg_cython(isi1, isi2, MRTS)
+            y_ends[index-1] = dist_at_t(isi1, isi2, s1, s2, MRTS, RIA)
     # end nogil
 
     # use only the data added above 
