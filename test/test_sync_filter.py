@@ -90,6 +90,6 @@ def test_filter():
     assert_allclose(filtered_spike_trains[2].spikes, [0.9, 4.1])
 
 
-if __name__ == "main":
+if __name__ == "__main__":
     test_single_prof()
     test_filter()

@@ -4,7 +4,6 @@ from pyspike import SpikeTrain
 from pyspike.spikes import reconcile_spike_trains
 
 def test_reconcile():
-
     ##input:
     tr1 = np.array([1,3,2,5])
     tr2 = np.array([1,4,4,10])
@@ -25,3 +24,6 @@ def test_reconcile():
         assert_allclose(st_fixed[i].spikes, trOut[i])
         assert_allclose(st_fixed[i].t_start, 0)
         assert_allclose(st_fixed[i].t_end, 9)
+
+if __name__ == "__main__":
+    test_reconcile()
