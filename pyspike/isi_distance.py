@@ -1,6 +1,8 @@
-# Module containing several functions to compute the ISI profiles and distances
-# Copyright 2014-2015, Mario Mulansky <mario.mulansky@gmx.net>
-# Distributed under the BSD License
+""" isi_distance.py
+    Module containing several functions to compute the ISI profiles and distances
+    Copyright 2014-2015, Mario Mulansky <mario.mulansky@gmx.net>
+    Distributed under the BSD License
+"""
 
 from __future__ import absolute_import
 
@@ -8,7 +10,7 @@ import pyspike
 from pyspike import PieceWiseConstFunc
 from pyspike.generic import _generic_profile_multi, _generic_distance_multi, \
     _generic_distance_matrix, resolve_keywords
-
+from pyspike.isi_lengths import default_thresh
 
 ############################################################
 # isi_profile
@@ -64,6 +66,8 @@ def isi_profile_bi(spike_train1, spike_train2, **kwargs):
 
     """
     MRTS,RIA = resolve_keywords(**kwargs)
+    if isinstance(MRTS, str):
+        MRTS = default_thresh([spike_train1, spike_train2])
     # check whether the spike trains are defined for the same interval
     assert spike_train1.t_start == spike_train2.t_start, \
         "Given spike trains are not defined on the same interval!"
@@ -170,6 +174,8 @@ def isi_distance_bi(spike_train1, spike_train2, interval=None, **kwargs):
     :rtype: double
     """
     MRTS, RIA = resolve_keywords(**kwargs)
+    if isinstance(MRTS, str):
+        MRTS = default_thresh([spike_train1, spike_train2])
     if interval is None:
         # distance over the whole interval is requested: use specific function
         # for optimal performance

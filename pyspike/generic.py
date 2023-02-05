@@ -14,8 +14,8 @@ import numpy as np
 def resolve_keywords(**kwargs):
     """ resolve keywords
         In: kwargs - dictionary of keywords
-        out: MRTS - default 0.
-             RIA  - default False
+        out: MRTS - Minimum Relevant Time Scale, default 0.
+             RIA  - Rate Independent Adaptive distance, default False
     """
     if 'MRTS' in kwargs:
         MRTS = kwargs['MRTS']

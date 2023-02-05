@@ -8,6 +8,7 @@ import pyspike
 from pyspike import PieceWiseLinFunc
 from pyspike.generic import _generic_profile_multi, _generic_distance_multi, \
     _generic_distance_matrix, resolve_keywords
+from pyspike.isi_lengths import default_thresh
 
 
 ############################################################
@@ -63,6 +64,8 @@ def spike_profile_bi(spike_train1, spike_train2, **kwargs):
 
     """
     MRTS, RIA = resolve_keywords(**kwargs)
+    if isinstance(MRTS, str):
+        MRTS = default_thresh([spike_train1, spike_train2])
     # check whether the spike trains are defined for the same interval
     assert spike_train1.t_start == spike_train2.t_start, \
         "Given spike trains are not defined on the same interval!"
@@ -171,6 +174,8 @@ def spike_distance_bi(spike_train1, spike_train2, interval=None, **kwargs):
 
     """
     MRTS, RIA = resolve_keywords(**kwargs)
+    if isinstance(MRTS, str):
+        MRTS = default_thresh([spike_train1, spike_train2])
 
     if interval is None:
         # distance over the whole interval is requested: use specific function

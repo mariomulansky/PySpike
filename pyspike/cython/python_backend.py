@@ -374,6 +374,9 @@ def get_tau(spikes1, spikes2, i, j, max_tau, MRTS):
 # coincidence_python
 ############################################################
 def coincidence_python(spikes1, spikes2, t_start, t_end, max_tau, MRTS=0.):
+    """ python version of logic for bivariate SPIKE-Sync profile
+        UNUSED - replaced by coincidence_single_python()
+    """
     true_max = t_end - t_start
     if max_tau > 0:
         true_max = min(true_max, 2*max_tau)
@@ -440,6 +443,15 @@ def coincidence_python(spikes1, spikes2, t_start, t_end, max_tau, MRTS=0.):
 # coincidence_single_profile_python
 ############################################################
 def coincidence_single_python(spikes1, spikes2, t_start, t_end, max_tau, MRTS=0.):
+    """ python version of logic for bivariate SPIKE-Sync profile
+        In: spikes1, spikes2 - lists of sorted spike times
+            t_start, t_end - range of times to consider
+            max_tau - max window coincidence length
+            MRTS - Minimum Relvant Time Scale (or 0 if none)
+        Out: st - spike times
+             c - coincidences
+             mp - multiplicity
+    """
     true_max = t_end - t_start
     if max_tau > 0:
         true_max = min(true_max, 2*max_tau)
@@ -473,6 +485,11 @@ def coincidence_single_python(spikes1, spikes2, t_start, t_end, max_tau, MRTS=0.
 # add_piece_wise_const_python
 ############################################################
 def add_piece_wise_const_python(x1, y1, x2, y2):
+    """ Add piecewise constant functions
+        In: x1,y1 - first function [y(x) = y1(i) for x(i)<=x<x(i+1)]
+            x2,y2 - second function
+        Out: returns x,y of the sum
+    """
     x_new = np.empty(len(x1) + len(x2))
     y_new = np.empty(len(x_new)-1)
     x_new[0] = x1[0]
@@ -517,6 +534,11 @@ def add_piece_wise_const_python(x1, y1, x2, y2):
 # add_piece_lin_const_python
 ############################################################
 def add_piece_wise_lin_python(x1, y11, y12, x2, y21, y22):
+    """ Add piecewise constant functions
+        In: x1,y11,y12 - first function
+            x2,y21,y22 - second function
+        Out: returns x,y1,y2 - the summed function
+    """
     x_new = np.empty(len(x1) + len(x2))
     y1_new = np.empty(len(x_new)-1)
     y2_new = np.empty_like(y1_new)
@@ -588,7 +610,13 @@ def add_piece_wise_lin_python(x1, y11, y12, x2, y21, y22):
 # add_discrete_function_python
 ############################################################
 def add_discrete_function_python(x1, y1, mp1, x2, y2, mp2):
-
+    """ Add two functions defined on a finite point set
+        In: x1,y1,mp1 - discrete function, with multiplicities
+            x2,y2,mp2 - second function
+        Out: x, y, mp - the sum
+        Note: Depends on floating point ==, so might not
+               return expected answer
+    """
     x_new = np.empty(len(x1) + len(x2))
     y_new = np.empty_like(x_new)
     mp_new = np.empty_like(x_new)

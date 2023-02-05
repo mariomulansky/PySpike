@@ -10,6 +10,7 @@ from functools import partial
 import pyspike
 from pyspike import DiscreteFunc, SpikeTrain
 from pyspike.generic import _generic_profile_multi, _generic_distance_matrix, resolve_keywords
+from pyspike.isi_lengths import default_thresh
 
 
 ############################################################
@@ -69,6 +70,8 @@ def spike_sync_profile_bi(spike_train1, spike_train2, max_tau=None, **kwargs):
 
     """
     MRTS, RIA = resolve_keywords(**kwargs)
+    if isinstance(MRTS, str):
+        MRTS = default_thresh([spike_train1, spike_train2])
     # check whether the spike trains are defined for the same interval
     assert spike_train1.t_start == spike_train2.t_start, \
         "Given spike trains are not defined on the same interval!"
@@ -133,6 +136,8 @@ def _spike_sync_values(spike_train1, spike_train2, interval, max_tau, **kwargs):
     instead.
     """
     MRTS, RIA = resolve_keywords(**kwargs)
+    if isinstance(MRTS, str):
+        MRTS = default_thresh([spike_train1, spike_train2])
     if interval is None:
         # distance over the whole interval is requested: use specific function
         # for optimal performance
@@ -306,6 +311,8 @@ def filter_by_spike_sync(spike_trains, threshold, indices=None, max_tau=None,
     threshold.
     """
     MRTS, RIA = resolve_keywords(**kwargs)
+    if isinstance(MRTS, str):
+        MRTS = default_thresh(spike_trains)
     N = len(spike_trains)
     filtered_spike_trains = []
     removed_spike_trains = []

@@ -10,6 +10,7 @@ import pyspike
 from pyspike import DiscreteFunc
 from functools import partial
 from pyspike.generic import _generic_profile_multi, resolve_keywords
+from pyspike.isi_lengths import default_thresh
 
 
 ############################################################
@@ -60,6 +61,8 @@ def _spike_directionality_values_impl(spike_trains, indices=None,
     """
     ## get the keywords:
     MRTS, RIA = resolve_keywords(**kwargs)
+    if isinstance(MRTS, str):
+        MRTS = default_thresh(spike_trains)
 
     if interval is not None:
         raise NotImplementedError("Parameter `interval` not supported.")
@@ -118,6 +121,8 @@ def spike_directionality(spike_train1, spike_train2, normalize=True,
     :returns: The spike train order profile :math:`E(t)`.
     """
     MRTS, RIA = resolve_keywords(**kwargs)
+    if isinstance(MRTS, str):
+        MRTS = default_thresh([spike_train1, spike_train2])
 
     if interval is None:
         # distance over the whole interval is requested: use specific function
@@ -240,6 +245,8 @@ def spike_train_order_profile_bi(spike_train1, spike_train2,
     :rtype: :class:`pyspike.function.DiscreteFunction`
     """
     MRTS, RIA = resolve_keywords(**kwargs)
+    if isinstance(MRTS, str):
+        MRTS = default_thresh([spike_train1, spike_train2])
 
     # check whether the spike trains are defined for the same interval
     assert spike_train1.t_start == spike_train2.t_start, \
@@ -316,6 +323,8 @@ def _spike_train_order_impl(spike_train1, spike_train2,
     :returns: The spike train order value (Synfire Indicator)
     """
     MRTS, RIA = resolve_keywords(**kwargs)
+    if isinstance(MRTS, str):
+        MRTS = default_thresh([spike_train1, spike_train2])
     if interval is None:
         # distance over the whole interval is requested: use specific function
         # for optimal performance

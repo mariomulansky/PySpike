@@ -1,5 +1,16 @@
+""" test_MRTS.py
+
+Tests the MRTS logic in all distances
+Also, test automatic generation of the threshold
+
+Copyright 2023, Thomas Kreuz
+Distributed under the BSD License
+"""
 import numpy as np
 import pyspike as spk
+from pyspike import SpikeTrain
+from pyspike.isi_lengths import default_thresh
+import pdb
 
 def test_MRTS():
     """ single testcase for all 4 algorithms changing MRTS:
@@ -196,5 +207,57 @@ def test_MRTS():
         d = spk.isi_distance(sp1, sp2, MRTS=r)
         np.testing.assert_almost_equal(d, Results4[r], decimal=5)
 
+    print('OK1')
+
+def test_autoThresh():
+    """ Automatic determination of MRTS
+    """
+    edges = [0, 1000]
+    spikes1 = SpikeTrain([64.88600, 305.81000, 696.00000, 800.0000], edges)
+    spikes2 = SpikeTrain([67.88600, 302.81000, 699.00000], edges)
+    spikes3 = SpikeTrain([164.88600, 205.81000, 796.00000, 900.0000], edges)
+    spikes4 = SpikeTrain([263.76400, 418.45000, 997.48000], edges)
+    spike_train_list = [spikes1, spikes2, spikes3, spikes4]
+
+    Thresh = default_thresh(spike_train_list)
+    print('default_thresh got %.4f'%Thresh)
+    np.testing.assert_almost_equal(Thresh, 325.4342, decimal=4)
+
+    c1 = spk.spike_sync(spikes1, spikes2, MRTS=Thresh)
+    c2 = spk.spike_sync(spikes1, spikes2, MRTS='auto')
+    np.testing.assert_almost_equal(c1, c2)
+
+    # apply it to the first example avove
+    v1 = [12.0000, 16.0000, 28.0000, 32.0000, 44.0000, 48.0000, 60.0000, 64.0000, 76.0000, 80.0000, ];
+    v2 = [7.5376, 19.9131, 24.2137, 35.7255, 40.0961, 51.7076, 55.9124, 68.1017, 71.9863, 83.5994, ];
+    edges=[0, 300]
+
+    sp1 = spk.SpikeTrain(v1, edges)
+    sp2 = spk.SpikeTrain(v2, edges)
+
+    t = default_thresh([sp1, sp2])
+    ## Look at all 4 algorithms
+
+    c1 = spk.spike_sync(sp1, sp2, MRTS=t)
+    c2 = spk.spike_sync(sp1, sp2, MRTS='auto')
+    np.testing.assert_almost_equal(c1, c2)
+    print('SS thresh %.3f, results %.3f'%(t,c1))
+    # compare with: {14:0., 15:.3, 16:.6, 17:.9, 18:1.}
+
+    c1 = spk.spike_distance(sp1, sp2, MRTS=t)
+    c2 = spk.spike_distance(sp1, sp2, MRTS='auto')
+    np.testing.assert_almost_equal(c1, c2)
+
+    c1 = spk.spike_distance(sp1, sp2, MRTS=t, RIA=True)
+    c2 = spk.spike_distance(sp1, sp2, MRTS='auto', RIA=True)
+    np.testing.assert_almost_equal(c1, c2)
+
+    c1 = spk.isi_distance(sp1, sp2, MRTS=t)
+    c2 = spk.isi_distance(sp1, sp2, MRTS='auto')
+    np.testing.assert_almost_equal(c1, c2)
+
+    print('OK2')
+
 if __name__ == "__main__":
     test_MRTS()
+    test_autoThresh()
