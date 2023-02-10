@@ -127,6 +127,7 @@ Curie Initial Training Network* `Neural Engineering Transformative Technologies
 
 **Python/C Programming:**
  - Mario Mulansky
+ - Edmund J Butler
 
 **Scientific Methods:**
  - Thomas Kreuz
