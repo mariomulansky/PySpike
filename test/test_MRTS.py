@@ -256,6 +256,10 @@ def test_autoThresh():
     c2 = spk.isi_distance(sp1, sp2, MRTS='auto')
     np.testing.assert_almost_equal(c1, c2)
 
+    c1 = spk.spike_directionality(sp1, sp2, MRTS=t)
+    c2 = spk.spike_directionality(sp1, sp2, MRTS='auto')
+    np.testing.assert_almost_equal(c1, c2)
+
     print('OK2')
 
 if __name__ == "__main__":

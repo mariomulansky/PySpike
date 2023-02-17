@@ -174,6 +174,9 @@ def spike_directionality_matrix(spike_trains, normalize=True, indices=None,
                     coincidence window has no upper bound.
     :returns: The spike-directionality values.
     """
+    MRTS, RIA = resolve_keywords(**kwargs)
+    if isinstance(MRTS, str):
+        MRTS = default_thresh(spike_trains)
     if indices is None:
         indices = np.arange(len(spike_trains))
     indices = np.array(indices)
@@ -187,7 +190,8 @@ def spike_directionality_matrix(spike_trains, normalize=True, indices=None,
     distance_matrix = np.zeros((len(indices), len(indices)))
     for i, j in pairs:
         d = spike_directionality(spike_trains[i], spike_trains[j], normalize,
-                                 interval, max_tau=max_tau, **kwargs)
+                                 interval, max_tau=max_tau, 
+                                 MRTS=MRTS, RIA=RIA)
         distance_matrix[i, j] = d
         distance_matrix[j, i] = -d
     return distance_matrix
@@ -426,6 +430,9 @@ def spike_train_order_multi(spike_trains, indices=None, normalize=True,
     :returns: Spike train order values (Synfire Indicator) F for the given spike trains.
     :rtype: double
     """
+    MRTS, RIA = resolve_keywords(**kwargs)
+    if isinstance(MRTS, str):
+        MRTS = default_thresh(spike_trains)
     if indices is None:
         indices = np.arange(len(spike_trains))
     indices = np.array(indices)
@@ -440,7 +447,7 @@ def spike_train_order_multi(spike_trains, indices=None, normalize=True,
     m_total = 0.0
     for (i, j) in pairs:
         e, m = _spike_train_order_impl(spike_trains[i], spike_trains[j],
-                                       interval, max_tau, **kwargs)
+                                       interval, max_tau, MRTS=MRTS, RIA=RIA)
         e_total += e
         m_total += m
 

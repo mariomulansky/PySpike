@@ -247,6 +247,9 @@ def spike_sync_multi(spike_trains, indices=None, interval=None, max_tau=None, **
     :rtype: double
 
     """
+    MRTS, RIA = resolve_keywords(**kwargs)
+    if isinstance(MRTS, str):
+        MRTS = default_thresh(spike_trains)
     if indices is None:
         indices = np.arange(len(spike_trains))
     indices = np.array(indices)
@@ -261,7 +264,7 @@ def spike_sync_multi(spike_trains, indices=None, interval=None, max_tau=None, **
     mp = 0.0
     for (i, j) in pairs:
         c, m = _spike_sync_values(spike_trains[i], spike_trains[j],
-                                  interval, max_tau, **kwargs)
+                                  interval, max_tau, MRTS=MRTS, RIA=RIA)
         coincidence += c
         mp += m
 
