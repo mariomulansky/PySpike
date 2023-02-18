@@ -10,7 +10,7 @@ Distributed under the BSD License
 from __future__ import division
 from pyspike.isi_lengths import default_thresh
 import numpy as np
-import pdb
+
 def resolve_keywords(**kwargs):
     """ resolve keywords
         In: kwargs - dictionary of keywords
