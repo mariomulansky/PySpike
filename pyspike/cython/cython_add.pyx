@@ -1,3 +1,4 @@
+#cython: language_level=3
 #cython: boundscheck=False
 #cython: wraparound=False
 #cython: cdivision=True
@@ -34,9 +35,8 @@ cimport numpy as np
 
 from libc.math cimport fabs
 
-DTYPE = np.float
-ctypedef np.float_t DTYPE_t
-
+#DTYPE = float
+#ctypedef np.float_t DTYPE_t
 
 ############################################################
 # add_piece_wise_const_cython

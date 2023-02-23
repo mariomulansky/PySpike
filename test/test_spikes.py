@@ -9,7 +9,7 @@ Distributed under the BSD License
 
 from __future__ import print_function
 import numpy as np
-from numpy.testing import assert_equal
+from numpy.testing import assert_allclose
 
 import pyspike as spk
 
@@ -29,7 +29,7 @@ def test_load_from_txt():
     spike_times = [64.886, 305.81, 696, 937.77, 1059.7, 1322.2, 1576.1,
                    1808.1, 2121.5, 2381.1, 2728.6, 2966.9, 3223.7, 3473.7,
                    3644.3, 3936.3]
-    assert_equal(spike_times, spike_trains[0].spikes)
+    assert_allclose(spike_times, spike_trains[0].spikes)
 
     # check auxiliary spikes
     for spike_train in spike_trains:
@@ -47,9 +47,9 @@ def test_load_time_series():
 
     # check spike trains
     for n in range(len(spike_trains)):
-        assert_equal(spike_trains[n].spikes, spike_trains_check[n].spikes)
-        assert_equal(spike_trains[n].t_start, 0)
-        assert_equal(spike_trains[n].t_end, 4000)
+        assert_allclose(spike_trains[n].spikes, spike_trains_check[n].spikes)
+        assert_allclose(spike_trains[n].t_start, 0)
+        assert_allclose(spike_trains[n].t_end, 4000)
 
 
 def check_merged_spikes(merged_spikes, spike_trains):

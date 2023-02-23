@@ -1,3 +1,4 @@
+#cython: language_level=3
 #cython: boundscheck=False
 #cython: wraparound=False
 #cython: cdivision=True
@@ -35,9 +36,8 @@ from libc.math cimport fabs
 from libc.math cimport fmax
 from libc.math cimport fmin
 
-DTYPE = np.float
-ctypedef np.float_t DTYPE_t
-
+#DTYPE = float
+#ctypedef np.float_t DTYPE_t
 
 ############################################################
 # isi_distance_cython

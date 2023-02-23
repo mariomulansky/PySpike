@@ -77,10 +77,8 @@ def _spike_directionality_values_impl(spike_trains, indices=None,
         from .cython.cython_directionality import \
             spike_directionality_profiles_cython as profile_impl
     except ImportError:
-        if not(pyspike.disable_backend_warning):
-            print("Warning: spike_distance_cython not found. Make sure that \
-PySpike is installed by running\n 'python setup.py build_ext --inplace'!\n \
-Falling back to slow python backend.")
+        pyspike.NoCythonWarn()
+
         # use python backend
         from .cython.directionality_python_backend import \
             spike_directionality_profile_python as profile_impl
@@ -131,10 +129,8 @@ def spike_directionality(spike_train1, spike_train2, normalize=True,
                                           max_tau)
             c = len(spike_train1.spikes)
         except ImportError:
-            if not(pyspike.disable_backend_warning):
-                print("Warning: spike_distance_cython not found. Make sure that \
-PySpike is installed by running\n 'python setup.py build_ext --inplace'!\n \
-Falling back to slow python backend.")
+            pyspike.NoCythonWarn()
+
             # use profile.
             d1, x = spike_directionality_values([spike_train1, spike_train2],
                                                  interval=interval,
@@ -249,10 +245,8 @@ def spike_train_order_profile_bi(spike_train1, spike_train2, max_tau=None):
             spike_train_order_profile_impl
     except ImportError:
         # raise NotImplementedError()
-        if not(pyspike.disable_backend_warning):
-            print("Warning: spike_distance_cython not found. Make sure that \
-PySpike is installed by running\n 'python setup.py build_ext --inplace'!\n \
-Falling back to slow python backend.")
+        pyspike.NoCythonWarn()
+
         # use python backend
         from .cython.directionality_python_backend import \
             spike_train_order_profile_python as spike_train_order_profile_impl

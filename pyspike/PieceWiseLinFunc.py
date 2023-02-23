@@ -5,7 +5,7 @@
 from __future__ import absolute_import, print_function
 
 import numpy as np
-import collections
+import collections.abc
 import pyspike
 
 
@@ -46,7 +46,7 @@ class PieceWiseLinFunc:
 
         ind = np.searchsorted(self.x, t, side='right')
 
-        if isinstance(t, collections.Sequence):
+        if isinstance(t, collections.abc.Sequence):
             # t is a sequence of values
             # correct the cases t == x[0], t == x[-1]
             ind[ind == 0] = 1
@@ -211,10 +211,10 @@ class PieceWiseLinFunc:
             return self.integral() / (self.x[-1]-self.x[0])
 
         # check if interval is as sequence
-        assert isinstance(interval, collections.Sequence), \
+        assert isinstance(interval, collections.abc.Sequence), \
             "Invalid value for `interval`. None, Sequence or Tuple expected."
         # check if interval is a sequence of intervals
-        if not isinstance(interval[0], collections.Sequence):
+        if not isinstance(interval[0], collections.abc.Sequence):
             # just one interval
             a = self.integral(interval) / (interval[1]-interval[0])
         else:
@@ -247,11 +247,8 @@ class PieceWiseLinFunc:
             from .cython.cython_add import add_piece_wise_lin_cython as \
                 add_piece_wise_lin_impl
         except ImportError:
-            if not(pyspike.disable_backend_warning):
-                print("Warning: add_piece_wise_lin_cython not found. Make \
-sure that PySpike is installed by running\n \
-'python setup.py build_ext --inplace'! \n \
-Falling back to slow python backend.")
+            pyspike.NoCythonWarn()
+
             # use python backend
             from .cython.python_backend import add_piece_wise_lin_python as \
                 add_piece_wise_lin_impl

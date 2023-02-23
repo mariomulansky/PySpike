@@ -37,6 +37,13 @@ if os.path.isfile("pyspike/cython/cython_add.c") and \
 else:
     use_c = False
 
+if not use_cython and not use_c:
+    print('Cython not installed. Programs will be slow.')
+    # Ans = input('Abort? (Y/N)\n')
+    # if len(Ans)>0 and (Ans[0]=='Y' or Ans[0]=='y'):
+    #     print("\nAborting\n")
+    #     raise RuntimeError('User termination')
+
 cmdclass = {}
 ext_modules = []
 
@@ -72,7 +79,7 @@ elif use_c:  # c files are there, compile to binaries
 setup(
     name='pyspike',
     packages=find_packages(exclude=['doc']),
-    version='0.6.0',
+    version='0.7.0',
     cmdclass=cmdclass,
     ext_modules=ext_modules,
     include_dirs=[numpy_include()],
@@ -98,13 +105,11 @@ train similarity',
 
         'License :: OSI Approved :: BSD License',
 
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6'
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
     ],
     package_data={
         'pyspike': ['cython/cython_add.c', 'cython/cython_profiles.c',

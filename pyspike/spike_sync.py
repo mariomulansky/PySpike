@@ -79,10 +79,8 @@ def spike_sync_profile_bi(spike_train1, spike_train2, max_tau=None):
         from .cython.cython_profiles import coincidence_profile_cython \
             as coincidence_profile_impl
     except ImportError:
-        if not(pyspike.disable_backend_warning):
-            print("Warning: spike_distance_cython not found. Make sure that \
-PySpike is installed by running\n 'python setup.py build_ext --inplace'!\n \
-Falling back to slow python backend.")
+        pyspike.NoCythonWarn()
+
         # use python backend
         from .cython.python_backend import coincidence_python \
             as coincidence_profile_impl
@@ -288,8 +286,13 @@ def spike_sync_matrix(spike_trains, indices=None, interval=None, max_tau=None):
 
     """
     dist_func = partial(spike_sync_bi, max_tau=max_tau)
-    return _generic_distance_matrix(spike_trains, dist_func,
+    ShouldBeSync =  _generic_distance_matrix(spike_trains, dist_func,
                                     indices, interval)
+    # These elements are not really distances, but spike-sync values
+    #   The diagonal needs to reflect that:
+    for i in range(ShouldBeSync.shape[0]):
+        ShouldBeSync[i][i] = 1.0
+    return ShouldBeSync
 
 
 ############################################################
@@ -309,11 +312,8 @@ def filter_by_spike_sync(spike_trains, threshold, indices=None, max_tau=None,
         from .cython.cython_profiles import coincidence_single_profile_cython \
             as coincidence_impl
     except ImportError:
-        if not(pyspike.disable_backend_warning):
-            print("Warning: coincidence_single_profile_cython not found. Make \
-sure that PySpike is installed by running\n \
-'python setup.py build_ext --inplace'!\n \
-Falling back to slow python backend.")
+        pyspike.NoCythonWarn()
+
         # use python backend
         from .cython.python_backend import coincidence_single_python \
             as coincidence_impl

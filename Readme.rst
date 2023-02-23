@@ -18,18 +18,21 @@ All source codes are available on `Github <https://github.com/mariomulansky/PySp
 Citing PySpike
 ----------------------------
 If you use PySpike in your research, please cite our SoftwareX publication on PySpike:
-    Mario Mulansky, Thomas Kreuz, *PySpike - A Python library for analyzing spike train synchrony*, SoftwareX, (2016), ISSN 2352-7110, http://dx.doi.org/10.1016/j.softx.2016.07.006.
+    Mario Mulansky, Thomas Kreuz, *PySpike - A Python library for analyzing spike train synchrony*, Software X 5, 183 (2016) `[pdf] <https://drive.google.com/file/d/1vJA5q4eFCd2ASKGN8ANaDNBfQVpWBPXd/view>`_
 
 Additionally, depending on the used methods: ISI-distance [1], SPIKE-distance [2] or SPIKE-Synchronization [3], please cite one or more of the following publications:
 
-.. [#] Kreuz T, Haas JS, Morelli A, Abarbanel HDI, Politi A, *Measuring spike train synchrony.* J Neurosci Methods 165, 151 (2007) `[pdf] <http://wwwold.fi.isc.cnr.it/users/thomas.kreuz/images/Kreuz_JNeurosciMethods_2007_Spike-Train-Synchrony.pdf>`_
+.. [#] Kreuz T, Haas JS, Morelli A, Abarbanel HDI, Politi A, *Measuring spike train synchrony.* J Neurosci Methods 165, 151 (2007) `[pdf] <https://drive.google.com/file/d/113cr1xUhKe0rMIiFc1vMoIQ7j9noobKW/view>`_
 
-.. [#] Kreuz T, Chicharro D, Houghton C, Andrzejak RG, Mormann F, *Monitoring spike train synchrony.* J Neurophysiol 109, 1457 (2013) `[pdf] <http://wwwold.fi.isc.cnr.it/users/thomas.kreuz/images/Kreuz_JNeurophysiol_2013_SPIKE-distance.pdf>`_
+.. [#] Kreuz T, Chicharro D, Houghton C, Andrzejak RG, Mormann F, *Monitoring spike train synchrony.* J Neurophysiol 109, 1457 (2013) `[pdf] <https://drive.google.com/file/d/1oppf86V4cBVakPiv6Mbn_WaoKoKWzmIl/view>`_
 
-.. [#] Kreuz T, Mulansky M and Bozanic N, *SPIKY: A graphical user interface for monitoring spike train synchrony*, J Neurophysiol, JNeurophysiol 113, 3432 (2015)
+.. [#] Kreuz T, Mulansky M and Bozanic N, *SPIKY: A graphical user interface for monitoring spike train synchrony*, J Neurophysiol 113, 3432 (2015) `[pdf] <https://drive.google.com/file/d/16rdVbJFj7BypaaI10aHpXLk0WJuJ7reM/view>`_
 
 Important Changelog
 -----------------------------
+
+With version 0.7.0, support for Python 2 was dropped, PySpike now officially supports
+Python 3.7, 3.8, 3.9, 3.10.
 
 With version 0.6.0, the spike directionality and spike train order function have been added.
 
@@ -61,7 +64,8 @@ For that, make sure you have the following Python libraries installed:
 - numpy
 - cython
 - matplotlib (for the examples)
-- nosetests (for running the tests)
+- pytest (for running the tests)
+- scipy (also for the tests)
 
 In particular, make sure that cython_ is configured properly and able to locate a C compiler, otherwise PySpike will use the much slower Python implementations.
 
@@ -73,11 +77,11 @@ To install PySpike, simply download the source, e.g. from Github, and run the :c
     cd PySpike
     python setup.py build_ext --inplace
 
-Then you can run the tests using the `nosetests` test framework:
+Then you can run the tests using the `pytest` test framework:
 
 .. code:: bash
 
-    nosetests
+    pytest
 
 Finally, you should make PySpike's installation folder known to Python to be able to import pyspike in your own projects.
 Therefore, add your :code:`/path/to/PySpike` to the :code:`$PYTHONPATH` environment variable.
@@ -123,6 +127,7 @@ Curie Initial Training Network* `Neural Engineering Transformative Technologies
 
 **Python/C Programming:**
  - Mario Mulansky
+ - Edmund J Butler
 
 **Scientific Methods:**
  - Thomas Kreuz
@@ -135,5 +140,5 @@ Curie Initial Training Network* `Neural Engineering Transformative Technologies
 .. _SPIKE: http://www.scholarpedia.org/article/SPIKE-distance
 .. _SPIKE-Synchronization: http://www.scholarpedia.org/article/Measures_of_spike_train_synchrony#SPIKE_synchronization
 .. _cython: http://www.cython.org
-.. _SPIKY: http://wwwold.fi.isc.cnr.it/users/thomas.kreuz/Source-Code/SPIKY.html
+.. _SPIKY: https://thomas-kreuz.complexworld.net/source-codes/spiky
 .. _BSD_License: http://opensource.org/licenses/BSD-2-Clause

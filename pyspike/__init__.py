@@ -54,3 +54,15 @@ else:
     __version__ = _dist.version
 
 disable_backend_warning = False
+
+def NoCythonWarn():
+    """ Warn exactly once
+         (called when an import of one of the cython_...so modules failed)
+    """
+    global disable_backend_warning  # initialized False in __init__.py
+    if not disable_backend_warning:
+        print("Warning: Cython implementation not found." +
+            " Make sure that PySpike is installed by running\n" +
+            " 'python setup.py build_ext --inplace'\n" +
+            "Falling back to slow python backend.\n")
+    disable_backend_warning = True

@@ -1,3 +1,9 @@
+PySpike v0.7:
+    * Python 3.10 compatible
+    * Dropped support for Python2
+    * Small fixes in tests
+    * Fixed documentation links
+
 PySpike v0.6:
     * Support for computing spike directionality and spike train order
 
