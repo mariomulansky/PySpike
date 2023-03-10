@@ -21,11 +21,14 @@ else:
     use_cython = True
 
 
-class numpy_include(object):
+class numpy_include(os.PathLike):
     """Defers import of numpy until install_requires is through"""
     def __str__(self):
         import numpy
         return numpy.get_include()
+    
+    def __fspath__(self):
+        return str(self)
 
 
 if os.path.isfile("pyspike/cython/cython_add.c") and \
