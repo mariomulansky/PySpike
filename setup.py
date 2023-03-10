@@ -89,7 +89,7 @@ train similarity',
     author_email='mario.mulansky@gmx.net',
     license='BSD',
     url='https://github.com/mariomulansky/PySpike',
-    install_requires=['numpy'],
+    install_requires=['numpy', 'setuptools'],
     keywords=['data analysis', 'spike', 'neuroscience'],  # arbitrary keywords
     classifiers=[
         # How mature is this project? Common values are
