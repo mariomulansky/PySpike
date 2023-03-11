@@ -69,7 +69,7 @@ def spike_sync_profile_bi(spike_train1, spike_train2, max_tau=None, **kwargs):
     :rtype: :class:`pyspike.function.DiscreteFunction`
 
     """
-    MRTS, RIA = resolve_keywords(**kwargs)
+    MRTS, RI = resolve_keywords(**kwargs)
     if isinstance(MRTS, str):
         MRTS = default_thresh([spike_train1, spike_train2])
     # check whether the spike trains are defined for the same interval
@@ -135,7 +135,7 @@ def _spike_sync_values(spike_train1, spike_train2, interval, max_tau, **kwargs):
     Do not call this function directly, use `spike_sync` or `spike_sync_multi`
     instead.
     """
-    MRTS, RIA = resolve_keywords(**kwargs)
+    MRTS, RI = resolve_keywords(**kwargs)
     if isinstance(MRTS, str):
         MRTS = default_thresh([spike_train1, spike_train2])
     if interval is None:
@@ -247,7 +247,7 @@ def spike_sync_multi(spike_trains, indices=None, interval=None, max_tau=None, **
     :rtype: double
 
     """
-    MRTS, RIA = resolve_keywords(**kwargs)
+    MRTS, RI = resolve_keywords(**kwargs)
     if isinstance(MRTS, str):
         MRTS = default_thresh(spike_trains)
     if indices is None:
@@ -264,7 +264,7 @@ def spike_sync_multi(spike_trains, indices=None, interval=None, max_tau=None, **
     mp = 0.0
     for (i, j) in pairs:
         c, m = _spike_sync_values(spike_trains[i], spike_trains[j],
-                                  interval, max_tau, MRTS=MRTS, RIA=RIA)
+                                  interval, max_tau, MRTS=MRTS, RI=RI)
         coincidence += c
         mp += m
 
@@ -313,7 +313,7 @@ def filter_by_spike_sync(spike_trains, threshold, indices=None, max_tau=None,
     """ Removes the spikes with a multi-variate spike_sync value below
     threshold.
     """
-    MRTS, RIA = resolve_keywords(**kwargs)
+    MRTS, RI = resolve_keywords(**kwargs)
     if isinstance(MRTS, str):
         MRTS = default_thresh(spike_trains)
     N = len(spike_trains)

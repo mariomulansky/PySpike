@@ -124,7 +124,7 @@ def get_min_dist(spike_time, spike_train, start_index, t_start, t_end):
 ############################################################
 # dist_at_t
 ############################################################
-def dist_at_t(isi1, isi2, s1, s2, MRTS, RIA):
+def dist_at_t(isi1, isi2, s1, s2, MRTS, RI):
     """ Compute instantaneous Spike Distance
             In: isi1, isi2 - spike time differences around current times in each trains
                 s1, s2 - weighted spike time differences between trains
@@ -132,7 +132,7 @@ def dist_at_t(isi1, isi2, s1, s2, MRTS, RIA):
     """
     meanISI = .5*(isi1+isi2)
     limitedISI = max(MRTS, meanISI)
-    if RIA:
+    if RI:
         return .5*(s1+s2)/limitedISI
     else:
         return .5*(s1*isi2 + s2*isi1)/(meanISI*limitedISI)        
@@ -140,7 +140,7 @@ def dist_at_t(isi1, isi2, s1, s2, MRTS, RIA):
 ############################################################
 # spike_distance_python
 ############################################################
-def spike_distance_python(spikes1, spikes2, t_start, t_end, MRTS=0., RIA=False):
+def spike_distance_python(spikes1, spikes2, t_start, t_end, MRTS=0., RI=False):
     """ Computes the instantaneous spike-distance S_spike (t) of the two given
     spike trains. The spike trains are expected to have auxiliary spikes at the
     beginning and end of the interval. Use the function add_auxiliary_spikes to
@@ -211,7 +211,7 @@ def spike_distance_python(spikes1, spikes2, t_start, t_end, MRTS=0., RIA=False):
         isi2 = t_f2-t2[0]
         s2 = dt_p2
         index2 = 0
-    y_starts[0] = dist_at_t(isi1, isi2, s1, s2, MRTS, RIA)
+    y_starts[0] = dist_at_t(isi1, isi2, s1, s2, MRTS, RI)
     index = 1
 
     while index1+index2 < N1+N2-2:
@@ -230,7 +230,7 @@ def spike_distance_python(spikes1, spikes2, t_start, t_end, MRTS=0., RIA=False):
                 t_f1 = t_aux1[1]
             spike_events[index] = t_p1
             s2 = (dt_p2*(t_f2-t_p1) + dt_f2*(t_p1-t_p2)) / isi2
-            y_ends[index-1] = dist_at_t(isi1, isi2, s1, s2, MRTS, RIA)
+            y_ends[index-1] = dist_at_t(isi1, isi2, s1, s2, MRTS, RI)
             # now the next interval start value
             if index1 < N1-1:
                 dt_f1 = get_min_dist(t_f1, t2, index2, t_aux2[0], t_aux2[1])
@@ -245,7 +245,7 @@ def spike_distance_python(spikes1, spikes2, t_start, t_end, MRTS=0., RIA=False):
                 # Eero's correction: no adjustment
                 s1 = dt_p1
             # s2 is the same as above, thus we can compute y2 immediately
-            y_starts[index] = dist_at_t(isi1, isi2, s1, s2, MRTS, RIA)
+            y_starts[index] = dist_at_t(isi1, isi2, s1, s2, MRTS, RI)
         elif (index2 < N2-1) and (t_f1 > t_f2 or index1 == N1-1):
             index2 += 1
             # first calculate the previous interval end value
@@ -260,7 +260,7 @@ def spike_distance_python(spikes1, spikes2, t_start, t_end, MRTS=0., RIA=False):
                 t_f2 = t_aux2[1]
             spike_events[index] = t_p2
             s1 = (dt_p1*(t_f1-t_p2) + dt_f1*(t_p2-t_p1)) / isi1
-            y_ends[index-1] = dist_at_t(isi1, isi2, s1, s2, MRTS, RIA)
+            y_ends[index-1] = dist_at_t(isi1, isi2, s1, s2, MRTS, RI)
             # now the next interval start value
             if index2 < N2-1:
                 dt_f2 = get_min_dist(t_f2, t1, index1, t_aux1[0], t_aux1[1])
@@ -275,7 +275,7 @@ def spike_distance_python(spikes1, spikes2, t_start, t_end, MRTS=0., RIA=False):
                 # Eero's adjustment: no correction
                 s2 = dt_p2
             # s2 is the same as above, thus we can compute y2 immediately
-            y_starts[index] = dist_at_t(isi1, isi2, s1, s2, MRTS, RIA)
+            y_starts[index] = dist_at_t(isi1, isi2, s1, s2, MRTS, RI)
         else:  # t_f1 == t_f2 - generate only one event
             index1 += 1
             index2 += 1
@@ -313,7 +313,7 @@ def spike_distance_python(spikes1, spikes2, t_start, t_end, MRTS=0., RIA=False):
         spike_events[index] = t_end
         s1 = dt_f1  # *(t_end-t1[N1-1])/isi1
         s2 = dt_f2  # *(t_end-t2[N2-1])/isi2
-        y_ends[index-1] = dist_at_t(isi1, isi2, s1, s2, MRTS, RIA)
+        y_ends[index-1] = dist_at_t(isi1, isi2, s1, s2, MRTS, RI)
 
     # use only the data added above
     # could be less than original length due to equal spike times

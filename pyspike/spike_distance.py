@@ -63,7 +63,7 @@ def spike_profile_bi(spike_train1, spike_train2, **kwargs):
     :rtype: :class:`.PieceWiseLinFunc`
 
     """
-    MRTS, RIA = resolve_keywords(**kwargs)
+    MRTS, RI = resolve_keywords(**kwargs)
     if isinstance(MRTS, str):
         MRTS = default_thresh([spike_train1, spike_train2])
     # check whether the spike trains are defined for the same interval
@@ -87,7 +87,7 @@ def spike_profile_bi(spike_train1, spike_train2, **kwargs):
         spike_train1.get_spikes_non_empty(),
         spike_train2.get_spikes_non_empty(),
         spike_train1.t_start, spike_train1.t_end,
-        MRTS, RIA)
+        MRTS, RI)
 
     return PieceWiseLinFunc(times, y_starts, y_ends)
 
@@ -173,7 +173,7 @@ def spike_distance_bi(spike_train1, spike_train2, interval=None, **kwargs):
     :rtype: double
 
     """
-    MRTS, RIA = resolve_keywords(**kwargs)
+    MRTS, RI = resolve_keywords(**kwargs)
     if isinstance(MRTS, str):
         MRTS = default_thresh([spike_train1, spike_train2])
 
@@ -187,15 +187,15 @@ def spike_distance_bi(spike_train1, spike_train2, interval=None, **kwargs):
                                        spike_train2.get_spikes_non_empty(),
                                        spike_train1.t_start,
                                        spike_train1.t_end,
-                                       MRTS, RIA)
+                                       MRTS, RI)
         except ImportError:
             # Cython backend not available: fall back to average profile
             return spike_profile_bi(spike_train1, spike_train2, 
-                                    MRTS=MRTS, RIA=RIA).avrg(interval)
+                                    MRTS=MRTS, RI=RI).avrg(interval)
     else:
         # some specific interval is provided: compute the whole profile
         return spike_profile_bi(spike_train1, spike_train2, 
-                                MRTS=MRTS, RIA=RIA).avrg(interval)
+                                MRTS=MRTS, RI=RI).avrg(interval)
 
 
 ############################################################

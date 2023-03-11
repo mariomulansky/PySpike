@@ -65,7 +65,7 @@ def isi_profile_bi(spike_train1, spike_train2, **kwargs):
     :rtype: :class:`.PieceWiseConstFunc`
 
     """
-    MRTS,RIA = resolve_keywords(**kwargs)
+    MRTS,RI = resolve_keywords(**kwargs)
     if isinstance(MRTS, str):
         MRTS = default_thresh([spike_train1, spike_train2])
     # check whether the spike trains are defined for the same interval
@@ -173,7 +173,7 @@ def isi_distance_bi(spike_train1, spike_train2, interval=None, **kwargs):
     :returns: The isi-distance :math:`D_I`.
     :rtype: double
     """
-    MRTS, RIA = resolve_keywords(**kwargs)
+    MRTS, RI = resolve_keywords(**kwargs)
     if isinstance(MRTS, str):
         MRTS = default_thresh([spike_train1, spike_train2])
     if interval is None:

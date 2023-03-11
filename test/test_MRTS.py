@@ -10,7 +10,6 @@ import numpy as np
 import pyspike as spk
 from pyspike import SpikeTrain
 from pyspike.isi_lengths import default_thresh
-import pdb
 
 def test_MRTS():
     """ single testcase for all 4 algorithms changing MRTS:
@@ -88,7 +87,7 @@ def test_MRTS():
         np.testing.assert_almost_equal(d, Results2[r], decimal=5)
 
 
-    ## RIA
+    ## RI
     Results3 = {
         0 : 0.12094,
         1 : 0.12094,
@@ -144,7 +143,7 @@ def test_MRTS():
     }
 
     for r in Results3:
-        d = spk.spike_distance(sp1, sp2, MRTS=r, RIA=True)
+        d = spk.spike_distance(sp1, sp2, MRTS=r, RI=True)
         #print('%d : %.5f,'%(r, d))
         np.testing.assert_almost_equal(d, Results3[r], decimal=5)
 
@@ -248,8 +247,8 @@ def test_autoThresh():
     c2 = spk.spike_distance(sp1, sp2, MRTS='auto')
     np.testing.assert_almost_equal(c1, c2)
 
-    c1 = spk.spike_distance(sp1, sp2, MRTS=t, RIA=True)
-    c2 = spk.spike_distance(sp1, sp2, MRTS='auto', RIA=True)
+    c1 = spk.spike_distance(sp1, sp2, MRTS=t, RI=True)
+    c2 = spk.spike_distance(sp1, sp2, MRTS='auto', RI=True)
     np.testing.assert_almost_equal(c1, c2)
 
     c1 = spk.isi_distance(sp1, sp2, MRTS=t)

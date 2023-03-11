@@ -71,7 +71,7 @@ if __name__ == "__main__":
                 spk.spike_profile_multi,
                 spk.spike_distance_multi, 
                 spk.spike_distance_matrix, 
-                RIA=True)
+                RI=True)
     auto_test(None,
                 None,
                 None,

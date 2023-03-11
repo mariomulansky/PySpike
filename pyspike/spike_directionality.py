@@ -60,7 +60,7 @@ def _spike_directionality_values_impl(spike_trains, indices=None,
     :returns: The spike-directionality values.
     """
     ## get the keywords:
-    MRTS, RIA = resolve_keywords(**kwargs)
+    MRTS, RI = resolve_keywords(**kwargs)
     if isinstance(MRTS, str):
         MRTS = default_thresh(spike_trains)
 
@@ -120,7 +120,7 @@ def spike_directionality(spike_train1, spike_train2, normalize=True,
                     coincidence window has no upper bound.
     :returns: The spike train order profile :math:`E(t)`.
     """
-    MRTS, RIA = resolve_keywords(**kwargs)
+    MRTS, RI = resolve_keywords(**kwargs)
     if isinstance(MRTS, str):
         MRTS = default_thresh([spike_train1, spike_train2])
 
@@ -174,7 +174,7 @@ def spike_directionality_matrix(spike_trains, normalize=True, indices=None,
                     coincidence window has no upper bound.
     :returns: The spike-directionality values.
     """
-    MRTS, RIA = resolve_keywords(**kwargs)
+    MRTS, RI = resolve_keywords(**kwargs)
     if isinstance(MRTS, str):
         MRTS = default_thresh(spike_trains)
     if indices is None:
@@ -191,7 +191,7 @@ def spike_directionality_matrix(spike_trains, normalize=True, indices=None,
     for i, j in pairs:
         d = spike_directionality(spike_trains[i], spike_trains[j], normalize,
                                  interval, max_tau=max_tau, 
-                                 MRTS=MRTS, RIA=RIA)
+                                 MRTS=MRTS, RI=RI)
         distance_matrix[i, j] = d
         distance_matrix[j, i] = -d
     return distance_matrix
@@ -248,7 +248,7 @@ def spike_train_order_profile_bi(spike_train1, spike_train2,
     :returns: The spike train order profile :math:`E(t)`.
     :rtype: :class:`pyspike.function.DiscreteFunction`
     """
-    MRTS, RIA = resolve_keywords(**kwargs)
+    MRTS, RI = resolve_keywords(**kwargs)
     if isinstance(MRTS, str):
         MRTS = default_thresh([spike_train1, spike_train2])
 
@@ -326,7 +326,7 @@ def _spike_train_order_impl(spike_train1, spike_train2,
                     coincidence window has no upper bound.
     :returns: The spike train order value (Synfire Indicator)
     """
-    MRTS, RIA = resolve_keywords(**kwargs)
+    MRTS, RI = resolve_keywords(**kwargs)
     if isinstance(MRTS, str):
         MRTS = default_thresh([spike_train1, spike_train2])
     if interval is None:
@@ -430,7 +430,7 @@ def spike_train_order_multi(spike_trains, indices=None, normalize=True,
     :returns: Spike train order values (Synfire Indicator) F for the given spike trains.
     :rtype: double
     """
-    MRTS, RIA = resolve_keywords(**kwargs)
+    MRTS, RI = resolve_keywords(**kwargs)
     if isinstance(MRTS, str):
         MRTS = default_thresh(spike_trains)
     if indices is None:
@@ -447,7 +447,7 @@ def spike_train_order_multi(spike_trains, indices=None, normalize=True,
     m_total = 0.0
     for (i, j) in pairs:
         e, m = _spike_train_order_impl(spike_trains[i], spike_trains[j],
-                                       interval, max_tau, MRTS=MRTS, RIA=RIA)
+                                       interval, max_tau, MRTS=MRTS, RI=RI)
         e_total += e
         m_total += m
 
