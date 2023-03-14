@@ -11,6 +11,7 @@ from pyspike import DiscreteFunc
 from functools import partial
 from pyspike.generic import _generic_profile_multi, resolve_keywords
 from pyspike.isi_lengths import default_thresh
+from pyspike.spikes import reconcile_spike_trains, reconcile_spike_trains_bi
 
 
 ############################################################
@@ -59,6 +60,8 @@ def _spike_directionality_values_impl(spike_trains, indices=None,
                     coincidence window has no upper bound.
     :returns: The spike-directionality values.
     """
+    if kwargs.get('Reconcile', True):
+        spike_trains = reconcile_spike_trains(spike_trains)
     ## get the keywords:
     MRTS, RI = resolve_keywords(**kwargs)
     if isinstance(MRTS, str):
@@ -120,6 +123,8 @@ def spike_directionality(spike_train1, spike_train2, normalize=True,
                     coincidence window has no upper bound.
     :returns: The spike train order profile :math:`E(t)`.
     """
+    if kwargs.get('Reconcile', True):
+        spike_train1, spike_train2 = reconcile_spike_trains_bi(spike_train1, spike_train2)
     MRTS, RI = resolve_keywords(**kwargs)
     if isinstance(MRTS, str):
         MRTS = default_thresh([spike_train1, spike_train2])
@@ -174,6 +179,8 @@ def spike_directionality_matrix(spike_trains, normalize=True, indices=None,
                     coincidence window has no upper bound.
     :returns: The spike-directionality values.
     """
+    if kwargs.get('Reconcile', True):
+        spike_trains = reconcile_spike_trains(spike_trains)
     MRTS, RI = resolve_keywords(**kwargs)
     if isinstance(MRTS, str):
         MRTS = default_thresh(spike_trains)
@@ -191,7 +198,7 @@ def spike_directionality_matrix(spike_trains, normalize=True, indices=None,
     for i, j in pairs:
         d = spike_directionality(spike_trains[i], spike_trains[j], normalize,
                                  interval, max_tau=max_tau, 
-                                 MRTS=MRTS, RI=RI)
+                                 MRTS=MRTS, RI=RI, Reconcile=False)
         distance_matrix[i, j] = d
         distance_matrix[j, i] = -d
     return distance_matrix
@@ -248,6 +255,8 @@ def spike_train_order_profile_bi(spike_train1, spike_train2,
     :returns: The spike train order profile :math:`E(t)`.
     :rtype: :class:`pyspike.function.DiscreteFunction`
     """
+    if kwargs.get('Reconcile', True):
+        spike_train1, spike_train2 = reconcile_spike_trains_bi(spike_train1, spike_train2)
     MRTS, RI = resolve_keywords(**kwargs)
     if isinstance(MRTS, str):
         MRTS = default_thresh([spike_train1, spike_train2])

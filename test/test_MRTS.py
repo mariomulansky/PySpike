@@ -220,11 +220,11 @@ def test_autoThresh():
 
     Thresh = default_thresh(spike_train_list)
     print('default_thresh got %.4f'%Thresh)
-    np.testing.assert_almost_equal(Thresh, 325.4342, decimal=4)
+    np.testing.assert_almost_equal(Thresh, 325.4342, decimal=4, err_msg="default_thresh")
 
     c1 = spk.spike_sync(spikes1, spikes2, MRTS=Thresh)
     c2 = spk.spike_sync(spikes1, spikes2, MRTS='auto')
-    np.testing.assert_almost_equal(c1, c2)
+    np.testing.assert_almost_equal(c1, c2, err_msg="spike_sync")
 
     # apply it to the first example avove
     v1 = [12.0000, 16.0000, 28.0000, 32.0000, 44.0000, 48.0000, 60.0000, 64.0000, 76.0000, 80.0000, ];
@@ -239,25 +239,25 @@ def test_autoThresh():
 
     c1 = spk.spike_sync(sp1, sp2, MRTS=t)
     c2 = spk.spike_sync(sp1, sp2, MRTS='auto')
-    np.testing.assert_almost_equal(c1, c2)
+    np.testing.assert_almost_equal(c1, c2, err_msg="spike_sync2")
     print('SS thresh %.3f, results %.3f'%(t,c1))
     # compare with: {14:0., 15:.3, 16:.6, 17:.9, 18:1.}
 
     c1 = spk.spike_distance(sp1, sp2, MRTS=t)
     c2 = spk.spike_distance(sp1, sp2, MRTS='auto')
-    np.testing.assert_almost_equal(c1, c2)
+    np.testing.assert_almost_equal(c1, c2, err_msg="spike_distance")
 
     c1 = spk.spike_distance(sp1, sp2, MRTS=t, RI=True)
     c2 = spk.spike_distance(sp1, sp2, MRTS='auto', RI=True)
-    np.testing.assert_almost_equal(c1, c2)
+    np.testing.assert_almost_equal(c1, c2, err_msg="RI")
 
     c1 = spk.isi_distance(sp1, sp2, MRTS=t)
     c2 = spk.isi_distance(sp1, sp2, MRTS='auto')
-    np.testing.assert_almost_equal(c1, c2)
+    np.testing.assert_almost_equal(c1, c2, err_msg="ISI")
 
     c1 = spk.spike_directionality(sp1, sp2, MRTS=t)
     c2 = spk.spike_directionality(sp1, sp2, MRTS='auto')
-    np.testing.assert_almost_equal(c1, c2)
+    np.testing.assert_almost_equal(c1, c2, err_msg="directionality")
 
     print('OK2')
 

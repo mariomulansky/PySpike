@@ -11,6 +11,7 @@ from pyspike import PieceWiseConstFunc
 from pyspike.generic import _generic_profile_multi, _generic_distance_multi, \
     _generic_distance_matrix, resolve_keywords
 from pyspike.isi_lengths import default_thresh
+from pyspike.spikes import reconcile_spike_trains, reconcile_spike_trains_bi
 
 ############################################################
 # isi_profile
@@ -44,9 +45,9 @@ def isi_profile(*args, **kwargs):
     if len(args) == 1:
         return isi_profile_multi(args[0], **kwargs)
     elif len(args) == 2:
-        return isi_profile_bi(args[0], args[1])
+        return isi_profile_bi(args[0], args[1], **kwargs)
     else:
-        return isi_profile_multi(args)
+        return isi_profile_multi(args, **kwargs)
 
 
 ############################################################
@@ -65,14 +66,14 @@ def isi_profile_bi(spike_train1, spike_train2, **kwargs):
     :rtype: :class:`.PieceWiseConstFunc`
 
     """
+    if kwargs.get('Reconcile', True):
+        spike_train1, spike_train2 = reconcile_spike_trains_bi(spike_train1, spike_train2)
+        kwargs['Reconcile'] = False
+
     MRTS,RI = resolve_keywords(**kwargs)
     if isinstance(MRTS, str):
         MRTS = default_thresh([spike_train1, spike_train2])
-    # check whether the spike trains are defined for the same interval
-    assert spike_train1.t_start == spike_train2.t_start, \
-        "Given spike trains are not defined on the same interval!"
-    assert spike_train1.t_end == spike_train2.t_end, \
-        "Given spike trains are not defined on the same interval!"
+        kwargs['MRTS'] = MRTS
 
     # load cython implementation
     try:
@@ -173,9 +174,15 @@ def isi_distance_bi(spike_train1, spike_train2, interval=None, **kwargs):
     :returns: The isi-distance :math:`D_I`.
     :rtype: double
     """
+    if kwargs.get('Reconcile', True):
+        spike_train1, spike_train2 = reconcile_spike_trains_bi(spike_train1, spike_train2)
+        kwargs['Reconcile'] = False
+
     MRTS, RI = resolve_keywords(**kwargs)
     if isinstance(MRTS, str):
         MRTS = default_thresh([spike_train1, spike_train2])
+        kwargs['MRTS'] = MRTS
+
     if interval is None:
         # distance over the whole interval is requested: use specific function
         # for optimal performance

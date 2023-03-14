@@ -9,6 +9,7 @@ from pyspike import PieceWiseLinFunc
 from pyspike.generic import _generic_profile_multi, _generic_distance_multi, \
     _generic_distance_matrix, resolve_keywords
 from pyspike.isi_lengths import default_thresh
+from pyspike.spikes import reconcile_spike_trains, reconcile_spike_trains_bi
 
 
 ############################################################
@@ -63,14 +64,12 @@ def spike_profile_bi(spike_train1, spike_train2, **kwargs):
     :rtype: :class:`.PieceWiseLinFunc`
 
     """
+    if kwargs.get('Reconcile', True):
+        spike_train1, spike_train2 = reconcile_spike_trains_bi(spike_train1, spike_train2)
     MRTS, RI = resolve_keywords(**kwargs)
+
     if isinstance(MRTS, str):
         MRTS = default_thresh([spike_train1, spike_train2])
-    # check whether the spike trains are defined for the same interval
-    assert spike_train1.t_start == spike_train2.t_start, \
-        "Given spike trains are not defined on the same interval!"
-    assert spike_train1.t_end == spike_train2.t_end, \
-        "Given spike trains are not defined on the same interval!"
 
     # cython implementation
     try:
@@ -173,6 +172,9 @@ def spike_distance_bi(spike_train1, spike_train2, interval=None, **kwargs):
     :rtype: double
 
     """
+    if kwargs.get('Reconcile', True):
+        spike_train1, spike_train2 = reconcile_spike_trains_bi(spike_train1, spike_train2)
+        kwargs['Reconcile'] = False
     MRTS, RI = resolve_keywords(**kwargs)
     if isinstance(MRTS, str):
         MRTS = default_thresh([spike_train1, spike_train2])
@@ -191,11 +193,11 @@ def spike_distance_bi(spike_train1, spike_train2, interval=None, **kwargs):
         except ImportError:
             # Cython backend not available: fall back to average profile
             return spike_profile_bi(spike_train1, spike_train2, 
-                                    MRTS=MRTS, RI=RI).avrg(interval)
+                                    **kwargs).avrg(interval)
     else:
         # some specific interval is provided: compute the whole profile
         return spike_profile_bi(spike_train1, spike_train2, 
-                                MRTS=MRTS, RI=RI).avrg(interval)
+                                **kwargs).avrg(interval)
 
 
 ############################################################
