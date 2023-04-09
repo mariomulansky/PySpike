@@ -7,7 +7,9 @@ from __future__ import absolute_import
 import pyspike
 from pyspike import PieceWiseLinFunc
 from pyspike.generic import _generic_profile_multi, _generic_distance_multi, \
-    _generic_distance_matrix
+    _generic_distance_matrix, resolve_keywords
+from pyspike.isi_lengths import default_thresh
+from pyspike.spikes import reconcile_spike_trains, reconcile_spike_trains_bi
 
 
 ############################################################
@@ -41,15 +43,15 @@ def spike_profile(*args, **kwargs):
     if len(args) == 1:
         return spike_profile_multi(args[0], **kwargs)
     elif len(args) == 2:
-        return spike_profile_bi(args[0], args[1])
+        return spike_profile_bi(args[0], args[1], **kwargs)
     else:
-        return spike_profile_multi(args)
+        return spike_profile_multi(args, **kwargs)
 
 
 ############################################################
 # spike_profile_bi
 ############################################################
-def spike_profile_bi(spike_train1, spike_train2):
+def spike_profile_bi(spike_train1, spike_train2, **kwargs):
     """ Specific function to compute a bivariate SPIKE-profile. This is a
     deprecated function and should not be called directly. Use
     :func:`.spike_profile` to compute SPIKE-profiles.
@@ -62,11 +64,12 @@ def spike_profile_bi(spike_train1, spike_train2):
     :rtype: :class:`.PieceWiseLinFunc`
 
     """
-    # check whether the spike trains are defined for the same interval
-    assert spike_train1.t_start == spike_train2.t_start, \
-        "Given spike trains are not defined on the same interval!"
-    assert spike_train1.t_end == spike_train2.t_end, \
-        "Given spike trains are not defined on the same interval!"
+    if kwargs.get('Reconcile', True):
+        spike_train1, spike_train2 = reconcile_spike_trains_bi(spike_train1, spike_train2)
+    MRTS, RI = resolve_keywords(**kwargs)
+
+    if isinstance(MRTS, str):
+        MRTS = default_thresh([spike_train1, spike_train2])
 
     # cython implementation
     try:
@@ -82,7 +85,8 @@ def spike_profile_bi(spike_train1, spike_train2):
     times, y_starts, y_ends = spike_profile_impl(
         spike_train1.get_spikes_non_empty(),
         spike_train2.get_spikes_non_empty(),
-        spike_train1.t_start, spike_train1.t_end)
+        spike_train1.t_start, spike_train1.t_end,
+        MRTS, RI)
 
     return PieceWiseLinFunc(times, y_starts, y_ends)
 
@@ -90,7 +94,7 @@ def spike_profile_bi(spike_train1, spike_train2):
 ############################################################
 # spike_profile_multi
 ############################################################
-def spike_profile_multi(spike_trains, indices=None):
+def spike_profile_multi(spike_trains, indices=None, **kwargs):
     """ Specific function to compute a multivariate SPIKE-profile. This is a
     deprecated function and should not be called directly. Use
     :func:`.spike_profile` to compute SPIKE-profiles.
@@ -104,7 +108,7 @@ def spike_profile_multi(spike_trains, indices=None):
 
     """
     average_dist, M = _generic_profile_multi(spike_trains, spike_profile_bi,
-                                             indices)
+                                             indices, **kwargs)
     average_dist.mul_scalar(1.0/M)  # normalize
     return average_dist
 
@@ -152,7 +156,7 @@ def spike_distance(*args, **kwargs):
 ############################################################
 # spike_distance_bi
 ############################################################
-def spike_distance_bi(spike_train1, spike_train2, interval=None):
+def spike_distance_bi(spike_train1, spike_train2, interval=None, **kwargs):
     """ Specific function to compute a bivariate SPIKE-distance. This is a
     deprecated function and should not be called directly. Use
     :func:`.spike_distance` to compute SPIKE-distances.
@@ -168,6 +172,13 @@ def spike_distance_bi(spike_train1, spike_train2, interval=None):
     :rtype: double
 
     """
+    if kwargs.get('Reconcile', True):
+        spike_train1, spike_train2 = reconcile_spike_trains_bi(spike_train1, spike_train2)
+        kwargs['Reconcile'] = False
+    MRTS, RI = resolve_keywords(**kwargs)
+    if isinstance(MRTS, str):
+        MRTS = default_thresh([spike_train1, spike_train2])
+
     if interval is None:
         # distance over the whole interval is requested: use specific function
         # for optimal performance
@@ -177,19 +188,22 @@ def spike_distance_bi(spike_train1, spike_train2, interval=None):
             return spike_distance_impl(spike_train1.get_spikes_non_empty(),
                                        spike_train2.get_spikes_non_empty(),
                                        spike_train1.t_start,
-                                       spike_train1.t_end)
+                                       spike_train1.t_end,
+                                       MRTS, RI)
         except ImportError:
             # Cython backend not available: fall back to average profile
-            return spike_profile_bi(spike_train1, spike_train2).avrg(interval)
+            return spike_profile_bi(spike_train1, spike_train2, 
+                                    **kwargs).avrg(interval)
     else:
         # some specific interval is provided: compute the whole profile
-        return spike_profile_bi(spike_train1, spike_train2).avrg(interval)
+        return spike_profile_bi(spike_train1, spike_train2, 
+                                **kwargs).avrg(interval)
 
 
 ############################################################
 # spike_distance_multi
 ############################################################
-def spike_distance_multi(spike_trains, indices=None, interval=None):
+def spike_distance_multi(spike_trains, indices=None, interval=None, **kwargs):
     """ Specific function to compute a multivariate SPIKE-distance. This is a
     deprecated function and should not be called directly. Use
     :func:`.spike_distance` to compute SPIKE-distances.
@@ -205,13 +219,13 @@ def spike_distance_multi(spike_trains, indices=None, interval=None):
     :rtype: double
     """
     return _generic_distance_multi(spike_trains, spike_distance_bi, indices,
-                                   interval)
+                                   interval, **kwargs)
 
 
 ############################################################
 # spike_distance_matrix
 ############################################################
-def spike_distance_matrix(spike_trains, indices=None, interval=None):
+def spike_distance_matrix(spike_trains, indices=None, interval=None, **kwargs):
     """ Computes the time averaged spike-distance of all pairs of spike-trains.
 
     :param spike_trains: list of :class:`.SpikeTrain`
@@ -226,4 +240,4 @@ def spike_distance_matrix(spike_trains, indices=None, interval=None):
     :rtype: np.array
     """
     return _generic_distance_matrix(spike_trains, spike_distance_bi,
-                                    indices, interval)
+                                    indices, interval, **kwargs)

@@ -36,6 +36,8 @@ from libc.math cimport fabs
 from libc.math cimport fmax
 from libc.math cimport fmin
 
+from pyspike.cython.cython_get_tau cimport get_tau
+
 #DTYPE = float
 #ctypedef np.float_t DTYPE_t
 
@@ -43,7 +45,8 @@ from libc.math cimport fmin
 # isi_profile_cython
 ############################################################
 def isi_profile_cython(double[:] s1, double[:] s2,
-                       double t_start, double t_end):
+                       double t_start, double t_end,
+                       double MRTS=0.):
 
     cdef double[:] spike_events
     cdef double[:] isi_values
@@ -77,7 +80,7 @@ def isi_profile_cython(double[:] s1, double[:] s2,
         nu2 = s2[1]-s2[0] if N2 > 1 else t_end-s2[0]
         index2 = 0
 
-    isi_values[0] = fabs(nu1-nu2)/fmax(nu1, nu2)
+    isi_values[0] = fabs(nu1-nu2)/fmax(MRTS, fmax(nu1, nu2))
     index = 1
 
     with nogil: # release the interpreter to allow multithreading
@@ -121,7 +124,7 @@ def isi_profile_cython(double[:] s1, double[:] s2,
                     nu2 = fmax(t_end-s2[index2], nu2) if N2 > 1 \
                           else t_end-s2[index2]
             # compute the corresponding isi-distance
-            isi_values[index] = fabs(nu1 - nu2) / fmax(nu1, nu2)
+            isi_values[index] = fabs(nu1 - nu2) / fmax(MRTS, fmax(nu1, nu2))
             index += 1
         # the last event is the interval end
         if spike_events[index-1] == t_end:
@@ -168,19 +171,32 @@ cdef inline double get_min_dist_cython(double spike_time,
 
 
 ############################################################
-# isi_avrg_cython
+# dist_at_t
 ############################################################
-cdef inline double isi_avrg_cython(double isi1, double isi2) nogil:
-    return 0.5*(isi1+isi2)*(isi1+isi2)
-    # alternative definition to obtain <S> ~ 0.5 for Poisson spikes
-    # return 0.5*(isi1*isi1+isi2*isi2)
-
+cdef inline double dist_at_t(double isi1, double isi2, 
+                              double s1, double s2,
+                              double MRTS, int RI) nogil:
+    """ Compute instantaneous Spike Distance
+            In: isi1, isi2 - spike time differences around current times in each trains
+                s1, s2 - weighted spike time differences between trains
+                MRTS -minimum relevant time scal (0 for legacy logic)
+                RI - Rate Independent Adaptive spike distance 
+                        (False for legacy SPIKE distance)
+            Out: Spike Distance at current time
+    """
+    cdef double meanISI = .5*(isi1+isi2)
+    cdef double limitedISI = max(MRTS, meanISI)
+    if RI:
+        return .5*(s1+s2)/limitedISI
+    else:
+        return .5*(s1*isi2 + s2*isi1)/(meanISI*limitedISI)
 
 ############################################################
 # spike_profile_cython
 ############################################################
 def spike_profile_cython(double[:] t1, double[:] t2,
-                         double t_start, double t_end):
+                         double t_start, double t_end,
+                         double MRTS=0., int RI=0):
 
     cdef double[:] spike_events
     cdef double[:] y_starts
@@ -248,7 +264,7 @@ def spike_profile_cython(double[:] t1, double[:] t2,
             s2 = dt_p2
             index2 = 0
 
-        y_starts[0] = (s1*isi2 + s2*isi1) / isi_avrg_cython(isi1, isi2)
+        y_starts[0] = dist_at_t(isi1, isi2, s1, s2, MRTS, RI)
         index = 1
 
         while index1+index2 < N1+N2-2:
@@ -267,8 +283,7 @@ def spike_profile_cython(double[:] t1, double[:] t2,
                     t_f1 = t_aux1[1]
                 spike_events[index] = t_p1
                 s2 = (dt_p2*(t_f2-t_p1) + dt_f2*(t_p1-t_p2)) / isi2
-                y_ends[index-1] = (s1*isi2 + s2*isi1)/isi_avrg_cython(isi1,
-                                                                      isi2)
+                y_ends[index-1] = dist_at_t(isi1, isi2, s1, s2, MRTS, RI)
                 # now the next interval start value
                 if index1 < N1-1:
                     dt_f1 = get_min_dist_cython(t_f1, t2, N2, index2,
@@ -284,8 +299,7 @@ def spike_profile_cython(double[:] t1, double[:] t2,
                     # Eero's correction: no adjustment
                     s1 = dt_p1
                 # s2 is the same as above, thus we can compute y2 immediately
-                y_starts[index] = (s1*isi2 + s2*isi1)/isi_avrg_cython(isi1,
-                                                                      isi2)
+                y_starts[index] = dist_at_t(isi1, isi2, s1, s2, MRTS, RI)
             elif (index2 < N2-1) and (t_f1 > t_f2 or index1 == N1-1):
                 index2 += 1
                 # first calculate the previous interval end value
@@ -300,8 +314,7 @@ def spike_profile_cython(double[:] t1, double[:] t2,
                     t_f2 = t_aux2[1]
                 spike_events[index] = t_p2
                 s1 = (dt_p1*(t_f1-t_p2) + dt_f1*(t_p2-t_p1)) / isi1
-                y_ends[index-1] = (s1*isi2 + s2*isi1) / isi_avrg_cython(isi1,
-                                                                        isi2)
+                y_ends[index-1] = dist_at_t(isi1, isi2, s1, s2, MRTS, RI)
                 # now the next interval start value
                 if index2 < N2-1:
                     dt_f2 = get_min_dist_cython(t_f2, t1, N1, index1,
@@ -317,7 +330,7 @@ def spike_profile_cython(double[:] t1, double[:] t2,
                     # Eero's correction: no adjustment
                     s2 = dt_p2
                 # s2 is the same as above, thus we can compute y2 immediately
-                y_starts[index] = (s1*isi2 + s2*isi1)/isi_avrg_cython(isi1, isi2)
+                y_starts[index] = dist_at_t(isi1, isi2, s1, s2, MRTS, RI)
             else: # t_f1 == t_f2 - generate only one event
                 index1 += 1
                 index2 += 1
@@ -356,7 +369,7 @@ def spike_profile_cython(double[:] t1, double[:] t2,
             spike_events[index] = t_end
             s1 = dt_f1
             s2 = dt_f2
-            y_ends[index-1] = (s1*isi2 + s2*isi1) / isi_avrg_cython(isi1, isi2)
+            y_ends[index-1] = dist_at_t(isi1, isi2, s1, s2, MRTS, RI)
     # end nogil
 
     # use only the data added above 
@@ -366,32 +379,10 @@ def spike_profile_cython(double[:] t1, double[:] t2,
 
 
 ############################################################
-# get_tau
-############################################################
-cdef inline double get_tau(double[:] spikes1, double[:] spikes2,
-                           int i, int j, double interval, double max_tau):
-    cdef double m = interval   # use interval as initial tau
-    cdef int N1 = spikes1.shape[0]-1  # len(spikes1)-1
-    cdef int N2 = spikes2.shape[0]-1  # len(spikes2)-1
-    if i < N1 and i > -1:
-        m = fmin(m, spikes1[i+1]-spikes1[i])
-    if j < N2 and j > -1:
-        m = fmin(m, spikes2[j+1]-spikes2[j])
-    if i > 0:
-        m = fmin(m, spikes1[i]-spikes1[i-1])
-    if j > 0:
-        m = fmin(m, spikes2[j]-spikes2[j-1])
-    m *= 0.5
-    if max_tau > 0.0:
-        m = fmin(m, max_tau)
-    return m
-    
-
-############################################################
 # coincidence_profile_cython
 ############################################################
 def coincidence_profile_cython(double[:] spikes1, double[:] spikes2,
-                               double t_start, double t_end, double max_tau):
+                               double t_start, double t_end, double max_tau, double MRTS=0):
 
     cdef int N1 = len(spikes1)
     cdef int N2 = len(spikes2)
@@ -403,11 +394,16 @@ def coincidence_profile_cython(double[:] spikes1, double[:] spikes2,
     cdef double[:] mp = np.ones(N1 + N2 + 2)   # multiplicity
     cdef double interval = t_end - t_start
     cdef double tau
+
+    cdef double true_max = t_end - t_start
+    if max_tau > 0:
+        true_max = fmin(true_max, 2*max_tau)
+
     while i + j < N1 + N2 - 2:
         if (i < N1-1) and (j == N2-1 or spikes1[i+1] < spikes2[j+1]):
             i += 1
             n += 1
-            tau = get_tau(spikes1, spikes2, i, j, interval, max_tau)
+            tau = get_tau(spikes1, spikes2, i, j, true_max, MRTS)
             st[n] = spikes1[i]
             if j > -1 and spikes1[i]-spikes2[j] < tau:
                 # coincidence between the current spike and the previous spike
@@ -417,7 +413,7 @@ def coincidence_profile_cython(double[:] spikes1, double[:] spikes2,
         elif (j < N2-1) and (i == N1-1 or spikes1[i+1] > spikes2[j+1]):
             j += 1
             n += 1
-            tau = get_tau(spikes1, spikes2, i, j, interval, max_tau)
+            tau = get_tau(spikes1, spikes2, i, j, true_max, MRTS)
             st[n] = spikes2[j]
             if i > -1 and spikes2[j]-spikes1[i] < tau:
                 # coincidence between the current spike and the previous spike
@@ -456,7 +452,7 @@ def coincidence_profile_cython(double[:] spikes1, double[:] spikes2,
 # coincidence_single_profile_cython
 ############################################################
 def coincidence_single_profile_cython(double[:] spikes1, double[:] spikes2,
-                                      double t_start, double t_end, double max_tau):
+                                      double t_start, double t_end, double max_tau, double MRTS=0.):
 
     cdef int N1 = len(spikes1)
     cdef int N2 = len(spikes2)
@@ -464,12 +460,17 @@ def coincidence_single_profile_cython(double[:] spikes1, double[:] spikes2,
     cdef double[:] c = np.zeros(N1)   # coincidences
     cdef double interval = t_end - t_start
     cdef double tau
+
+    cdef double true_max = t_end - t_start
+    if max_tau > 0:
+        true_max = fmin(true_max, 2*max_tau)
+
     for i in xrange(N1):
         while j < N2-1 and spikes2[j+1] < spikes1[i]:
             # move forward until spikes2[j] is the last spike before spikes1[i]
             # note that if spikes2[j] is after spikes1[i] we dont do anything
             j += 1
-        tau = get_tau(spikes1, spikes2, i, j, interval, max_tau)
+        tau = get_tau(spikes1, spikes2, i, j, true_max, MRTS)
         if j > -1 and fabs(spikes1[i]-spikes2[j]) < tau:
             # current spike in st1 is coincident
             c[i] = 1
@@ -478,7 +479,7 @@ def coincidence_single_profile_cython(double[:] spikes1, double[:] spikes2,
             # right before (see above), hence we move one forward and also 
             # check the next spike
             j += 1
-            tau = get_tau(spikes1, spikes2, i, j, interval, max_tau)
+            tau = get_tau(spikes1, spikes2, i, j, true_max, MRTS)
             if fabs(spikes2[j]-spikes1[i]) < tau:
                 # current spike in st1 is coincident
                 c[i] = 1

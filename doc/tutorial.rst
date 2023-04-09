@@ -41,15 +41,39 @@ Computing bivariate distances profiles
 
 ------------------------------
 
-    Spike trains are expected to be *sorted*! 
-    For performance reasons, the PySpike distance functions do not check if the spike trains provided are indeed sorted.
-    Make sure that all your spike trains are sorted, which is ensured if you use the :func:`.load_spike_trains_from_txt` function with the parameter `is_sorted=False` (default).
-    If in doubt, use :meth:`.SpikeTrain.sort()` to ensure a correctly sorted spike train.
+Spike trains are expected to be *sorted*! 
+For performance reasons, the PySpike distance functions do not check if the spike trains provided are indeed sorted.
+Make sure that all your spike trains are sorted, which is ensured if you use the :func:`.load_spike_trains_from_txt` function with the parameter `is_sorted=False` (default).
+If in doubt, use :meth:`.SpikeTrain.sort()` to ensure a correctly sorted spike train.
 
-    If you need to copy a spike train, use the :meth:`.SpikeTrain.copy()` method.
-    Simple assignment `t2 = t1` does not create a copy of the spike train data, but a reference as `numpy.array` is used for storing the data.
+Alternatively the function :func:`.reconcile_spike_trains` applies three fixes to a list of SpikeTrain objects. It sorts
+the times, it removes all but one of any duplicated time, and it ensures all t_start and t_end values are compatible
+
+.. code:: python
+
+    from pyspike.spikes import reconcile_spike_trains
+    spike_trains = reconcile_spike_trains(spike_trains)
+
+If you need to copy a spike train, use the :meth:`.SpikeTrain.copy()` method.
+Simple assignment `t2 = t1` does not create a copy of the spike train data, but a reference as `numpy.array` is used for storing the data.
     
 ------------------------------
+
+   PySpike algorithms
+
+  PySpike supports four basic algorithms for comparing spike trains and their adaptive generalizations
+
+  The basic algorithms are:
+1) ISI-distance  (Inter Spike Intervals)
+2) SPIKE-distance
+3) Rate-Independent SPIKE-distance (RI-SPIKE)
+4) SPIKE sychronization
+
+plus
+
+(5-8) Adaptive generalizations of 1-4 based on the MRTS (Minimum Relevant Time Scale) parameter
+
+Algorithms 3 and 5-8 are new in version 0.8.0.
 
 ISI-distance
 ............
@@ -128,6 +152,17 @@ to compute the SPIKE distance directly, if you are not interested in the profile
 The parameter :code:`interval` is optional and if neglected the whole time interval is used.
 
 
+Rate-Independent SPIKE-distance
+...............................
+
+This variant of the SPIKE-distance disregards any differences in base rates and focuses purely on spike timing.
+It can be calculated by setting the optional parameter "RI=True":
+
+.. code:: python
+
+    ri_spike_dist = spk.spike_distance(spike_trains[0], spike_trains[1], RI=True)
+
+
 SPIKE synchronization
 .....................
 
@@ -164,7 +199,28 @@ For the direct computation of the overall spike synchronization value within som
 
 .. code:: python
    
-   spike_sync = spk.spike_sync(spike_trains[0], spike_trains[1], interval=ival)
+    spike_sync = spk.spike_sync(spike_trains[0], spike_trains[1], interval=ival)
+
+
+Adaptive generalizations
+........................
+
+The adaptive generalizations for all four of these basic measures can be calculated by setting the optional parameter "MRTS=<value>" (MRTS - Minimum Relevant Time Scale).
+If <value> is greater than zero the respective basic algorithm is modified to reduce emphasis on smaller spike time differences.
+If MRTS is set to 'auto', the threshold is automatically extracted from the data.
+
+Here are a few example lines:
+
+.. code:: python
+
+    a_isi_dist = spk.isi_distance(spike_trains, MRTS=10)
+
+    a_spike_profile = spk.spike_profile(spike_trains, MRTS=20)
+
+    a_ri_spike_matrix = spk.spike_distance_matrix(spike_trains[0], spike_trains[1], RI=True, MRTS=50)
+
+    a_spike_sync_auto = spk.spike_sync(spike_trains[0], spike_trains[1], MRTS='auto')
+
 
 Computing multivariate profiles and distances
 ----------------------------------------------

@@ -2,7 +2,6 @@
 # Copyright 2014, Mario Mulansky <mario.mulansky@gmx.net>
 # Distributed under the BSD License
 
-
 import numpy as np
 from pyspike import SpikeTrain
 
@@ -167,6 +166,7 @@ def reconcile_spike_trains(spike_trains):
               1) t_start and t_end are the same for every train
               2) The spike times are sorted
               3) No duplicate times in any train  
+              4) spike times outside of t_start,t_end removed
     """
     ## handle sorting and uniqueness first (np.unique() does a sort)
     spike_trains = [SpikeTrain(np.unique(s.spikes), 
@@ -176,8 +176,20 @@ def reconcile_spike_trains(spike_trains):
     ## find global start and end times
     Starts = [s.t_start  for s in spike_trains]
     tStart = min(Starts)
-    Ends   = [s.t_end for s in spike_trains if len(s.spikes)>0]
+
+    Ends   = [s.t_end for s in spike_trains]
     tEnd = max(Ends)
+
+    ## remove spike times outside of the bounds
+    Eps = 1e-6 #beware precision change
+    for s in spike_trains:
+        s.spikes = [t for t in s.spikes if t > tStart-Eps and t < tEnd+Eps]
 
     ## Apply start and end times to every train
     return [SpikeTrain(s.spikes, [tStart, tEnd], is_sorted=True) for s in spike_trains]
+
+def reconcile_spike_trains_bi(spike_train1, spike_train2):
+    """ fix up a pair of spike trains"""
+    trains_in = [spike_train1, spike_train2]
+    trains_out = reconcile_spike_trains(trains_in)
+    return trains_out[0], trains_out[1]

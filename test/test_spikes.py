@@ -96,6 +96,6 @@ def test_merge_empty_spike_trains():
     # we don't need to check more, that's done by test_merge_spike_trains
 
 
-if __name__ == "main":
+if __name__ == "__main__":
     test_load_from_txt()
     test_merge_spike_trains()
