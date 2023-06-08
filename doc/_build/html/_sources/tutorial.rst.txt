@@ -34,9 +34,6 @@ Furthermore, the spike trains are sorted via :code:`np.sort` (disable this featu
 As result, :func:`.load_spike_trains_from_txt` returns a *list of arrays* containing the spike trains in the text file.
 
 
-Computing bivariate distances profiles
----------------------------------------
-
 **Important note:**
 
 ------------------------------
@@ -62,9 +59,10 @@ Simple assignment `t2 = t1` does not create a copy of the spike train data, but 
 PySpike algorithms
 -------------------
 
-  PySpike supports four basic algorithms for comparing spike trains and their adaptive generalizations
+PySpike supports four basic algorithms for comparing spike trains and their adaptive generalizations
 
-  The basic algorithms are:
+The basic algorithms are:
+
 1) ISI-distance  (Inter Spike Intervals)
 2) SPIKE-distance
 3) Rate-Independent SPIKE-distance (RI-SPIKE)
@@ -291,7 +289,7 @@ The following example computes and plots the ISI- and SPIKE-distance matrix as w
 
 
 Quantifying Leaders and Followers: Spike Train Order
----------------------------------------
+-----------------------------------------------------
 
 PySpike provides functionality to quantify how much a set of spike trains
 resembles a synfire pattern (ie perfect leader-follower pattern). For details

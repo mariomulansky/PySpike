@@ -67,10 +67,6 @@ To quickly obtain spike trains from such files, PySpike provides the function <a
 Furthermore, the time interval of the spike train measurement (edges of the spike trains) should be provided as a pair of start- and end-time values.
 Furthermore, the spike trains are sorted via <code class="code docutils literal notranslate"><span class="pre">np.sort</span></code> (disable this feature by providing <code class="code docutils literal notranslate"><span class="pre">is_sorted=True</span></code> as a parameter to the load function).
 As result, <a class="reference internal" href="pyspike.html#pyspike.spikes.load_spike_trains_from_txt" title="pyspike.spikes.load_spike_trains_from_txt"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_spike_trains_from_txt()</span></code></a> returns a <em>list of arrays</em> containing the spike trains in the text file.</p>
-</section>
-</section>
-<section id="computing-bivariate-distances-profiles">
-<h1>Computing bivariate distances profiles<a class="headerlink" href="#computing-bivariate-distances-profiles" title="Permalink to this heading">¶</a></h1>
 <p><strong>Important note:</strong></p>
 <hr class="docutils" />
 <p>Spike trains are expected to be <em>sorted</em>!
@@ -86,13 +82,12 @@ the times, it removes all but one of any duplicated time, and it ensures all t_s
 <p>If you need to copy a spike train, use the <a class="reference internal" href="pyspike.html#pyspike.SpikeTrain.SpikeTrain.copy" title="pyspike.SpikeTrain.SpikeTrain.copy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SpikeTrain.copy()</span></code></a> method.
 Simple assignment <cite>t2 = t1</cite> does not create a copy of the spike train data, but a reference as <cite>numpy.array</cite> is used for storing the data.</p>
 </section>
+</section>
 <hr class="docutils" />
 <section id="pyspike-algorithms">
 <h1>PySpike algorithms<a class="headerlink" href="#pyspike-algorithms" title="Permalink to this heading">¶</a></h1>
-<blockquote>
-<div><p>PySpike supports four basic algorithms for comparing spike trains and their adaptive generalizations</p>
+<p>PySpike supports four basic algorithms for comparing spike trains and their adaptive generalizations</p>
 <p>The basic algorithms are:</p>
-</div></blockquote>
 <ol class="arabic simple">
 <li><p>ISI-distance  (Inter Spike Intervals)</p></li>
 <li><p>SPIKE-distance</p></li>
@@ -348,7 +343,6 @@ computes the optimal order of a set of 20 Poissonian spike trains:</p>
 <li><a class="reference internal" href="#loading-from-text-files">Loading from text files</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#computing-bivariate-distances-profiles">Computing bivariate distances profiles</a></li>
 <li><a class="reference internal" href="#pyspike-algorithms">PySpike algorithms</a><ul>
 <li><a class="reference internal" href="#isi-distance">ISI-distance</a></li>
 <li><a class="reference internal" href="#spike-distance">SPIKE-distance</a></li>
