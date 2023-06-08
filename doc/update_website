@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#git checkout gh-pages
+git checkout gh-pages
 rc=$?
 if [[ $rc != 0 ]] ; then
     exit $rc
