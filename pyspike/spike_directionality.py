@@ -17,6 +17,7 @@ from pyspike.spikes import reconcile_spike_trains, reconcile_spike_trains_bi
 ############################################################
 # spike_directionality_values
 ############################################################
+
 def spike_directionality_values(*args, **kwargs):
     """ Computes the spike directionality value for each spike in
     each spike train. Returns a list containing an array of spike directionality
