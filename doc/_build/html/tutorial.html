@@ -1,0 +1,404 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Spike trains &#8212; PySpike 0.8.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PySpike 0.8.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Spike trains</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="spike-trains">
+<h1>Spike trains<a class="headerlink" href="#spike-trains" title="Permalink to this heading">¶</a></h1>
+<p>In PySpike, spike trains are represented by <a class="reference internal" href="pyspike.html#pyspike.SpikeTrain.SpikeTrain" title="pyspike.SpikeTrain.SpikeTrain"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpikeTrain</span></code></a> objects.
+A <a class="reference internal" href="pyspike.html#pyspike.SpikeTrain.SpikeTrain" title="pyspike.SpikeTrain.SpikeTrain"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpikeTrain</span></code></a> object consists of the spike times given as <cite>numpy</cite> arrays as well as the edges of the spike train as <code class="code docutils literal notranslate"><span class="pre">[t_start,</span> <span class="pre">t_end]</span></code>.
+The following code creates such a spike train with some arbitrary spike times:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pyspike</span> <span class="kn">import</span> <span class="n">SpikeTrain</span>
+
+<span class="n">spike_train</span> <span class="o">=</span> <span class="n">SpikeTrain</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]))</span>
+</pre></div>
+</div>
+<section id="loading-from-text-files">
+<h2>Loading from text files<a class="headerlink" href="#loading-from-text-files" title="Permalink to this heading">¶</a></h2>
+<p>Typically, spike train data is loaded into PySpike from data files.
+The most straight-forward data files are text files where each line represents one spike train given as an sequence of spike times.
+An exemplary file with several spike trains is <a class="reference external" href="https://github.com/mariomulansky/PySpike/blob/master/examples/PySpike_testdata.txt">PySpike_testdata.txt</a>.
+To quickly obtain spike trains from such files, PySpike provides the function <a class="reference internal" href="pyspike.html#pyspike.spikes.load_spike_trains_from_txt" title="pyspike.spikes.load_spike_trains_from_txt"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_spike_trains_from_txt()</span></code></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pyspike</span> <span class="k">as</span> <span class="nn">spk</span>
+
+<span class="n">spike_trains</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">load_spike_trains_from_txt</span><span class="p">(</span><span class="s2">&quot;SPIKY_testdata.txt&quot;</span><span class="p">,</span>
+                                              <span class="n">edges</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4000</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>This function expects the name of the data file as first parameter.
+Furthermore, the time interval of the spike train measurement (edges of the spike trains) should be provided as a pair of start- and end-time values.
+Furthermore, the spike trains are sorted via <code class="code docutils literal notranslate"><span class="pre">np.sort</span></code> (disable this feature by providing <code class="code docutils literal notranslate"><span class="pre">is_sorted=True</span></code> as a parameter to the load function).
+As result, <a class="reference internal" href="pyspike.html#pyspike.spikes.load_spike_trains_from_txt" title="pyspike.spikes.load_spike_trains_from_txt"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_spike_trains_from_txt()</span></code></a> returns a <em>list of arrays</em> containing the spike trains in the text file.</p>
+</section>
+</section>
+<section id="computing-bivariate-distances-profiles">
+<h1>Computing bivariate distances profiles<a class="headerlink" href="#computing-bivariate-distances-profiles" title="Permalink to this heading">¶</a></h1>
+<p><strong>Important note:</strong></p>
+<hr class="docutils" />
+<p>Spike trains are expected to be <em>sorted</em>!
+For performance reasons, the PySpike distance functions do not check if the spike trains provided are indeed sorted.
+Make sure that all your spike trains are sorted, which is ensured if you use the <a class="reference internal" href="pyspike.html#pyspike.spikes.load_spike_trains_from_txt" title="pyspike.spikes.load_spike_trains_from_txt"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_spike_trains_from_txt()</span></code></a> function with the parameter <cite>is_sorted=False</cite> (default).
+If in doubt, use <a class="reference internal" href="pyspike.html#pyspike.SpikeTrain.SpikeTrain.sort" title="pyspike.SpikeTrain.SpikeTrain.sort"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SpikeTrain.sort()</span></code></a> to ensure a correctly sorted spike train.</p>
+<p>Alternatively the function <a class="reference internal" href="pyspike.html#pyspike.spikes.reconcile_spike_trains" title="pyspike.spikes.reconcile_spike_trains"><code class="xref py py-func docutils literal notranslate"><span class="pre">reconcile_spike_trains()</span></code></a> applies three fixes to a list of SpikeTrain objects. It sorts
+the times, it removes all but one of any duplicated time, and it ensures all t_start and t_end values are compatible</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyspike.spikes</span> <span class="kn">import</span> <span class="n">reconcile_spike_trains</span>
+<span class="n">spike_trains</span> <span class="o">=</span> <span class="n">reconcile_spike_trains</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you need to copy a spike train, use the <a class="reference internal" href="pyspike.html#pyspike.SpikeTrain.SpikeTrain.copy" title="pyspike.SpikeTrain.SpikeTrain.copy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SpikeTrain.copy()</span></code></a> method.
+Simple assignment <cite>t2 = t1</cite> does not create a copy of the spike train data, but a reference as <cite>numpy.array</cite> is used for storing the data.</p>
+</section>
+<hr class="docutils" />
+<section id="pyspike-algorithms">
+<h1>PySpike algorithms<a class="headerlink" href="#pyspike-algorithms" title="Permalink to this heading">¶</a></h1>
+<blockquote>
+<div><p>PySpike supports four basic algorithms for comparing spike trains and their adaptive generalizations</p>
+<p>The basic algorithms are:</p>
+</div></blockquote>
+<ol class="arabic simple">
+<li><p>ISI-distance  (Inter Spike Intervals)</p></li>
+<li><p>SPIKE-distance</p></li>
+<li><p>Rate-Independent SPIKE-distance (RI-SPIKE)</p></li>
+<li><p>SPIKE sychronization</p></li>
+</ol>
+<p>plus</p>
+<p>(5-8) Adaptive generalizations of 1-4 based on the MRTS (Minimum Relevant Time Scale) parameter</p>
+<p>Algorithms 3 and 5-8 are new in version 0.8.0.</p>
+<section id="isi-distance">
+<h2>ISI-distance<a class="headerlink" href="#isi-distance" title="Permalink to this heading">¶</a></h2>
+<p>The following code loads some exemplary spike trains, computes the dissimilarity profile of the ISI-distance of the first two <a class="reference internal" href="pyspike.html#pyspike.SpikeTrain.SpikeTrain" title="pyspike.SpikeTrain.SpikeTrain"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpikeTrain</span></code></a> s, and plots it with matplotlib:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">pyspike</span> <span class="k">as</span> <span class="nn">spk</span>
+
+<span class="n">spike_trains</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">load_spike_trains_from_txt</span><span class="p">(</span><span class="s2">&quot;PySpike_testdata.txt&quot;</span><span class="p">,</span>
+                                              <span class="n">edges</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4000</span><span class="p">))</span>
+<span class="n">isi_profile</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">isi_profile</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">spike_trains</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">isi_profile</span><span class="o">.</span><span class="n">get_plottable_data</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s1">&#39;--k&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ISI distance: </span><span class="si">%.8f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">isi_profile</span><span class="o">.</span><span class="n">avrg</span><span class="p">())</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The ISI-profile is a piece-wise constant function, and hence the function <a class="reference internal" href="pyspike.html#pyspike.isi_distance.isi_profile" title="pyspike.isi_distance.isi_profile"><code class="xref py py-func docutils literal notranslate"><span class="pre">isi_profile()</span></code></a> returns an instance of the <a class="reference internal" href="pyspike.html#pyspike.PieceWiseConstFunc.PieceWiseConstFunc" title="pyspike.PieceWiseConstFunc.PieceWiseConstFunc"><code class="xref py py-class docutils literal notranslate"><span class="pre">PieceWiseConstFunc</span></code></a> class.
+As shown above, this class allows you to obtain arrays that can be used to plot the function with <code class="code docutils literal notranslate"><span class="pre">plt.plt</span></code>, but also to compute the time average, which amounts to the final scalar ISI-distance.
+By default, the time average is computed for the whole <a class="reference internal" href="pyspike.html#pyspike.PieceWiseConstFunc.PieceWiseConstFunc" title="pyspike.PieceWiseConstFunc.PieceWiseConstFunc"><code class="xref py py-class docutils literal notranslate"><span class="pre">PieceWiseConstFunc</span></code></a> function.
+However, it is also possible to obtain the average of a specific interval by providing a pair of floats defining the start and end of the interval.
+For the above example, the following code computes the ISI-distances obtained from averaging the ISI-profile over four different intervals:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">isi1</span> <span class="o">=</span> <span class="n">isi_profile</span><span class="o">.</span><span class="n">avrg</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">))</span>
+<span class="n">isi2</span> <span class="o">=</span> <span class="n">isi_profile</span><span class="o">.</span><span class="n">avrg</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">2000</span><span class="p">))</span>
+<span class="n">isi3</span> <span class="o">=</span> <span class="n">isi_profile</span><span class="o">.</span><span class="n">avrg</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">),</span> <span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">3000</span><span class="p">)])</span>
+<span class="n">isi4</span> <span class="o">=</span> <span class="n">isi_profile</span><span class="o">.</span><span class="n">avrg</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="p">[(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">2000</span><span class="p">),</span> <span class="p">(</span><span class="mi">3000</span><span class="p">,</span> <span class="mi">4000</span><span class="p">)])</span>
+</pre></div>
+</div>
+<p>Note, how also multiple intervals can be supplied by giving a list of tuples.</p>
+<p>If you are only interested in the scalar ISI-distance and not the profile, you can simply use:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">isi_dist</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">isi_distance</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">spike_trains</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">interval</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>where <code class="code docutils literal notranslate"><span class="pre">interval</span></code> is optional, as above, and if omitted the ISI-distance is computed for the complete spike train.</p>
+</section>
+<section id="spike-distance">
+<h2>SPIKE-distance<a class="headerlink" href="#spike-distance" title="Permalink to this heading">¶</a></h2>
+<p>To compute for the spike distance profile you use the function <a class="reference internal" href="pyspike.html#pyspike.spike_distance.spike_profile" title="pyspike.spike_distance.spike_profile"><code class="xref py py-func docutils literal notranslate"><span class="pre">spike_profile()</span></code></a> instead of <code class="code docutils literal notranslate"><span class="pre">isi_profile</span></code> above.
+But the general approach is very similar:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">pyspike</span> <span class="k">as</span> <span class="nn">spk</span>
+
+<span class="n">spike_trains</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">load_spike_trains_from_txt</span><span class="p">(</span><span class="s2">&quot;PySpike_testdata.txt&quot;</span><span class="p">,</span>
+                                              <span class="n">edges</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4000</span><span class="p">))</span>
+<span class="n">spike_profile</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">spike_profile</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">spike_trains</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">spike_profile</span><span class="o">.</span><span class="n">get_plottable_data</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s1">&#39;--k&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SPIKE distance: </span><span class="si">%.8f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">spike_profile</span><span class="o">.</span><span class="n">avrg</span><span class="p">())</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This short example computes and plots the SPIKE-profile of the first two spike trains in the file <code class="code docutils literal notranslate"><span class="pre">PySpike_testdata.txt</span></code>.</p>
+<p>In contrast to the ISI-profile, a SPIKE-profile is a piece-wise <em>linear</em> function and is therefore represented by a <a class="reference internal" href="pyspike.html#pyspike.PieceWiseLinFunc.PieceWiseLinFunc" title="pyspike.PieceWiseLinFunc.PieceWiseLinFunc"><code class="xref py py-class docutils literal notranslate"><span class="pre">PieceWiseLinFunc</span></code></a> object.
+Just like the <a class="reference internal" href="pyspike.html#pyspike.PieceWiseConstFunc.PieceWiseConstFunc" title="pyspike.PieceWiseConstFunc.PieceWiseConstFunc"><code class="xref py py-class docutils literal notranslate"><span class="pre">PieceWiseConstFunc</span></code></a> for the ISI-profile, the <a class="reference internal" href="pyspike.html#pyspike.PieceWiseLinFunc.PieceWiseLinFunc" title="pyspike.PieceWiseLinFunc.PieceWiseLinFunc"><code class="xref py py-class docutils literal notranslate"><span class="pre">PieceWiseLinFunc</span></code></a> provides a <a class="reference internal" href="pyspike.html#pyspike.PieceWiseLinFunc.PieceWiseLinFunc.get_plottable_data" title="pyspike.PieceWiseLinFunc.PieceWiseLinFunc.get_plottable_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PieceWiseLinFunc.get_plottable_data()</span></code></a> member function that returns arrays that can be used directly to plot the function.
+Furthermore, the <a class="reference internal" href="pyspike.html#pyspike.PieceWiseLinFunc.PieceWiseLinFunc.avrg" title="pyspike.PieceWiseLinFunc.PieceWiseLinFunc.avrg"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PieceWiseLinFunc.avrg()</span></code></a> member function returns the average of the profile defined as the overall SPIKE distance.
+As above, you can provide an interval as a pair of floats as well as a sequence of such pairs to <code class="code docutils literal notranslate"><span class="pre">avrg</span></code> to specify the averaging interval if required.</p>
+<p>Again, you can use:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">spike_dist</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">spike_distance</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">spike_trains</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">interval</span><span class="o">=</span><span class="n">ival</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>to compute the SPIKE distance directly, if you are not interested in the profile at all.
+The parameter <code class="code docutils literal notranslate"><span class="pre">interval</span></code> is optional and if neglected the whole time interval is used.</p>
+</section>
+<section id="rate-independent-spike-distance">
+<h2>Rate-Independent SPIKE-distance<a class="headerlink" href="#rate-independent-spike-distance" title="Permalink to this heading">¶</a></h2>
+<p>This variant of the SPIKE-distance disregards any differences in base rates and focuses purely on spike timing.
+It can be calculated by setting the optional parameter “RI=True”:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ri_spike_dist</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">spike_distance</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">spike_trains</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">RI</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="spike-synchronization">
+<h2>SPIKE synchronization<a class="headerlink" href="#spike-synchronization" title="Permalink to this heading">¶</a></h2>
+<p><strong>Important note:</strong></p>
+<hr class="docutils" />
+<blockquote>
+<div><p>SPIKE-Synchronization measures <em>similarity</em>.
+That means, a value of zero indicates absence of synchrony, while a value of one denotes the presence of synchrony.
+This is exactly opposite to the other two measures: ISI- and SPIKE-distance.</p>
+</div></blockquote>
+<hr class="docutils" />
+<p>SPIKE synchronization is another approach to measure spike synchrony.
+In contrast to the SPIKE- and ISI-distance, it measures similarity instead of dissimilarity, i.e. higher values represent larger synchrony.
+Another difference is that the SPIKE synchronization profile is only defined exactly at the spike times, not for the whole interval of the spike trains.
+Therefore, it is represented by a <code class="xref py py-class docutils literal notranslate"><span class="pre">DiscreteFunction</span></code>.</p>
+<p>To compute for the spike synchronization profile, PySpike provides the function <a class="reference internal" href="pyspike.html#pyspike.spike_sync.spike_sync_profile" title="pyspike.spike_sync.spike_sync_profile"><code class="xref py py-func docutils literal notranslate"><span class="pre">spike_sync_profile()</span></code></a>.
+The general handling of the profile, however, is similar to the other profiles above:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">pyspike</span> <span class="k">as</span> <span class="nn">spk</span>
+
+<span class="n">spike_trains</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">load_spike_trains_from_txt</span><span class="p">(</span><span class="s2">&quot;PySpike_testdata.txt&quot;</span><span class="p">,</span>
+                                              <span class="n">edges</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4000</span><span class="p">))</span>
+<span class="n">spike_profile</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">spike_sync_profile</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">spike_trains</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">spike_profile</span><span class="o">.</span><span class="n">get_plottable_data</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>For the direct computation of the overall spike synchronization value within some interval, the <a class="reference internal" href="pyspike.html#pyspike.spike_sync.spike_sync" title="pyspike.spike_sync.spike_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">spike_sync()</span></code></a> function can be used:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">spike_sync</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">spike_sync</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">spike_trains</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">interval</span><span class="o">=</span><span class="n">ival</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="adaptive-generalizations">
+<h2>Adaptive generalizations<a class="headerlink" href="#adaptive-generalizations" title="Permalink to this heading">¶</a></h2>
+<p>The adaptive generalizations for all four of these basic measures can be calculated by setting the optional parameter “MRTS=&lt;value&gt;” (MRTS - Minimum Relevant Time Scale).
+If &lt;value&gt; is greater than zero the respective basic algorithm is modified to reduce emphasis on smaller spike time differences.
+If MRTS is set to ‘auto’, the threshold is automatically extracted from the data.</p>
+<p>Here are a few example lines:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a_isi_dist</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">isi_distance</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">MRTS</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="n">a_spike_profile</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">spike_profile</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">MRTS</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+
+<span class="n">a_ri_spike_matrix</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">spike_distance_matrix</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">spike_trains</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">RI</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">MRTS</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+
+<span class="n">a_spike_sync_auto</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">spike_sync</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">spike_trains</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">MRTS</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="computing-multivariate-profiles-and-distances">
+<h1>Computing multivariate profiles and distances<a class="headerlink" href="#computing-multivariate-profiles-and-distances" title="Permalink to this heading">¶</a></h1>
+<p>To compute the multivariate ISI-profile, SPIKE-profile or SPIKE-Synchronization profile for a set of spike trains, simply provide a list of spike trains to the profile or distance functions.
+The following example computes the multivariate ISI-, SPIKE- and SPIKE-Sync-profile for a list of spike trains:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">spike_trains</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">load_spike_trains_from_txt</span><span class="p">(</span><span class="s2">&quot;PySpike_testdata.txt&quot;</span><span class="p">,</span>
+                                              <span class="n">edges</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4000</span><span class="p">))</span>
+<span class="n">avrg_isi_profile</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">isi_profile</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">)</span>
+<span class="n">avrg_spike_profile</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">spike_profile</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">)</span>
+<span class="n">avrg_spike_sync_profile</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">spike_sync_profile</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>All functions also take an optional parameter <code class="code docutils literal notranslate"><span class="pre">indices</span></code>, a list of indices that allows to define the spike trains that should be used for the multivariate profile.
+As before, if you are only interested in the distance values, and not in the profile, you can call the functions: <a class="reference internal" href="pyspike.html#pyspike.isi_distance.isi_distance" title="pyspike.isi_distance.isi_distance"><code class="xref py py-func docutils literal notranslate"><span class="pre">isi_distance()</span></code></a>, <a class="reference internal" href="pyspike.html#pyspike.spike_distance.spike_distance" title="pyspike.spike_distance.spike_distance"><code class="xref py py-func docutils literal notranslate"><span class="pre">spike_distance()</span></code></a> and <a class="reference internal" href="pyspike.html#pyspike.spike_sync.spike_sync" title="pyspike.spike_sync.spike_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">spike_sync()</span></code></a> with a list of spike trains.
+They return the scalar overall multivariate ISI-, SPIKE-distance or the SPIKE-Synchronization value.</p>
+<p>The following code is equivalent to the bivariate example above, computing the ISI-Distance between the first two spike trains in the given interval using the <code class="code docutils literal notranslate"><span class="pre">indices</span></code> parameter:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">isi_dist</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">isi_distance</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">interval</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>As you can see, the distance functions also accept an <code class="code docutils literal notranslate"><span class="pre">interval</span></code> parameter that can be used to specify the begin and end of the averaging interval as a pair of floats, if neglected the complete interval is used.</p>
+<p><strong>Note:</strong></p>
+<hr class="docutils" />
+<blockquote>
+<div><p>Instead of providing lists of spike trains to the profile or distance functions, you can also call those functions with many spike trains as (unnamed) parameters, e.g.:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># st1, st2, st3, st4 are spike trains</span>
+<span class="n">spike_prof</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">spike_profile</span><span class="p">(</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">,</span> <span class="n">st3</span><span class="p">,</span> <span class="n">st4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<hr class="docutils" />
+<p>Another option to characterize large sets of spike trains are distance matrices.
+Each entry in the distance matrix represents a bivariate distance (similarity for SPIKE-Synchronization) of two spike trains.
+The distance matrix is symmetric and has zero values (ones) at the diagonal and is computed with the functions <a class="reference internal" href="pyspike.html#pyspike.isi_distance.isi_distance_matrix" title="pyspike.isi_distance.isi_distance_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">isi_distance_matrix()</span></code></a>, <a class="reference internal" href="pyspike.html#pyspike.spike_distance.spike_distance_matrix" title="pyspike.spike_distance.spike_distance_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">spike_distance_matrix()</span></code></a> and <a class="reference internal" href="pyspike.html#pyspike.spike_sync.spike_sync_matrix" title="pyspike.spike_sync.spike_sync_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">spike_sync_matrix()</span></code></a>.
+The following example computes and plots the ISI- and SPIKE-distance matrix as well as the SPIKE-Synchronization-matrix, with different intervals.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">spike_trains</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">load_spike_trains_from_txt</span><span class="p">(</span><span class="s2">&quot;PySpike_testdata.txt&quot;</span><span class="p">,</span> <span class="mi">4000</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">isi_distance</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">isi_distance_matrix</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">isi_distance</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;ISI-distance&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">spike_distance</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">spike_distance_matrix</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1000</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">spike_distance</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;SPIKE-distance&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">spike_sync</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">spike_sync_matrix</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span><span class="mi">4000</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">spike_sync</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;SPIKE-Sync&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="quantifying-leaders-and-followers-spike-train-order">
+<h1>Quantifying Leaders and Followers: Spike Train Order<a class="headerlink" href="#quantifying-leaders-and-followers-spike-train-order" title="Permalink to this heading">¶</a></h1>
+<p>PySpike provides functionality to quantify how much a set of spike trains
+resembles a synfire pattern (ie perfect leader-follower pattern). For details
+on the algorithms please see
+<a class="reference external" href="http://iopscience.iop.org/article/10.1088/1367-2630/aa68c3">our article in NJP</a>.</p>
+<p>The following example computes the Spike Order profile and Synfire Indicator
+of two Poissonian spike trains.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">import</span> <span class="nn">pyspike</span> <span class="k">as</span> <span class="nn">spk</span>
+
+
+<span class="n">st1</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">generate_poisson_spikes</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">])</span>
+<span class="n">st2</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">generate_poisson_spikes</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">])</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">spike_directionality</span><span class="p">(</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="s2">&quot;Spike Directionality of two Poissonian spike trains:&quot;</span><span class="p">,</span> <span class="n">d</span>
+
+<span class="n">E</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">spike_train_order_profile</span><span class="p">(</span><span class="n">st1</span><span class="p">,</span> <span class="n">st2</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">E</span><span class="o">.</span><span class="n">get_plottable_data</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s1">&#39;-ob&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;t&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;E&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Spike Train Order Profile&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Additionally, PySpike can also compute the optimal ordering of the spike trains,
+ie the ordering that most resembles a synfire pattern. The following example
+computes the optimal order of a set of 20 Poissonian spike trains:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">M</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">spike_trains</span> <span class="o">=</span> <span class="p">[</span><span class="n">spk</span><span class="o">.</span><span class="n">generate_poisson_spikes</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">])</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="n">M</span><span class="p">)]</span>
+
+<span class="n">F_init</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">spike_train_order</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">)</span>
+<span class="nb">print</span> <span class="s2">&quot;Initial Synfire Indicator for 20 Poissonian spike trains:&quot;</span><span class="p">,</span> <span class="n">F_init</span>
+
+<span class="n">D_init</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">spike_directionality_matrix</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">)</span>
+<span class="n">phi</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">optimal_spike_train_sorting</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">)</span>
+<span class="n">F_opt</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">spike_train_order</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">phi</span><span class="p">)</span>
+<span class="nb">print</span> <span class="s2">&quot;Synfire Indicator of optimized spike train sorting:&quot;</span><span class="p">,</span> <span class="n">F_opt</span>
+
+<span class="n">D_opt</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">permutate_matrix</span><span class="p">(</span><span class="n">D_init</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">D_init</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Initial Directionality Matrix&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">D_opt</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Optimized Directionality Matrix&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Spike trains</a><ul>
+<li><a class="reference internal" href="#loading-from-text-files">Loading from text files</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#computing-bivariate-distances-profiles">Computing bivariate distances profiles</a></li>
+<li><a class="reference internal" href="#pyspike-algorithms">PySpike algorithms</a><ul>
+<li><a class="reference internal" href="#isi-distance">ISI-distance</a></li>
+<li><a class="reference internal" href="#spike-distance">SPIKE-distance</a></li>
+<li><a class="reference internal" href="#rate-independent-spike-distance">Rate-Independent SPIKE-distance</a></li>
+<li><a class="reference internal" href="#spike-synchronization">SPIKE synchronization</a></li>
+<li><a class="reference internal" href="#adaptive-generalizations">Adaptive generalizations</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#computing-multivariate-profiles-and-distances">Computing multivariate profiles and distances</a></li>
+<li><a class="reference internal" href="#quantifying-leaders-and-followers-spike-train-order">Quantifying Leaders and Followers: Spike Train Order</a></li>
+</ul>
+
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/tutorial.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PySpike 0.8.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Spike trains</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2014-2017, Mario Mulansky.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+  </body>
+</html>

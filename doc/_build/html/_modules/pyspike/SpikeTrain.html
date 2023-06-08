@@ -1,0 +1,159 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pyspike.SpikeTrain &#8212; PySpike 0.8.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css" />
+    
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">PySpike 0.8.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">pyspike.SpikeTrain</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pyspike.SpikeTrain</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Module containing the class representing spike trains for PySpike.</span>
+<span class="c1"># Copyright 2015, Mario Mulansky &lt;mario.mulansky@gmx.net&gt;</span>
+<span class="c1"># Distributed under the BSD License</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="SpikeTrain"><a class="viewcode-back" href="../../pyspike.html#pyspike.SpikeTrain.SpikeTrain">[docs]</a><span class="k">class</span> <span class="nc">SpikeTrain</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Class representing spike trains for the PySpike Module.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SpikeTrain.__init__"><a class="viewcode-back" href="../../pyspike.html#pyspike.SpikeTrain.SpikeTrain.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spike_times</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">is_sorted</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Constructs the SpikeTrain.</span>
+
+<span class="sd">        :param spike_times: ordered array of spike times.</span>
+<span class="sd">        :param edges: The edges of the spike train. Given as a pair of floats</span>
+<span class="sd">                      (T0, T1) or a single float T1, where then T0=0 is</span>
+<span class="sd">                      assumed.</span>
+<span class="sd">        :param is_sorted: If `False`, the spike times will sorted by `np.sort`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># TODO: sanity checks</span>
+        <span class="k">if</span> <span class="n">is_sorted</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">spikes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">spike_times</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">spikes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">spike_times</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">edges</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">t_end</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">edges</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">t_end</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the time of the spike given by index.</span>
+
+<span class="sd">        :param index: Index of the spike.</span>
+<span class="sd">        :return: spike time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">spikes</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the number of spikes.</span>
+<span class="sd">        </span>
+<span class="sd">        :return: Number of spikes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spikes</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SpikeTrain.sort"><a class="viewcode-back" href="../../pyspike.html#pyspike.SpikeTrain.SpikeTrain.sort">[docs]</a>    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Sorts the spike times of this spike train using `np.sort`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spikes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spikes</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SpikeTrain.copy"><a class="viewcode-back" href="../../pyspike.html#pyspike.SpikeTrain.SpikeTrain.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a copy of this spike train.</span>
+<span class="sd">        Use this function if you want to create a real (deep) copy of this</span>
+<span class="sd">        spike train. Simple assignment `t2 = t1` does not create a copy of the</span>
+<span class="sd">        spike train data, but a reference as `numpy.array` is used for storing</span>
+<span class="sd">        the data.</span>
+
+<span class="sd">        :return: :class:`.SpikeTrain` copy of this spike train.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">SpikeTrain</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spikes</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">t_start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_end</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="SpikeTrain.get_spikes_non_empty"><a class="viewcode-back" href="../../pyspike.html#pyspike.SpikeTrain.SpikeTrain.get_spikes_non_empty">[docs]</a>    <span class="k">def</span> <span class="nf">get_spikes_non_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the spikes of this spike train with auxiliary spikes in case</span>
+<span class="sd">        of empty spike trains.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spikes</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">t_start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_end</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">spikes</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">spikes</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">PySpike 0.8.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">pyspike.SpikeTrain</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2014-2017, Mario Mulansky.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,327 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pyspike.spike_distance &#8212; PySpike 0.8.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css" />
+    
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">PySpike 0.8.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">pyspike.spike_distance</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pyspike.spike_distance</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Module containing several functions to compute SPIKE profiles and distances</span>
+<span class="c1"># Copyright 2014-2015, Mario Mulansky &lt;mario.mulansky@gmx.net&gt;</span>
+<span class="c1"># Distributed under the BSD License</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+
+<span class="kn">import</span> <span class="nn">pyspike</span>
+<span class="kn">from</span> <span class="nn">pyspike</span> <span class="kn">import</span> <span class="n">PieceWiseLinFunc</span>
+<span class="kn">from</span> <span class="nn">pyspike.generic</span> <span class="kn">import</span> <span class="n">_generic_profile_multi</span><span class="p">,</span> <span class="n">_generic_distance_multi</span><span class="p">,</span> \
+    <span class="n">_generic_distance_matrix</span><span class="p">,</span> <span class="n">resolve_keywords</span>
+<span class="kn">from</span> <span class="nn">pyspike.isi_lengths</span> <span class="kn">import</span> <span class="n">default_thresh</span>
+<span class="kn">from</span> <span class="nn">pyspike.spikes</span> <span class="kn">import</span> <span class="n">reconcile_spike_trains</span><span class="p">,</span> <span class="n">reconcile_spike_trains_bi</span>
+
+
+<span class="c1">############################################################</span>
+<span class="c1"># spike_profile</span>
+<span class="c1">############################################################</span>
+<div class="viewcode-block" id="spike_profile"><a class="viewcode-back" href="../../pyspike.html#pyspike.spike_distance.spike_profile">[docs]</a><span class="k">def</span> <span class="nf">spike_profile</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Computes the spike-distance profile :math:`S(t)` of the given</span>
+<span class="sd">    spike trains. Returns the profile as a PieceWiseConstLin object. The</span>
+<span class="sd">    SPIKE-values are defined positive :math:`S(t)&gt;=0`.</span>
+
+<span class="sd">    Valid call structures::</span>
+
+<span class="sd">      spike_profile(st1, st2)  # returns the bi-variate profile</span>
+<span class="sd">      spike_profile(st1, st2, st3)  # multi-variate profile of 3 spike trains</span>
+
+<span class="sd">      spike_trains = [st1, st2, st3, st4]  # list of spike trains</span>
+<span class="sd">      spike_profile(spike_trains)  # profile of the list of spike trains</span>
+<span class="sd">      spike_profile(spike_trains, indices=[0, 1])  # use only the spike trains</span>
+<span class="sd">                                                   # given by the indices</span>
+
+<span class="sd">    The multivariate spike-distance profile is defined as the average of all</span>
+<span class="sd">    pairs of spike-trains:</span>
+
+<span class="sd">    .. math:: &lt;S(t)&gt; = \\frac{2}{N(N-1)} \\sum_{&lt;i,j&gt;} S^{i, j}`,</span>
+
+<span class="sd">    where the sum goes over all pairs &lt;i,j&gt;</span>
+
+<span class="sd">    :returns: The spike-distance profile :math:`S(t)`</span>
+<span class="sd">    :rtype: :class:`.PieceWiseConstLin`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">spike_profile_multi</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">spike_profile_bi</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">spike_profile_multi</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<span class="c1">############################################################</span>
+<span class="c1"># spike_profile_bi</span>
+<span class="c1">############################################################</span>
+<div class="viewcode-block" id="spike_profile_bi"><a class="viewcode-back" href="../../pyspike.html#pyspike.spike_distance.spike_profile_bi">[docs]</a><span class="k">def</span> <span class="nf">spike_profile_bi</span><span class="p">(</span><span class="n">spike_train1</span><span class="p">,</span> <span class="n">spike_train2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Specific function to compute a bivariate SPIKE-profile. This is a</span>
+<span class="sd">    deprecated function and should not be called directly. Use</span>
+<span class="sd">    :func:`.spike_profile` to compute SPIKE-profiles.</span>
+
+<span class="sd">    :param spike_train1: First spike train.</span>
+<span class="sd">    :type spike_train1: :class:`.SpikeTrain`</span>
+<span class="sd">    :param spike_train2: Second spike train.</span>
+<span class="sd">    :type spike_train2: :class:`.SpikeTrain`</span>
+<span class="sd">    :returns: The spike-distance profile :math:`S(t)`.</span>
+<span class="sd">    :rtype: :class:`.PieceWiseLinFunc`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Reconcile&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="n">spike_train1</span><span class="p">,</span> <span class="n">spike_train2</span> <span class="o">=</span> <span class="n">reconcile_spike_trains_bi</span><span class="p">(</span><span class="n">spike_train1</span><span class="p">,</span> <span class="n">spike_train2</span><span class="p">)</span>
+    <span class="n">MRTS</span><span class="p">,</span> <span class="n">RI</span> <span class="o">=</span> <span class="n">resolve_keywords</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">MRTS</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">MRTS</span> <span class="o">=</span> <span class="n">default_thresh</span><span class="p">([</span><span class="n">spike_train1</span><span class="p">,</span> <span class="n">spike_train2</span><span class="p">])</span>
+
+    <span class="c1"># cython implementation</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">.cython.cython_profiles</span> <span class="kn">import</span> <span class="n">spike_profile_cython</span> \
+            <span class="k">as</span> <span class="n">spike_profile_impl</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="n">pyspike</span><span class="o">.</span><span class="n">NoCythonWarn</span><span class="p">()</span>
+
+        <span class="c1"># use python backend</span>
+        <span class="kn">from</span> <span class="nn">.cython.python_backend</span> <span class="kn">import</span> <span class="n">spike_distance_python</span> \
+            <span class="k">as</span> <span class="n">spike_profile_impl</span>
+
+    <span class="n">times</span><span class="p">,</span> <span class="n">y_starts</span><span class="p">,</span> <span class="n">y_ends</span> <span class="o">=</span> <span class="n">spike_profile_impl</span><span class="p">(</span>
+        <span class="n">spike_train1</span><span class="o">.</span><span class="n">get_spikes_non_empty</span><span class="p">(),</span>
+        <span class="n">spike_train2</span><span class="o">.</span><span class="n">get_spikes_non_empty</span><span class="p">(),</span>
+        <span class="n">spike_train1</span><span class="o">.</span><span class="n">t_start</span><span class="p">,</span> <span class="n">spike_train1</span><span class="o">.</span><span class="n">t_end</span><span class="p">,</span>
+        <span class="n">MRTS</span><span class="p">,</span> <span class="n">RI</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">PieceWiseLinFunc</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">y_starts</span><span class="p">,</span> <span class="n">y_ends</span><span class="p">)</span></div>
+
+
+<span class="c1">############################################################</span>
+<span class="c1"># spike_profile_multi</span>
+<span class="c1">############################################################</span>
+<div class="viewcode-block" id="spike_profile_multi"><a class="viewcode-back" href="../../pyspike.html#pyspike.spike_distance.spike_profile_multi">[docs]</a><span class="k">def</span> <span class="nf">spike_profile_multi</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Specific function to compute a multivariate SPIKE-profile. This is a</span>
+<span class="sd">    deprecated function and should not be called directly. Use</span>
+<span class="sd">    :func:`.spike_profile` to compute SPIKE-profiles.</span>
+
+<span class="sd">    :param spike_trains: list of :class:`.SpikeTrain`</span>
+<span class="sd">    :param indices: list of indices defining which spike trains to use,</span>
+<span class="sd">                    if None all given spike trains are used (default=None)</span>
+<span class="sd">    :type indices: list or None</span>
+<span class="sd">    :returns: The averaged spike profile :math:`&lt;S&gt;(t)`</span>
+<span class="sd">    :rtype: :class:`.PieceWiseLinFunc`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">average_dist</span><span class="p">,</span> <span class="n">M</span> <span class="o">=</span> <span class="n">_generic_profile_multi</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">spike_profile_bi</span><span class="p">,</span>
+                                             <span class="n">indices</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">average_dist</span><span class="o">.</span><span class="n">mul_scalar</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">M</span><span class="p">)</span>  <span class="c1"># normalize</span>
+    <span class="k">return</span> <span class="n">average_dist</span></div>
+
+
+<span class="c1">############################################################</span>
+<span class="c1"># spike_distance</span>
+<span class="c1">############################################################</span>
+<div class="viewcode-block" id="spike_distance"><a class="viewcode-back" href="../../pyspike.html#pyspike.spike_distance.spike_distance">[docs]</a><span class="k">def</span> <span class="nf">spike_distance</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Computes the SPIKE-distance :math:`D_S` of the given spike trains. The</span>
+<span class="sd">    spike-distance is the integral over the spike distance profile</span>
+<span class="sd">    :math:`D(t)`:</span>
+
+<span class="sd">    .. math:: D_S = \\int_{T_0}^{T_1} S(t) dt.</span>
+
+
+<span class="sd">    Valid call structures::</span>
+
+<span class="sd">      spike_distance(st1, st2)  # returns the bi-variate distance</span>
+<span class="sd">      spike_distance(st1, st2, st3)  # multi-variate distance of 3 spike trains</span>
+
+<span class="sd">      spike_trains = [st1, st2, st3, st4]  # list of spike trains</span>
+<span class="sd">      spike_distance(spike_trains)  # distance of the list of spike trains</span>
+<span class="sd">      spike_distance(spike_trains, indices=[0, 1])  # use only the spike trains</span>
+<span class="sd">                                                    # given by the indices</span>
+
+<span class="sd">    In the multivariate case, the spike distance is given as the integral over</span>
+<span class="sd">    the multivariate profile, that is the average profile of all spike train</span>
+<span class="sd">    pairs:</span>
+
+<span class="sd">    .. math::  D_S = \\int_0^T \\frac{2}{N(N-1)} \\sum_{&lt;i,j&gt;}</span>
+<span class="sd">               S^{i, j} dt</span>
+
+<span class="sd">    :returns: The spike-distance :math:`D_S`.</span>
+<span class="sd">    :rtype: double</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">spike_distance_multi</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">spike_distance_bi</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">spike_distance_multi</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<span class="c1">############################################################</span>
+<span class="c1"># spike_distance_bi</span>
+<span class="c1">############################################################</span>
+<div class="viewcode-block" id="spike_distance_bi"><a class="viewcode-back" href="../../pyspike.html#pyspike.spike_distance.spike_distance_bi">[docs]</a><span class="k">def</span> <span class="nf">spike_distance_bi</span><span class="p">(</span><span class="n">spike_train1</span><span class="p">,</span> <span class="n">spike_train2</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Specific function to compute a bivariate SPIKE-distance. This is a</span>
+<span class="sd">    deprecated function and should not be called directly. Use</span>
+<span class="sd">    :func:`.spike_distance` to compute SPIKE-distances.</span>
+
+<span class="sd">    :param spike_train1: First spike train.</span>
+<span class="sd">    :type spike_train1: :class:`.SpikeTrain`</span>
+<span class="sd">    :param spike_train2: Second spike train.</span>
+<span class="sd">    :type spike_train2: :class:`.SpikeTrain`</span>
+<span class="sd">    :param interval: averaging interval given as a pair of floats (T0, T1),</span>
+<span class="sd">                     if None the average over the whole function is computed.</span>
+<span class="sd">    :type interval: Pair of floats or None.</span>
+<span class="sd">    :returns: The spike-distance.</span>
+<span class="sd">    :rtype: double</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Reconcile&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="n">spike_train1</span><span class="p">,</span> <span class="n">spike_train2</span> <span class="o">=</span> <span class="n">reconcile_spike_trains_bi</span><span class="p">(</span><span class="n">spike_train1</span><span class="p">,</span> <span class="n">spike_train2</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;Reconcile&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">MRTS</span><span class="p">,</span> <span class="n">RI</span> <span class="o">=</span> <span class="n">resolve_keywords</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">MRTS</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">MRTS</span> <span class="o">=</span> <span class="n">default_thresh</span><span class="p">([</span><span class="n">spike_train1</span><span class="p">,</span> <span class="n">spike_train2</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">interval</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># distance over the whole interval is requested: use specific function</span>
+        <span class="c1"># for optimal performance</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">.cython.cython_distances</span> <span class="kn">import</span> <span class="n">spike_distance_cython</span> \
+                <span class="k">as</span> <span class="n">spike_distance_impl</span>
+            <span class="k">return</span> <span class="n">spike_distance_impl</span><span class="p">(</span><span class="n">spike_train1</span><span class="o">.</span><span class="n">get_spikes_non_empty</span><span class="p">(),</span>
+                                       <span class="n">spike_train2</span><span class="o">.</span><span class="n">get_spikes_non_empty</span><span class="p">(),</span>
+                                       <span class="n">spike_train1</span><span class="o">.</span><span class="n">t_start</span><span class="p">,</span>
+                                       <span class="n">spike_train1</span><span class="o">.</span><span class="n">t_end</span><span class="p">,</span>
+                                       <span class="n">MRTS</span><span class="p">,</span> <span class="n">RI</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="c1"># Cython backend not available: fall back to average profile</span>
+            <span class="k">return</span> <span class="n">spike_profile_bi</span><span class="p">(</span><span class="n">spike_train1</span><span class="p">,</span> <span class="n">spike_train2</span><span class="p">,</span> 
+                                    <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">avrg</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># some specific interval is provided: compute the whole profile</span>
+        <span class="k">return</span> <span class="n">spike_profile_bi</span><span class="p">(</span><span class="n">spike_train1</span><span class="p">,</span> <span class="n">spike_train2</span><span class="p">,</span> 
+                                <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">avrg</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span></div>
+
+
+<span class="c1">############################################################</span>
+<span class="c1"># spike_distance_multi</span>
+<span class="c1">############################################################</span>
+<div class="viewcode-block" id="spike_distance_multi"><a class="viewcode-back" href="../../pyspike.html#pyspike.spike_distance.spike_distance_multi">[docs]</a><span class="k">def</span> <span class="nf">spike_distance_multi</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Specific function to compute a multivariate SPIKE-distance. This is a</span>
+<span class="sd">    deprecated function and should not be called directly. Use</span>
+<span class="sd">    :func:`.spike_distance` to compute SPIKE-distances.</span>
+
+<span class="sd">    :param spike_trains: list of :class:`.SpikeTrain`</span>
+<span class="sd">    :param indices: list of indices defining which spike trains to use,</span>
+<span class="sd">                    if None all given spike trains are used (default=None)</span>
+<span class="sd">    :type indices: list or None</span>
+<span class="sd">    :param interval: averaging interval given as a pair of floats, if None</span>
+<span class="sd">                     the average over the whole function is computed.</span>
+<span class="sd">    :type interval: Pair of floats or None.</span>
+<span class="sd">    :returns: The averaged multi-variate spike distance :math:`D_S`.</span>
+<span class="sd">    :rtype: double</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_generic_distance_multi</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">spike_distance_bi</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span>
+                                   <span class="n">interval</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<span class="c1">############################################################</span>
+<span class="c1"># spike_distance_matrix</span>
+<span class="c1">############################################################</span>
+<div class="viewcode-block" id="spike_distance_matrix"><a class="viewcode-back" href="../../pyspike.html#pyspike.spike_distance.spike_distance_matrix">[docs]</a><span class="k">def</span> <span class="nf">spike_distance_matrix</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Computes the time averaged spike-distance of all pairs of spike-trains.</span>
+
+<span class="sd">    :param spike_trains: list of :class:`.SpikeTrain`</span>
+<span class="sd">    :param indices: list of indices defining which spike trains to use,</span>
+<span class="sd">                    if None all given spike trains are used (default=None)</span>
+<span class="sd">    :type indices: list or None</span>
+<span class="sd">    :param interval: averaging interval given as a pair of floats, if None</span>
+<span class="sd">                     the average over the whole function is computed.</span>
+<span class="sd">    :type interval: Pair of floats or None.</span>
+<span class="sd">    :returns: 2D array with the pair wise time average spike distances</span>
+<span class="sd">              :math:`D_S^{ij}`</span>
+<span class="sd">    :rtype: np.array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_generic_distance_matrix</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">spike_distance_bi</span><span class="p">,</span>
+                                    <span class="n">indices</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">PySpike 0.8.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">pyspike.spike_distance</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2014-2017, Mario Mulansky.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+  </body>
+</html>

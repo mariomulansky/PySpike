@@ -1,0 +1,279 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pyspike.spikes &#8212; PySpike 0.8.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css" />
+    
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">PySpike 0.8.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">pyspike.spikes</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pyspike.spikes</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Module containing several function to load and transform spike trains</span>
+<span class="c1"># Copyright 2014, Mario Mulansky &lt;mario.mulansky@gmx.net&gt;</span>
+<span class="c1"># Distributed under the BSD License</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pyspike</span> <span class="kn">import</span> <span class="n">SpikeTrain</span>
+
+
+<span class="c1">############################################################</span>
+<span class="c1"># spike_train_from_string</span>
+<span class="c1">############################################################</span>
+<div class="viewcode-block" id="spike_train_from_string"><a class="viewcode-back" href="../../pyspike.html#pyspike.spikes.spike_train_from_string">[docs]</a><span class="k">def</span> <span class="nf">spike_train_from_string</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">is_sorted</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Converts a string of times into a  :class:`.SpikeTrain`.</span>
+
+<span class="sd">    :param s: the string with (ordered) spike times.</span>
+<span class="sd">    :param edges: interval defining the edges of the spike train.</span>
+<span class="sd">                  Given as a pair of floats (T0, T1) or a single float T1,</span>
+<span class="sd">                  where T0=0 is assumed.</span>
+<span class="sd">    :param sep: The separator between the time numbers, default=&#39; &#39;.</span>
+<span class="sd">    :param is_sorted: if True, the spike times are not sorted after loading,</span>
+<span class="sd">                      if False, spike times are sorted with `np.sort`</span>
+<span class="sd">    :returns: :class:`.SpikeTrain`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">SpikeTrain</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">sep</span><span class="p">),</span> <span class="n">edges</span><span class="p">,</span> <span class="n">is_sorted</span><span class="p">)</span></div>
+
+
+<span class="c1">############################################################</span>
+<span class="c1"># load_spike_trains_from_txt</span>
+<span class="c1">############################################################</span>
+<div class="viewcode-block" id="load_spike_trains_from_txt"><a class="viewcode-back" href="../../pyspike.html#pyspike.spikes.load_spike_trains_from_txt">[docs]</a><span class="k">def</span> <span class="nf">load_spike_trains_from_txt</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span>
+                               <span class="n">separator</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s1">&#39;#&#39;</span><span class="p">,</span> <span class="n">is_sorted</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                               <span class="n">ignore_empty_lines</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Loads a number of spike trains from a text file. Each line of the text</span>
+<span class="sd">    file should contain one spike train as a sequence of spike times separated</span>
+<span class="sd">    by `separator`. Empty lines as well as lines starting with `comment` are</span>
+<span class="sd">    neglected. The `edges` represents the start and the end of the</span>
+<span class="sd">    spike trains.</span>
+
+<span class="sd">    :param file_name: The name of the text file.</span>
+<span class="sd">    :param edges: A pair (T_start, T_end) of values representing the</span>
+<span class="sd">                  start and end time of the spike train measurement</span>
+<span class="sd">                  or a single value representing the end time, the</span>
+<span class="sd">                  T_start is then assuemd as 0.</span>
+<span class="sd">    :param separator: The character used to seprate the values in the text file</span>
+<span class="sd">    :param comment: Lines starting with this character are ignored.</span>
+<span class="sd">    :param sort: If true, the spike times are order via `np.sort`, default=True</span>
+<span class="sd">    :returns: list of :class:`.SpikeTrain`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">spike_trains</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">spike_file</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">spike_file</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">comment</span><span class="p">):</span>  <span class="c1"># ignore comments</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="c1"># ignore empty lines</span>
+                    <span class="n">spike_train</span> <span class="o">=</span> <span class="n">spike_train_from_string</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span>
+                                                          <span class="n">separator</span><span class="p">,</span> <span class="n">is_sorted</span><span class="p">)</span>
+                    <span class="n">spike_trains</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spike_train</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="ow">not</span><span class="p">(</span><span class="n">ignore_empty_lines</span><span class="p">):</span>
+                    <span class="c1"># add empty spike train</span>
+                    <span class="n">spike_trains</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">SpikeTrain</span><span class="p">([],</span> <span class="n">edges</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">spike_trains</span></div>
+
+
+<div class="viewcode-block" id="import_spike_trains_from_time_series"><a class="viewcode-back" href="../../pyspike.html#pyspike.spikes.import_spike_trains_from_time_series">[docs]</a><span class="k">def</span> <span class="nf">import_spike_trains_from_time_series</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">start_time</span><span class="p">,</span> <span class="n">time_bin</span><span class="p">,</span>
+                                         <span class="n">separator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s1">&#39;#&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Imports spike trains from time series consisting of 0 and 1 denoting</span>
+<span class="sd">    the absence or presence of a spike. Each line in the data file represents</span>
+<span class="sd">    one spike train.</span>
+
+<span class="sd">    :param file_name: The name of the data file containing the time series.</span>
+<span class="sd">    :param edges: A pair (T_start, T_end) of values representing the</span>
+<span class="sd">                  start and end time of the spike train measurement</span>
+<span class="sd">                  or a single value representing the end time, the</span>
+<span class="sd">                  T_start is then assuemd as 0.</span>
+<span class="sd">    :param separator: The character used to seprate the values in the text file</span>
+<span class="sd">    :param comment: Lines starting with this character are ignored.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="n">comment</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="n">separator</span><span class="p">)</span>
+    <span class="n">time_points</span> <span class="o">=</span> <span class="n">start_time</span> <span class="o">+</span> <span class="n">time_bin</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]))</span><span class="o">*</span><span class="n">time_bin</span>
+    <span class="n">spike_trains</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">time_series</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">spike_trains</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">SpikeTrain</span><span class="p">(</span><span class="n">time_points</span><span class="p">[</span><span class="n">time_series</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">],</span>
+                                       <span class="n">edges</span><span class="o">=</span><span class="p">[</span><span class="n">start_time</span><span class="p">,</span>
+                                              <span class="n">time_points</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]))</span>
+    <span class="k">return</span> <span class="n">spike_trains</span></div>
+
+
+<span class="c1">############################################################</span>
+<span class="c1"># save_spike_trains_to_txt</span>
+<span class="c1">############################################################</span>
+<div class="viewcode-block" id="save_spike_trains_to_txt"><a class="viewcode-back" href="../../pyspike.html#pyspike.spikes.save_spike_trains_to_txt">[docs]</a><span class="k">def</span> <span class="nf">save_spike_trains_to_txt</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span>
+                             <span class="n">separator</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Saves the given spike trains into a file with the given file name.</span>
+<span class="sd">    Each spike train will be stored in one line in the text file with the times</span>
+<span class="sd">    separated by `separator`.</span>
+
+<span class="sd">    :param spike_trains: List of :class:`.SpikeTrain` objects</span>
+<span class="sd">    :param file_name: The name of the text file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># format string to print the spike times with given precision</span>
+    <span class="n">format_str</span> <span class="o">=</span> <span class="s2">&quot;{0:.</span><span class="si">%d</span><span class="s2">e}&quot;</span> <span class="o">%</span> <span class="n">precision</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">spike_file</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">st</span> <span class="ow">in</span> <span class="n">spike_trains</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">separator</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">format_str</span><span class="o">.</span><span class="n">format</span><span class="p">,</span> <span class="n">st</span><span class="o">.</span><span class="n">spikes</span><span class="p">))</span>
+            <span class="n">spike_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+
+<span class="c1">############################################################</span>
+<span class="c1"># merge_spike_trains</span>
+<span class="c1">############################################################</span>
+<div class="viewcode-block" id="merge_spike_trains"><a class="viewcode-back" href="../../pyspike.html#pyspike.spikes.merge_spike_trains">[docs]</a><span class="k">def</span> <span class="nf">merge_spike_trains</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Merges a number of spike trains into a single spike train.</span>
+
+<span class="sd">    :param spike_trains: list of :class:`.SpikeTrain`</span>
+<span class="sd">    :returns: spike train with the merged spike times</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># concatenating and sorting with numpy is fast, it also means we can handle</span>
+    <span class="c1"># empty spike trains</span>
+    <span class="n">merged_spikes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">st</span><span class="o">.</span><span class="n">spikes</span> <span class="k">for</span> <span class="n">st</span> <span class="ow">in</span> <span class="n">spike_trains</span><span class="p">])</span>
+    <span class="n">merged_spikes</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">SpikeTrain</span><span class="p">(</span><span class="n">merged_spikes</span><span class="p">,</span> <span class="p">[</span><span class="n">spike_trains</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">t_start</span><span class="p">,</span>
+                                      <span class="n">spike_trains</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">t_end</span><span class="p">])</span></div>
+
+
+<span class="c1">############################################################</span>
+<span class="c1"># generate_poisson_spikes</span>
+<span class="c1">############################################################</span>
+<div class="viewcode-block" id="generate_poisson_spikes"><a class="viewcode-back" href="../../pyspike.html#pyspike.spikes.generate_poisson_spikes">[docs]</a><span class="k">def</span> <span class="nf">generate_poisson_spikes</span><span class="p">(</span><span class="n">rate</span><span class="p">,</span> <span class="n">interval</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Generates a Poisson spike train with the given rate in the given time</span>
+<span class="sd">    interval</span>
+
+<span class="sd">    :param rate: The rate of the spike trains</span>
+<span class="sd">    :param interval: A pair (T_start, T_end) of values representing the</span>
+<span class="sd">                     start and end time of the spike train measurement or</span>
+<span class="sd">                     a single value representing the end time, the T_start</span>
+<span class="sd">                     is then assuemd as 0. Auxiliary spikes will be added</span>
+<span class="sd">                     to the spike train at the beginning and end of this</span>
+<span class="sd">                     interval, if they are not yet present.</span>
+<span class="sd">    :type interval: pair of doubles or double</span>
+<span class="sd">    :returns: Poisson spike train as a :class:`.SpikeTrain`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">T_start</span> <span class="o">=</span> <span class="n">interval</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">T_end</span> <span class="o">=</span> <span class="n">interval</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">T_start</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">T_end</span> <span class="o">=</span> <span class="n">interval</span>
+    <span class="c1"># roughly how many spikes are required to fill the interval</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="mf">1.2</span> <span class="o">*</span> <span class="n">rate</span> <span class="o">*</span> <span class="p">(</span><span class="n">T_end</span><span class="o">-</span><span class="n">T_start</span><span class="p">)))</span>
+    <span class="n">N_append</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">rate</span> <span class="o">*</span> <span class="p">(</span><span class="n">T_end</span><span class="o">-</span><span class="n">T_start</span><span class="p">)))</span>
+    <span class="n">intervals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">exponential</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">rate</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+    <span class="c1"># make sure we have enough spikes</span>
+    <span class="k">while</span> <span class="n">T_start</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="n">intervals</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">T_end</span><span class="p">:</span>
+        <span class="c1"># print T_start + sum(intervals)</span>
+        <span class="n">intervals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">intervals</span><span class="p">,</span>
+                              <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">exponential</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">rate</span><span class="p">,</span> <span class="n">N_append</span><span class="p">))</span>
+    <span class="n">spikes</span> <span class="o">=</span> <span class="n">T_start</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">intervals</span><span class="p">)</span>
+    <span class="n">spikes</span> <span class="o">=</span> <span class="n">spikes</span><span class="p">[</span><span class="n">spikes</span> <span class="o">&lt;</span> <span class="n">T_end</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">SpikeTrain</span><span class="p">(</span><span class="n">spikes</span><span class="p">,</span> <span class="n">interval</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="reconcile_spike_trains"><a class="viewcode-back" href="../../pyspike.html#pyspike.spikes.reconcile_spike_trains">[docs]</a><span class="k">def</span> <span class="nf">reconcile_spike_trains</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; make sure that Spike trains meet PySpike rules</span>
+<span class="sd">            In: spike_trains - a list of SpikeTrain objects</span>
+<span class="sd">            Out: spike_trains - same list with some fixes:</span>
+<span class="sd">              1) t_start and t_end are the same for every train</span>
+<span class="sd">              2) The spike times are sorted</span>
+<span class="sd">              3) No duplicate times in any train  </span>
+<span class="sd">              4) spike times outside of t_start,t_end removed</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">## handle sorting and uniqueness first (np.unique() does a sort)</span>
+    <span class="n">spike_trains</span> <span class="o">=</span> <span class="p">[</span><span class="n">SpikeTrain</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">spikes</span><span class="p">),</span> 
+                               <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">t_start</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">t_end</span><span class="p">],</span> 
+                               <span class="n">is_sorted</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">spike_trains</span><span class="p">]</span>
+
+    <span class="c1">## find global start and end times</span>
+    <span class="n">Starts</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">t_start</span>  <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">spike_trains</span><span class="p">]</span>
+    <span class="n">tStart</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">Starts</span><span class="p">)</span>
+
+    <span class="n">Ends</span>   <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">t_end</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">spike_trains</span><span class="p">]</span>
+    <span class="n">tEnd</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">Ends</span><span class="p">)</span>
+
+    <span class="c1">## remove spike times outside of the bounds</span>
+    <span class="n">Eps</span> <span class="o">=</span> <span class="mf">1e-6</span> <span class="c1">#beware precision change</span>
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">spike_trains</span><span class="p">:</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">spikes</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">spikes</span> <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="n">tStart</span><span class="o">-</span><span class="n">Eps</span> <span class="ow">and</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="n">tEnd</span><span class="o">+</span><span class="n">Eps</span><span class="p">]</span>
+
+    <span class="c1">## Apply start and end times to every train</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">SpikeTrain</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">spikes</span><span class="p">,</span> <span class="p">[</span><span class="n">tStart</span><span class="p">,</span> <span class="n">tEnd</span><span class="p">],</span> <span class="n">is_sorted</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">spike_trains</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="reconcile_spike_trains_bi"><a class="viewcode-back" href="../../pyspike.html#pyspike.spikes.reconcile_spike_trains_bi">[docs]</a><span class="k">def</span> <span class="nf">reconcile_spike_trains_bi</span><span class="p">(</span><span class="n">spike_train1</span><span class="p">,</span> <span class="n">spike_train2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; fix up a pair of spike trains&quot;&quot;&quot;</span>
+    <span class="n">trains_in</span> <span class="o">=</span> <span class="p">[</span><span class="n">spike_train1</span><span class="p">,</span> <span class="n">spike_train2</span><span class="p">]</span>
+    <span class="n">trains_out</span> <span class="o">=</span> <span class="n">reconcile_spike_trains</span><span class="p">(</span><span class="n">trains_in</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">trains_out</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">trains_out</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">PySpike 0.8.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">pyspike.spikes</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2014-2017, Mario Mulansky.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+  </body>
+</html>
