@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pyspike.spikes &#8212; PySpike 0.5.3 documentation</title>
+    <title>pyspike.spikes &#8212; PySpike 0.8.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/classic.css" />
     
@@ -28,7 +28,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">PySpike 0.5.3 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">PySpike 0.8.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">pyspike.spikes</a></li> 
       </ul>
@@ -43,7 +43,6 @@
 <span></span><span class="c1"># Module containing several function to load and transform spike trains</span>
 <span class="c1"># Copyright 2014, Mario Mulansky &lt;mario.mulansky@gmx.net&gt;</span>
 <span class="c1"># Distributed under the BSD License</span>
-
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">pyspike</span> <span class="kn">import</span> <span class="n">SpikeTrain</span>
@@ -209,6 +208,7 @@
 <span class="sd">              1) t_start and t_end are the same for every train</span>
 <span class="sd">              2) The spike times are sorted</span>
 <span class="sd">              3) No duplicate times in any train  </span>
+<span class="sd">              4) spike times outside of t_start,t_end removed</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">## handle sorting and uniqueness first (np.unique() does a sort)</span>
     <span class="n">spike_trains</span> <span class="o">=</span> <span class="p">[</span><span class="n">SpikeTrain</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">spikes</span><span class="p">),</span> 
@@ -218,11 +218,23 @@
     <span class="c1">## find global start and end times</span>
     <span class="n">Starts</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">t_start</span>  <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">spike_trains</span><span class="p">]</span>
     <span class="n">tStart</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">Starts</span><span class="p">)</span>
-    <span class="n">Ends</span>   <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">t_end</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">spike_trains</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">spikes</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">Ends</span>   <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">t_end</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">spike_trains</span><span class="p">]</span>
     <span class="n">tEnd</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">Ends</span><span class="p">)</span>
+
+    <span class="c1">## remove spike times outside of the bounds</span>
+    <span class="n">Eps</span> <span class="o">=</span> <span class="mf">1e-6</span> <span class="c1">#beware precision change</span>
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">spike_trains</span><span class="p">:</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">spikes</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">spikes</span> <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="n">tStart</span><span class="o">-</span><span class="n">Eps</span> <span class="ow">and</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="n">tEnd</span><span class="o">+</span><span class="n">Eps</span><span class="p">]</span>
 
     <span class="c1">## Apply start and end times to every train</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">SpikeTrain</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">spikes</span><span class="p">,</span> <span class="p">[</span><span class="n">tStart</span><span class="p">,</span> <span class="n">tEnd</span><span class="p">],</span> <span class="n">is_sorted</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">spike_trains</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="reconcile_spike_trains_bi"><a class="viewcode-back" href="../../pyspike.html#pyspike.spikes.reconcile_spike_trains_bi">[docs]</a><span class="k">def</span> <span class="nf">reconcile_spike_trains_bi</span><span class="p">(</span><span class="n">spike_train1</span><span class="p">,</span> <span class="n">spike_train2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; fix up a pair of spike trains&quot;&quot;&quot;</span>
+    <span class="n">trains_in</span> <span class="o">=</span> <span class="p">[</span><span class="n">spike_train1</span><span class="p">,</span> <span class="n">spike_train2</span><span class="p">]</span>
+    <span class="n">trains_out</span> <span class="o">=</span> <span class="n">reconcile_spike_trains</span><span class="p">(</span><span class="n">trains_in</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">trains_out</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">trains_out</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
 </pre></div>
 
             <div class="clearer"></div>
@@ -254,7 +266,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">PySpike 0.5.3 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">PySpike 0.8.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">pyspike.spikes</a></li> 
       </ul>

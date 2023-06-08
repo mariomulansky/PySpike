@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>PySpike &#8212; PySpike 0.5.3 documentation</title>
+    <title>PySpike &#8212; PySpike 0.8.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/classic.css" />
     
@@ -33,7 +33,7 @@
         <li class="right" >
           <a href="pyspike.html" title="pyspike package"
              accesskey="N">next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">PySpike 0.5.3 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="#">PySpike 0.8.0 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">PySpike</a></li> 
       </ul>
     </div>  
@@ -48,7 +48,7 @@
 <a class="reference external image-reference" href="http://badge.fury.io/py/pyspike"><img alt="https://badge.fury.io/py/pyspike.png" src="https://badge.fury.io/py/pyspike.png" /></a>
 <a class="reference external image-reference" href="https://travis-ci.org/mariomulansky/PySpike"><img alt="https://travis-ci.org/mariomulansky/PySpike.svg?branch=master" src="https://travis-ci.org/mariomulansky/PySpike.svg?branch=master" /></a>
 <p>PySpike is a Python library for the numerical analysis of spike train similarity.
-Its core functionality is the implementation of the <a class="reference external" href="http://www.scholarpedia.org/article/Measures_of_spike_train_synchrony#ISI-distance">ISI</a>-distance <a class="footnote-reference brackets" href="#id4" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> and <a class="reference external" href="http://www.scholarpedia.org/article/SPIKE-distance">SPIKE</a>-distance <a class="footnote-reference brackets" href="#id6" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> as well as <a class="reference external" href="http://www.scholarpedia.org/article/Measures_of_spike_train_synchrony#SPIKE_synchronization">SPIKE-Synchronization</a> <a class="footnote-reference brackets" href="#id8" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>.
+Its core functionality is the implementation of the <a class="reference external" href="http://www.scholarpedia.org/article/Measures_of_spike_train_synchrony#ISI-distance">ISI</a>-distance <a class="footnote-reference brackets" href="#id5" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> and <a class="reference external" href="http://www.scholarpedia.org/article/SPIKE-distance">SPIKE</a>-distance <a class="footnote-reference brackets" href="#id7" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>, <a class="reference external" href="http://www.scholarpedia.org/article/Measures_of_spike_train_synchrony#SPIKE_synchronization">SPIKE-Synchronization</a> <a class="footnote-reference brackets" href="#id9" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>, as well as their adaptive generalizations <a class="footnote-reference brackets" href="#id11" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a>.
 It provides functions to compute multivariate profiles, distance matrices, as well as averaging and general spike train processing.
 All computation intensive parts are implemented in C via <a class="reference external" href="http://www.cython.org">cython</a> to reach a competitive performance (factor 100-200 over plain Python).</p>
 <p>PySpike provides the same fundamental functionality as the <a class="reference external" href="https://thomas-kreuz.complexworld.net/source-codes/spiky">SPIKY</a> framework for Matlab, which additionally contains spike-train generators, more spike train distance measures and many visualization routines.</p>
@@ -59,24 +59,29 @@ All computation intensive parts are implemented in C via <a class="reference ext
 <dt>If you use PySpike in your research, please cite our SoftwareX publication on PySpike:</dt><dd><p>Mario Mulansky, Thomas Kreuz, <em>PySpike - A Python library for analyzing spike train synchrony</em>, Software X 5, 183 (2016) <a class="reference external" href="https://drive.google.com/file/d/1vJA5q4eFCd2ASKGN8ANaDNBfQVpWBPXd/view">[pdf]</a></p>
 </dd>
 </dl>
-<p>Additionally, depending on the used methods: ISI-distance [1], SPIKE-distance [2] or SPIKE-Synchronization [3], please cite one or more of the following publications:</p>
+<p>Additionally, depending on the used methods: ISI-distance [1], SPIKE-distance [2], SPIKE-Synchronization [3], or their adaptive generalizations [4], please cite one or more of the following publications:</p>
 <aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id4" role="note">
+<aside class="footnote brackets" id="id5" role="note">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
 <p>Kreuz T, Haas JS, Morelli A, Abarbanel HDI, Politi A, <em>Measuring spike train synchrony.</em> J Neurosci Methods 165, 151 (2007) <a class="reference external" href="https://drive.google.com/file/d/113cr1xUhKe0rMIiFc1vMoIQ7j9noobKW/view">[pdf]</a></p>
 </aside>
-<aside class="footnote brackets" id="id6" role="note">
+<aside class="footnote brackets" id="id7" role="note">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
 <p>Kreuz T, Chicharro D, Houghton C, Andrzejak RG, Mormann F, <em>Monitoring spike train synchrony.</em> J Neurophysiol 109, 1457 (2013) <a class="reference external" href="https://drive.google.com/file/d/1oppf86V4cBVakPiv6Mbn_WaoKoKWzmIl/view">[pdf]</a></p>
 </aside>
-<aside class="footnote brackets" id="id8" role="note">
+<aside class="footnote brackets" id="id9" role="note">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
 <p>Kreuz T, Mulansky M and Bozanic N, <em>SPIKY: A graphical user interface for monitoring spike train synchrony</em>, J Neurophysiol 113, 3432 (2015) <a class="reference external" href="https://drive.google.com/file/d/16rdVbJFj7BypaaI10aHpXLk0WJuJ7reM/view">[pdf]</a></p>
+</aside>
+<aside class="footnote brackets" id="id11" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">4</a><span class="fn-bracket">]</span></span>
+<p>Satuvuori E, Mulansky M, Bozanic N, Malvestio I, Zeldenrust F, Lenk K, and Kreuz T, <em>Measures of spike train synchrony for data with multiple time-scales</em>, J Neurosci Methods 287, 25 (2017) <a class="reference external" href="https://drive.google.com/file/d/1xOepp9WN0luODH9qF6i5vVRimqC9WweA/view">[pdf]</a></p>
 </aside>
 </aside>
 </section>
 <section id="important-changelog">
 <h2>Important Changelog<a class="headerlink" href="#important-changelog" title="Permalink to this heading">¶</a></h2>
+<p>With version 0.8.0, Adaptive and Rate Independent algorithms are supported.</p>
 <p>With version 0.7.0, support for Python 2 was dropped, PySpike now officially supports
 Python 3.7, 3.8, 3.9, 3.10.</p>
 <p>With version 0.6.0, the spike directionality and spike train order function have been added.</p>
@@ -201,15 +206,35 @@ As result, <a class="reference internal" href="pyspike.html#pyspike.spikes.load_
 <h2>Computing bivariate distances profiles<a class="headerlink" href="#computing-bivariate-distances-profiles" title="Permalink to this heading">¶</a></h2>
 <p><strong>Important note:</strong></p>
 <hr class="docutils" />
-<blockquote>
-<div><p>Spike trains are expected to be <em>sorted</em>!
+<p>Spike trains are expected to be <em>sorted</em>!
 For performance reasons, the PySpike distance functions do not check if the spike trains provided are indeed sorted.
 Make sure that all your spike trains are sorted, which is ensured if you use the <a class="reference internal" href="pyspike.html#pyspike.spikes.load_spike_trains_from_txt" title="pyspike.spikes.load_spike_trains_from_txt"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_spike_trains_from_txt()</span></code></a> function with the parameter <cite>is_sorted=False</cite> (default).
 If in doubt, use <a class="reference internal" href="pyspike.html#pyspike.SpikeTrain.SpikeTrain.sort" title="pyspike.SpikeTrain.SpikeTrain.sort"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SpikeTrain.sort()</span></code></a> to ensure a correctly sorted spike train.</p>
+<p>Alternatively the function <a class="reference internal" href="pyspike.html#pyspike.spikes.reconcile_spike_trains" title="pyspike.spikes.reconcile_spike_trains"><code class="xref py py-func docutils literal notranslate"><span class="pre">reconcile_spike_trains()</span></code></a> applies three fixes to a list of SpikeTrain objects. It sorts
+the times, it removes all but one of any duplicated time, and it ensures all t_start and t_end values are compatible</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyspike.spikes</span> <span class="kn">import</span> <span class="n">reconcile_spike_trains</span>
+<span class="n">spike_trains</span> <span class="o">=</span> <span class="n">reconcile_spike_trains</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>If you need to copy a spike train, use the <a class="reference internal" href="pyspike.html#pyspike.SpikeTrain.SpikeTrain.copy" title="pyspike.SpikeTrain.SpikeTrain.copy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SpikeTrain.copy()</span></code></a> method.
 Simple assignment <cite>t2 = t1</cite> does not create a copy of the spike train data, but a reference as <cite>numpy.array</cite> is used for storing the data.</p>
-</div></blockquote>
 <hr class="docutils" />
+<blockquote>
+<div><blockquote>
+<div><p>PySpike algorithms</p>
+</div></blockquote>
+<p>PySpike supports four basic algorithms for comparing spike trains and their adaptive generalizations</p>
+<p>The basic algorithms are:</p>
+</div></blockquote>
+<ol class="arabic simple">
+<li><p>ISI-distance  (Inter Spike Intervals)</p></li>
+<li><p>SPIKE-distance</p></li>
+<li><p>Rate-Independent SPIKE-distance (RI-SPIKE)</p></li>
+<li><p>SPIKE sychronization</p></li>
+</ol>
+<p>plus</p>
+<p>(5-8) Adaptive generalizations of 1-4 based on the MRTS (Minimum Relevant Time Scale) parameter</p>
+<p>Algorithms 3 and 5-8 are new in version 0.8.0.</p>
 <section id="isi-distance">
 <h3>ISI-distance<a class="headerlink" href="#isi-distance" title="Permalink to this heading">¶</a></h3>
 <p>The following code loads some exemplary spike trains, computes the dissimilarity profile of the ISI-distance of the first two <a class="reference internal" href="pyspike.html#pyspike.SpikeTrain.SpikeTrain" title="pyspike.SpikeTrain.SpikeTrain"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpikeTrain</span></code></a> s, and plots it with matplotlib:</p>
@@ -271,8 +296,16 @@ As above, you can provide an interval as a pair of floats as well as a sequence 
 <p>to compute the SPIKE distance directly, if you are not interested in the profile at all.
 The parameter <code class="code docutils literal notranslate"><span class="pre">interval</span></code> is optional and if neglected the whole time interval is used.</p>
 </section>
-<section id="id10">
-<h3>SPIKE synchronization<a class="headerlink" href="#id10" title="Permalink to this heading">¶</a></h3>
+<section id="rate-independent-spike-distance">
+<h3>Rate-Independent SPIKE-distance<a class="headerlink" href="#rate-independent-spike-distance" title="Permalink to this heading">¶</a></h3>
+<p>This variant of the SPIKE-distance disregards any differences in base rates and focuses purely on spike timing.
+It can be calculated by setting the optional parameter “RI=True”:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ri_spike_dist</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">spike_distance</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">spike_trains</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">RI</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id13">
+<h3>SPIKE synchronization<a class="headerlink" href="#id13" title="Permalink to this heading">¶</a></h3>
 <p><strong>Important note:</strong></p>
 <hr class="docutils" />
 <blockquote>
@@ -298,6 +331,22 @@ The general handling of the profile, however, is similar to the other profiles a
 </div>
 <p>For the direct computation of the overall spike synchronization value within some interval, the <a class="reference internal" href="pyspike.html#pyspike.spike_sync.spike_sync" title="pyspike.spike_sync.spike_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">spike_sync()</span></code></a> function can be used:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">spike_sync</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">spike_sync</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">spike_trains</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">interval</span><span class="o">=</span><span class="n">ival</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="adaptive-generalizations">
+<h3>Adaptive generalizations<a class="headerlink" href="#adaptive-generalizations" title="Permalink to this heading">¶</a></h3>
+<p>The adaptive generalizations for all four of these basic measures can be calculated by setting the optional parameter “MRTS=&lt;value&gt;” (MRTS - Minimum Relevant Time Scale).
+If &lt;value&gt; is greater than zero the respective basic algorithm is modified to reduce emphasis on smaller spike time differences.
+If MRTS is set to ‘auto’, the threshold is automatically extracted from the data.</p>
+<p>Here are a few example lines:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a_isi_dist</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">isi_distance</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">MRTS</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="n">a_spike_profile</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">spike_profile</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">MRTS</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+
+<span class="n">a_ri_spike_matrix</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">spike_distance_matrix</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">spike_trains</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">RI</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">MRTS</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+
+<span class="n">a_spike_sync_auto</span> <span class="o">=</span> <span class="n">spk</span><span class="o">.</span><span class="n">spike_sync</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">spike_trains</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">MRTS</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -467,7 +516,9 @@ computes the optimal order of a set of 20 Poissonian spike trains:</p>
 <li><a class="reference internal" href="#computing-bivariate-distances-profiles">Computing bivariate distances profiles</a><ul>
 <li><a class="reference internal" href="#isi-distance">ISI-distance</a></li>
 <li><a class="reference internal" href="#spike-distance">SPIKE-distance</a></li>
-<li><a class="reference internal" href="#id10">SPIKE synchronization</a></li>
+<li><a class="reference internal" href="#rate-independent-spike-distance">Rate-Independent SPIKE-distance</a></li>
+<li><a class="reference internal" href="#id13">SPIKE synchronization</a></li>
+<li><a class="reference internal" href="#adaptive-generalizations">Adaptive generalizations</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#computing-multivariate-profiles-and-distances">Computing multivariate profiles and distances</a></li>
@@ -517,7 +568,7 @@ computes the optimal order of a set of 20 Poissonian spike trains:</p>
         <li class="right" >
           <a href="pyspike.html" title="pyspike package"
              >next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">PySpike 0.5.3 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="#">PySpike 0.8.0 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">PySpike</a></li> 
       </ul>
     </div>
