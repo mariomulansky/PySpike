@@ -54,7 +54,7 @@ the times, it removes all but one of any duplicated time, and it ensures all t_s
 If you need to copy a spike train, use the :meth:`.SpikeTrain.copy()` method.
 Simple assignment `t2 = t1` does not create a copy of the spike train data, but a reference as `numpy.array` is used for storing the data.
 
-PySpike algorithms
+PySpike algorithms 
 -------------------
 
 PySpike supports four basic algorithms for comparing spike trains and their adaptive generalizations
