@@ -83,7 +83,7 @@ elif use_c:  # c files are there, compile to binaries
 
 setup(
     name='pyspike',
-    packages=find_packages(exclude=['doc']),
+    packages=find_packages(exclude=['doc', 'test*']),
     version='0.8.0',
     cmdclass=cmdclass,
     ext_modules=ext_modules,
