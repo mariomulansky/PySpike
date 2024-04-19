@@ -64,9 +64,9 @@ PSTH
     :undoc-members:
     :show-inheritance:
 
-Directionality
+Order
 ........................................
-.. automodule:: pyspike.spike_directionality
+.. automodule:: pyspike.spike_order
     :members:
     :undoc-members:
     :show-inheritance:
