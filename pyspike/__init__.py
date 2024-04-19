@@ -7,7 +7,7 @@ Distributed under the BSD License
 from __future__ import absolute_import
 
 __all__ = ["isi_distance", "spike_distance", "spike_sync", "psth",
-           "spikes", "spike_directionality", "SpikeTrain",
+           "spikes", "spike_order", "SpikeTrain",
            "PieceWiseConstFunc", "PieceWiseLinFunc", "DiscreteFunc"]
 
 from .PieceWiseConstFunc import PieceWiseConstFunc
@@ -28,8 +28,8 @@ from .spikes import load_spike_trains_from_txt, save_spike_trains_to_txt, \
     spike_train_from_string, import_spike_trains_from_time_series, \
     merge_spike_trains, generate_poisson_spikes
 
-from .spike_directionality import spike_directionality, \
-    spike_directionality_values, spike_directionality_matrix, \
+from .spike_order import spike_order, \
+    spike_order_values, spike_order_matrix, \
     spike_train_order_profile, spike_train_order_profile_bi, \
     spike_train_order_profile_multi, spike_train_order, \
     spike_train_order_bi, spike_train_order_multi, \
