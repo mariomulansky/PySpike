@@ -1,0 +1,11 @@
+# PySpike exemplary spike trains
+# lines starting with # are ignored, just like empty lines
+
+64.886 305.81 696
+66.415 
+66.449
+66.415 
+66.449
+63.764 318.45 697.48
+
+
