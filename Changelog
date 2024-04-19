@@ -1,48 +1,47 @@
 PySpike v0.8
-    * Support Adaptive versions of distances (Minimum Relevant Time Scale)
-    * Support Rate Independent Adaptive spike distance
-	* New function to correct errors in imported SpikeTrain list [reconcile_spike_trains()]
-	* Avoid problems with np.float deprecation
+_ Support Adaptive versions of distances (Minimum Relevant Time Scale)
+_ Support Rate Independent Adaptive spike distance
+_ New function to correct errors in imported SpikeTrain list [reconcile_spike_trains()]
+_ Avoid problems with np.float deprecation
 
 PySpike v0.7:
-    * Python 3.10 compatible
-    * Dropped support for Python2
-    * Small fixes in tests
-    * Fixed documentation links
+_ Python 3.10 compatible
+_ Dropped support for Python2
+_ Small fixes in tests
+_ Fixed documentation links
 
-PySpike v0.6:
-    * Support for computing spike directionality and spike train order
+PySpike v0.6: \* Support for computing spike order and spike train order
 
 PySpike v0.5:
-	* First beta release
-	* Python 2.6 support removed
-	* Python 3.6 support added
-	* several bugfixes
+_ First beta release
+_ Python 2.6 support removed
+_ Python 3.6 support added
+_ several bugfixes
 
 PySpike v0.4:
-	* Python 3 support (thanks to Igor Gnatenko)
-	* list interface to SpikeTrain class
-	* disable_backend_warning property
-	* several bugfixes
+_ Python 3 support (thanks to Igor Gnatenko)
+_ list interface to SpikeTrain class
+_ disable_backend_warning property
+_ several bugfixes
 
 PySpike v0.3:
-	* addition of __version__ attribute
-	* restructured docs, Readme now only contains basic examples
-	* performance improvements by introducing specific distance functions
-	* performance improvements for multivariate profiles by using recursive
-	approach
-	* new example: performance.py
-	* consistent treatment of empty spike trains
-	* new example: profiles.py
-	* additional functionality: pwc and pwl function classes can now return
-	function values at given time(s)
+_ addition of **version** attribute
+_ restructured docs, Readme now only contains basic examples
+_ performance improvements by introducing specific distance functions
+_ performance improvements for multivariate profiles by using recursive
+approach
+_ new example: performance.py
+_ consistent treatment of empty spike trains
+_ new example: profiles.py
+_ additional functionality: pwc and pwl function classes can now return
+function values at given time(s)
 
 PySpike v0.2:
 
-	* introduction of SpikeTrain class. Breaking interface change of
-	distance functions
-	* added max_tau parameter to SPIKE-Synchronization
-	* added psth function
-	* restructured modules, separate files for different distance measures
-	* Bugfix for selective multivariate distance
-	* added spike generation function
+    * introduction of SpikeTrain class. Breaking interface change of
+    distance functions
+    * added max_tau parameter to SPIKE-Synchronization
+    * added psth function
+    * restructured modules, separate files for different distance measures
+    * Bugfix for selective multivariate distance
+    * added spike generation function

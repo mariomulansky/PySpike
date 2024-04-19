@@ -21,9 +21,9 @@ else:
     use_cython = True
 
 
-class numpy_include(os.PathLike):
+class numpy_include(object):
     """Defers import of numpy until install_requires is through"""
-    def __fspath__(self):
+    def __str__(self):
         import numpy
         return numpy.get_include()
 
@@ -32,7 +32,7 @@ if os.path.isfile("pyspike/cython/cython_add.c") and \
    os.path.isfile("pyspike/cython/cython_get_tau.c") and \
    os.path.isfile("pyspike/cython/cython_profiles.c") and \
    os.path.isfile("pyspike/cython/cython_distances.c") and \
-   os.path.isfile("pyspike/cython/cython_directionality.c") and \
+   os.path.isfile("pyspike/cython/cython_order.c") and \
    os.path.isfile("pyspike/cython/cython_simulated_annealing.c"):
     use_c = True
 else:
@@ -58,8 +58,8 @@ if use_cython:  # Cython is available, compile .pyx -> .c
                   ["pyspike/cython/cython_profiles.pyx"]),
         Extension("pyspike.cython.cython_distances",
                   ["pyspike/cython/cython_distances.pyx"]),
-        Extension("pyspike.cython.cython_directionality",
-                  ["pyspike/cython/cython_directionality.pyx"]),
+        Extension("pyspike.cython.cython_order",
+                  ["pyspike/cython/cython_order.pyx"]),
         Extension("pyspike.cython.cython_simulated_annealing",
                   ["pyspike/cython/cython_simulated_annealing.pyx"])
     ]
@@ -74,8 +74,8 @@ elif use_c:  # c files are there, compile to binaries
                   ["pyspike/cython/cython_profiles.c"]),
         Extension("pyspike.cython.cython_distances",
                   ["pyspike/cython/cython_distances.c"]),
-        Extension("pyspike.cython.cython_directionality",
-                  ["pyspike/cython/cython_directionality.c"]),
+        Extension("pyspike.cython.cython_order",
+                  ["pyspike/cython/cython_order.c"]),
         Extension("pyspike.cython.cython_simulated_annealing",
                   ["pyspike/cython/cython_simulated_annealing.c"])
     ]
@@ -83,11 +83,11 @@ elif use_c:  # c files are there, compile to binaries
 
 setup(
     name='pyspike',
-    packages=find_packages(exclude=['doc', 'test*']),
+    packages=find_packages(exclude=['doc']),
     version='0.8.0',
     cmdclass=cmdclass,
     ext_modules=ext_modules,
-    include_dirs=[numpy_include()],
+    include_dirs=[numpy_include().__str__()],
     description='A Python library for the numerical analysis of spike\
 train similarity',
     author='Mario Mulansky',
@@ -121,7 +121,7 @@ train similarity',
                     'cython/cython_profiles.c',
                     'cython/cython_get_tau.c',
                     'cython/cython_distances.c',
-                    'cython/cython_directionality.c',
+                    'cython/cython_order.c',
                     'cython/cython_simulated_annealing.c'],
         'test': ['Spike_testdata.txt']
     }

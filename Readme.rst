@@ -37,7 +37,7 @@ With version 0.8.0, Adaptive and Rate Independent algorithms are supported.
 With version 0.7.0, support for Python 2 was dropped, PySpike now officially supports
 Python 3.7, 3.8, 3.9, 3.10.
 
-With version 0.6.0, the spike directionality and spike train order function have been added.
+With version 0.6.0, the spike order and spike train order function have been added.
 
 With version 0.5.0, the interfaces have been unified and the specific functions for multivariate computations have become deprecated.
 
