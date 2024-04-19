@@ -75,6 +75,6 @@ if __name__ == "__main__":
     auto_test(None,
                 None,
                 None,
-                spk.spike_directionality_matrix)
+                spk.spike_order_matrix)
                      
         
