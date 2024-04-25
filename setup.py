@@ -26,6 +26,9 @@ class numpy_include(object):
     def __str__(self):
         import numpy
         return numpy.get_include()
+    
+    def __fspath(self):
+        return str(self)
 
 
 if os.path.isfile("pyspike/cython/cython_add.c") and \
@@ -87,7 +90,7 @@ setup(
     version='0.8.0',
     cmdclass=cmdclass,
     ext_modules=ext_modules,
-    include_dirs=[numpy_include().__str__()],
+    include_dirs=[numpy_include()],
     description='A Python library for the numerical analysis of spike\
 train similarity',
     author='Mario Mulansky',
