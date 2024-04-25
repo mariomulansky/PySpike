@@ -108,9 +108,9 @@ def _spike_order_values_impl(spike_trains, indices=None,
 
 
 ############################################################
-# spike_order
+# spike_train_order
 ############################################################
-def spike_order(spike_train1, spike_train2, normalize=True,
+def spike_train_order(spike_train1, spike_train2, normalize=True,
                          interval=None, max_tau=None, **kwargs):
     """ Computes the overall spike order of the first spike train with
     respect to the second spike train.
@@ -138,12 +138,12 @@ def spike_order(spike_train1, spike_train2, normalize=True,
                 spike_order_cython as spike_order_impl
             if max_tau is None:
                 max_tau = 0.0
-            d = spike_order_impl(spike_train1.spikes,
+            d = 2*spike_order_impl(spike_train1.spikes,
                                           spike_train2.spikes,
                                           spike_train1.t_start,
                                           spike_train1.t_end,
                                           max_tau, MRTS)
-            c = len(spike_train1.spikes)
+            c = len(spike_train1.spikes) + len(spike_train2.spikes)
         except ImportError:
             pyspike.NoCythonWarn()
 
@@ -152,21 +152,21 @@ def spike_order(spike_train1, spike_train2, normalize=True,
                                                  interval=interval,
                                                  max_tau=max_tau,
                                                  MRTS=MRTS)
-            d = np.sum(d1)
-            c = len(spike_train1.spikes)
+            d = 2*np.sum(d1)
+            c = len(spike_train1.spikes) + len(spike_train2.spikes)
         if normalize:
             return 1.0*d/c
         else:
-            return d
+            return d/2
     else:
         # some specific interval is provided: not yet implemented
         raise NotImplementedError("Parameter `interval` not supported.")
 
 
 ############################################################
-# spike_order_matrix
+# spike_train_order_matrix
 ############################################################
-def spike_order_matrix(spike_trains, normalize=True, indices=None,
+def spike_train_order_matrix(spike_trains, normalize=True, indices=None,
                                 interval=None, max_tau=None, **kwargs):
     """ Computes the spike order matrix for the given spike trains.
 
@@ -197,7 +197,7 @@ def spike_order_matrix(spike_trains, normalize=True, indices=None,
 
     distance_matrix = np.zeros((len(indices), len(indices)))
     for i, j in pairs:
-        d = spike_order(spike_trains[i], spike_trains[j], normalize,
+        d = spike_train_order(spike_trains[i], spike_trains[j], normalize,
                                  interval, max_tau=max_tau, 
                                  MRTS=MRTS, RI=RI, Reconcile=False)
         distance_matrix[i, j] = d
@@ -366,19 +366,19 @@ def _spike_train_order_impl(spike_train1, spike_train2,
 ############################################################
 # spike_train_order
 ############################################################
-def spike_train_order(*args, **kwargs):
+def spike_train_order_value(*args, **kwargs):
     """ Computes the spike train order (Synfire Indicator) of the given
     spike trains.
 
     Valid call structures::
 
-      spike_train_order(st1, st2, normalize=True)  # normalized bi-variate
+      spike_train_order_value(st1, st2, normalize=True)  # normalized bi-variate
                                                     # spike train order
-      spike_train_order(st1, st2, st3)  # multi-variate result of 3 spike trains
+      spike_train_order_value(st1, st2, st3)  # multi-variate result of 3 spike trains
 
       spike_trains = [st1, st2, st3, st4]       # list of spike trains
-      spike_train_order(spike_trains)   # result for the list of spike trains
-      spike_train_order(spike_trains, indices=[0, 1])  # use only the spike trains
+      spike_train_order_value(spike_trains)   # result for the list of spike trains
+      spike_train_order_value(spike_trains, indices=[0, 1])  # use only the spike trains
                                                        # given by the indices
 
     Additonal arguments: 
@@ -529,7 +529,7 @@ def optimal_spike_train_sorting(spike_trains,  indices=None, interval=None,
     :return: (p, F) - tuple with the optimal permutation and synfire indicator.
              if `full_output=True` , (p, F, iter) is returned.
     """
-    D = spike_order_matrix(spike_trains, normalize=False,
+    D = spike_train_order_matrix(spike_trains, normalize=False,
                                     indices=indices, interval=interval,
                                     max_tau=max_tau, **kwargs)
     return _optimal_spike_train_sorting_from_matrix(D, full_output)
