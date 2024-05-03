@@ -3,6 +3,7 @@
 # Distributed under the BSD License
 
 import numpy as np
+import matplotlib.pyplot as plt
 from pyspike import SpikeTrain
 
 
@@ -193,3 +194,222 @@ def reconcile_spike_trains_bi(spike_train1, spike_train2):
     trains_in = [spike_train1, spike_train2]
     trains_out = reconcile_spike_trains(trains_in)
     return trains_out[0], trains_out[1]
+
+############################################################
+# create synfire
+############################################################
+
+def renorm(values, tmin, tmax, inside=0):
+    if isinstance(values, list):
+        all_values = np.concatenate(values)
+        minas = np.min(all_values)
+        maxas = np.max(all_values)
+        num_trains = len(values)
+        norm_values = []
+        for trc in range(num_trains):
+            if maxas > minas:
+                if len(values[trc]) > 0:
+                    if inside == 1:
+                        if values[trc][0] == tmin:
+                            norm_values.append(tmin + 1e-10)
+                        elif values[trc][0] == tmax:
+                            norm_values.append(tmax - 1e-10)
+                        else:
+                            norm_values.append((values[trc] - minas) / (maxas - minas) * (tmax - tmin - 2 * 1e-10) + tmin + 1e-10)
+                    else:
+                        norm_values.append((values[trc] - minas) / (maxas - minas) * (tmax - tmin) + tmin)
+            else:
+                if inside == 1:
+                    if values[trc][0] == tmin:
+                        norm_values.append(tmin + 1e-10)
+                    elif values[trc][0] == tmax:
+                        norm_values.append(tmax - 1e-10)
+                    else:
+                        norm_values.append(values[trc])
+                else:
+                    norm_values.append(values[trc])
+        return norm_values
+    else:
+        minas = np.min(values)
+        maxas = np.max(values)
+        if maxas > minas:
+            if inside == 1:
+                if values[0] == tmin:
+                    return tmin + 1e-10
+                elif values[0] == tmax:
+                    return tmax - 1e-10
+                else:
+                    return (values - minas) / (maxas - minas) * (tmax - tmin - 2 * 1e-10) + tmin + 1e-10
+            else:
+                return (values - minas) / (maxas - minas) * (tmax - tmin) + tmin
+        else:
+            if inside == 1:
+                if values[0] == tmin:
+                    return tmin + 1e-10
+                elif values[0] == tmax:
+                    return tmax - 1e-10
+                else:
+                    return values
+            else:
+                return values
+
+
+def create_synfire(tmin, tmax, num_trains, num_synfire_events, num_inverse_events, overlap, shuffle, jitter, complete, background, order, plotting):
+    refractoriness = 0.0001
+    num_total_events = num_synfire_events + num_inverse_events
+    num_total_spikes = num_trains * num_total_events
+
+    if overlap > 0:
+        distance_btw_events = (tmax - tmin) / overlap / ((num_total_events - 1) / overlap + 1)
+    else:
+        distance_btw_events = (tmax - tmin) / (num_total_events - 1)
+
+    event_duration = distance_btw_events * overlap
+    spike_time_diff = event_duration / (num_trains - 1)
+    spikes = [[] for _ in range(num_trains)]
+
+    for trc in range(num_trains):
+        spikes[trc] = np.arange(tmin + trc * spike_time_diff, tmax + 1, distance_btw_events)
+
+    original_shift = [x[0] for x in spikes]
+
+    if shuffle > 0:
+        num_shuffle_spikes = round(shuffle * num_trains)
+        if num_shuffle_spikes > 1:
+            for ec in range(num_total_events):
+                dummy = np.random.permutation(num_shuffle_spikes)
+                while any(dummy == np.arange(1, num_shuffle_spikes + 1)):
+                    dummy = np.random.permutation(num_shuffle_spikes)
+                rand_indy = np.random.permutation(num_trains)
+                indy = rand_indy[:num_shuffle_spikes]
+                event_spikes = [spikes[ind][ec] for ind in indy]
+                for spc in range(num_shuffle_spikes):
+                    spikes[indy[dummy[spc]]][ec] = event_spikes[spc]
+
+    if num_inverse_events > 0:
+        if num_inverse_events > num_synfire_events:
+            for ec in range(num_inverse_events):
+                dummy = [spikes[x][ec] for x in range(num_trains)]
+                for trc in range(num_trains):
+                    spikes[trc][ec] = dummy[num_trains - 1 - trc]
+        else:
+            for ec in range(num_synfire_events, num_total_events):
+                dummy = [spikes[x][ec] for x in range(num_trains)]
+                for trc in range(num_trains):
+                    spikes[trc][ec] = dummy[num_trains - 1 - trc]
+
+    if jitter > 0:
+        mean_isi = np.mean(np.diff(spikes[0]))
+        for trc in range(num_trains):
+            spikes[trc] += np.random.randn(num_total_events) * mean_isi * jitter
+
+    if complete < 1:
+        num_total_spikes = num_trains * num_total_events
+        num_events_spikes = round(num_total_spikes * complete)
+        num_sel_spikes = np.ones(num_total_events, dtype=int) * (num_events_spikes // num_total_events)
+        if num_events_spikes % num_total_events > 0:
+            rp = np.random.permutation(num_total_events)
+            rpi = rp[:num_events_spikes % num_total_events]
+            num_sel_spikes[rpi] += 1
+        indy = [[] for _ in range(num_total_events)]
+        for ec in range(num_total_events):
+            rand_indy = np.random.permutation(num_trains)
+            indy[ec] = np.sort(rand_indy[:num_sel_spikes[ec]])
+        for trc in range(num_trains):
+            sel_events = [any(np.isin(x, trc)) for x in indy]
+            spikes[trc] = [spikes[trc][i] for i, x in enumerate(sel_events) if x]
+
+    if background > 0:
+        num_exp_spikes = num_total_events * complete * (1 + background)
+        if 1 / num_exp_spikes < 5 * refractoriness:
+            refractoriness = 0.00001
+            if 1 / num_exp_spikes < 5 * refractoriness:
+                refractoriness = 0.000001
+                if 1 / num_exp_spikes < 5 * refractoriness:
+                    refractoriness = 0.0000001
+                    if 1 / num_exp_spikes < 5 * refractoriness:
+                        refractoriness = 0.00000001
+        spikes6 = [[] for _ in range(num_trains)]
+        num_background_spikes = round(background * num_total_spikes)
+        num_sel_spikes = np.ones(num_trains, dtype=int) * (num_background_spikes // num_trains)
+        if num_background_spikes % num_trains > 0:
+            rp = np.random.permutation(num_trains)
+            rpi = rp[:num_background_spikes % num_trains]
+            num_sel_spikes[rpi] += 1
+        for trc in range(num_trains):
+            backy = np.random.rand(num_sel_spikes[trc]) * tmax
+            spikes6[trc] = np.array([0, 0], dtype=float)
+            wlc = 0
+            while np.min(np.diff(spikes6[trc])) < refractoriness:
+                if wlc == 0:
+                    spikes6[trc] = np.sort(np.concatenate((spikes[trc], backy)))
+                    wlc += 1
+                else:
+                    minp = np.argmin(np.diff(spikes6[trc]))
+                    if spikes6[trc][minp] > refractoriness:
+                        spikes6[trc][minp] -= refractoriness
+                    else:
+                        spikes6[trc][minp + 1] += refractoriness
+        spikes = spikes6
+
+    testcase = 0
+    if testcase == 1:
+        spikes[num_trains // 2] = []
+    elif testcase == 2:
+        spikes[num_trains // 2] += 10
+    elif testcase == 3:
+        spikes[2] = np.sort(np.concatenate((spikes[2], spikes[2] + 1)))
+    elif testcase == 4:
+        for trc in range(num_trains):
+            spikes[trc] = spikes[trc][[0, 1, num_total_events - 2, num_total_events - 1]]
+        spikes[2] = (tmax - tmin) / 2
+
+    num_spikes = [len(x) for x in spikes]
+
+    unnorm_spikes = spikes
+    spikes = renorm(spikes, tmin, tmax, 0)
+    indy = np.where(np.array(num_spikes) > 1)[0]
+
+    if indy.size > 0 and not np.array_equal(unnorm_spikes, spikes):
+        original_shift = [x / (unnorm_spikes[indy[0]][1] - unnorm_spikes[indy[0]][0]) * (spikes[indy[0]][1] - spikes[indy[0]][0]) for x in original_shift]
+
+    original_shift = np.array(original_shift)
+    original_shift -= np.mean(original_shift)
+
+    if order == 1:
+        spikes = spikes[::-1]
+        original_shift = original_shift[::-1]
+    elif order == 2:
+        randi = np.random.permutation(num_trains)
+        spikes = [spikes[x] for x in randi]
+        original_shift = original_shift[randi]
+
+    original_shift[np.abs(original_shift) < 1e-14] = 0
+
+    if plotting == 1:
+        fs = 15
+        fig, ax = plt.subplots(figsize=(17, 10), dpi=80)
+        plt.title("Rasterplot", color='k', fontsize=24)
+        plt.xlabel('Time', color='k', fontsize=18)
+        plt.ylabel('Spike Trains', color='k', fontsize=18)
+        plt.axis([tmin-0.05*(tmax-tmin), tmax+0.05*(tmax-tmin), 0, num_trains+1])
+        plt.xticks(np.arange(tmin,tmax+1,1000), fontsize=14)
+        plt.yticks(np.arange(1,num_trains+1), np.arange(num_trains,0,-1),fontsize=14)
+        plt.plot((tmin, tmax), (0.5, 0.5), ':', color='k', linewidth=1)
+        plt.plot((tmin, tmax), (num_trains+0.5, num_trains+0.5), ':', color='k', linewidth=1)
+        plt.plot((tmin, tmin), (0.5, num_trains+0.5), ':', color='k', linewidth=1)
+        plt.plot((tmax, tmax), (0.5, num_trains+0.5), ':', color='k', linewidth=1)
+        for i in range(num_trains):
+            for j in range(len(spikes[i])):
+                plt.plot((spikes[i][j], spikes[i][j]), (num_trains-i+0.5, num_trains-i-0.5), '-', color='k', linewidth=1)
+        if num_trains < 12:
+            plt.yticks(range(1, num_trains + 1), labels=range(num_trains, 0, -1))
+        elif num_trains < 51:
+            plt.yticks(range(num_trains, num_trains - 11, -10), labels=range(10, num_trains + 1, 10))
+        else:
+            plt.yticks(range(num_trains, num_trains - 21, -20), labels=range(20, num_trains + 1, 20))
+        plt.box(True)
+        plt.xticks(fontsize=fs)
+        plt.yticks(fontsize=fs)
+        plt.show()
+    return [spikes, original_shift]
