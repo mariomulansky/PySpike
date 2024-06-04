@@ -98,14 +98,109 @@ def _spike_order_values_impl(spike_trains, indices=None,
 
     for i, j in pairs:
         d1, d2 = profile_impl(spike_trains[i].spikes, spike_trains[j].spikes,
-                              spike_trains[i].t_start, spike_trains[i].t_end,
-                              max_tau, MRTS)
+                                spike_trains[i].t_start, spike_trains[i].t_end,
+                                max_tau, MRTS)
         asymmetry_list[i] += d1
         asymmetry_list[j] += d2
     for a in asymmetry_list:
         a /= len(spike_trains)-1
     return asymmetry_list
 
+def spike_order_matrix(*args, **kwargs):
+    """ Computes the spike order value for each spike in
+    each spike train. Returns a symmetric matrix where each element
+    represents the combined spike order values of the corresponding pair
+    of spike trains.
+
+    Valid call structures:
+
+    spike_order_matrix(st1, st2)  # returns the bi-variate matrix
+    spike_order_matrix(st1, st2, st3)  # multi-variate matrix of 3 spike trains
+
+    spike_trains = [st1, st2, st3, st4]  # list of spike trains
+    spike_order_matrix(spike_trains)  # matrix of the list of spike trains
+    spike_order_matrix(spike_trains, verification=True)  # returns a matrix
+                                                          # with calculated values
+
+    Additional arguments:
+    :param verification: Determines whether to return the matrix with calculated
+                         values or an empty matrix (default=False).
+    :param max_tau: Upper bound for coincidence window (default=None).
+    :param indices: List of indices defining which spike trains to use,
+                    if None all given spike trains are used (default=None).
+
+    :returns: The spike order matrix.
+    """
+    
+    if len(args) == 1:
+        return _spike_order_impl(args[0], **kwargs)
+    else:
+        return _spike_order_impl(args, **kwargs)
+    
+def _spike_order_impl(spike_trains, verification=False, indices=None,
+                                       interval=None, max_tau=None, **kwargs):
+    """ Computes the multi-variate spike order profile 
+    of the given spike trains.
+
+    :param spike_trains: List of spike trains.
+    :type spike_trains: List of :class:`pyspike.SpikeTrain`
+    :param verification: Determines whether to return the matrix with calculated
+                         values or an empty matrix (default=False).
+    :type verification: bool, optional
+    :param indices: List of indices defining which spike trains to use,
+                    if None all given spike trains are used (default=None).
+    :type indices: list or None
+    :param max_tau: Maximum coincidence window size. If 0 or `None`, the
+                    coincidence window has no upper bound.
+    :returns: The spike-order values.
+    """
+    if kwargs.get('Reconcile', True):
+        spike_trains = reconcile_spike_trains(spike_trains)
+    ## get the keywords:
+    MRTS, RI = resolve_keywords(**kwargs)
+    if isinstance(MRTS, str):
+        MRTS = default_thresh(spike_trains)
+
+    if interval is not None:
+        raise NotImplementedError("Parameter `interval` not supported.")
+    if indices is None:
+        indices = np.arange(len(spike_trains))
+    indices = np.array(indices)
+    # check validity of indices
+    assert (indices < len(spike_trains)).all() and (indices >= 0).all(), \
+        "Invalid index list."
+    # matrix of spike-order
+    matrix = np.zeros((len(indices),len(indices)))
+    # generate a list of possible index pairs
+    pairs = [(indices[i], j) for i in range(len(indices))
+             for j in indices[i+1:]]
+
+    # cython implementation
+    try:
+        from .cython.cython_order import \
+            spike_order_profiles_cython as profile_impl
+    except ImportError:
+        pyspike.NoCythonWarn()
+
+        # use python backend
+        from .cython.order_python_backend import \
+            spike_order_profile_python as profile_impl
+
+    if max_tau is None:
+        max_tau = 0.0
+
+    if not verification:
+        return matrix
+    
+    else:
+        for i, j in pairs:
+            d1, d2 = profile_impl(spike_trains[i].spikes, spike_trains[j].spikes,
+                                spike_trains[i].t_start, spike_trains[i].t_end,
+                                max_tau, MRTS)
+            d = sum(d1)+sum(d2)
+            matrix[i][j] = d
+            matrix[j][i] = d
+        return matrix
 
 ############################################################
 # spike_train_order

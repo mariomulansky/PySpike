@@ -88,7 +88,7 @@ def _generic_profile_multi(spike_trains, pair_distance_func, indices=None, **kwa
     # generate a list of possible index pairs
     pairs = [(indices[i], j) for i in range(len(indices))
              for j in indices[i+1:]]
-
+    
     L = len(pairs)
     if L > 1:
         # recursive iteration through the list of pairs to get average profile
@@ -98,7 +98,6 @@ def _generic_profile_multi(spike_trains, pair_distance_func, indices=None, **kwa
         avrg_dist = pair_distance_func(spike_trains[pairs[0][0]],
                                        spike_trains[pairs[0][1]], 
                                        **kwargs)
-
     return avrg_dist, L
 
 

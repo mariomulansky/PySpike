@@ -95,7 +95,7 @@ def spike_sync_profile_bi(spike_train1, spike_train2, max_tau=None, **kwargs):
         = coincidence_profile_impl(spike_train1.spikes, spike_train2.spikes,
                                    spike_train1.t_start, spike_train1.t_end,
                                    max_tau, MRTS)
-
+    
     return DiscreteFunc(times, coincidences, multiplicity)
 
 
