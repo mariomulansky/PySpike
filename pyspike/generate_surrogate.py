@@ -2,11 +2,10 @@ import numpy as np
 import random
 
 def generate_surro(sto_profs, num_surros):
-
     num_pairs = sto_profs.shape[0]
     num_trains = int((1 + np.sqrt(1 + 8 * num_pairs)) / 2)
     firsts, seconds = np.where(np.triu(np.ones((num_trains, num_trains)), 1))
-
+    
     pair_indies, spike_indies  = np.where(sto_profs != 0)
     values = sto_profs[pair_indies, spike_indies]
     leader_pos = spike_indies[::2]
@@ -16,7 +15,6 @@ def generate_surro(sto_profs, num_surros):
     num_coins = len(pair)
     num_spikes = sto_profs.shape[1]
 
-
     indies = np.array([pair, firsts[pair] * (coins == 1) + seconds[pair] * (coins == -1), seconds[pair] * (coins == 1) + firsts[pair] * (coins == -1), leader_pos, follower_pos])
 
     num_swaps = num_spikes  # eliminate transients !!!!!
@@ -24,9 +22,8 @@ def generate_surro(sto_profs, num_surros):
     synf_norm = np.zeros(num_surros)
     for suc in range(num_surros):
         if suc == 1:
-            num_swaps = round(num_swaps / 2)
-
-        indies, error_count = Spike_Order_surro(indies, firsts, seconds, num_swaps)
+            num_swaps = round(num_swaps / 2)   
+        indies, a = Spike_Order_surro(indies, firsts, seconds, num_swaps)
 
         surro_sto_profs = np.zeros_like(sto_profs)
         for cc in range(num_coins):
@@ -36,27 +33,19 @@ def generate_surro(sto_profs, num_surros):
         surro_mat = np.tril(np.ones((num_trains, num_trains)), -1)
         surro_mat[np.where(surro_mat)] = surro_mat_entries
         surro_mat = surro_mat.T - surro_mat
-        
-        st_indy_simann, synf[suc], total_iter = Spike_Order_sim_ann(surro_mat)
-        
-        synf_norm[suc] = synf[suc]*2 / ((num_trains-1)*len(sto_profs[0]))
-        
-        """
+
         try:
-            from pyspike.cython.cython_simulated_annealing import sim_ann_cython
+            from pyspike.spike_order import _optimal_spike_train_sorting_from_matrix
         except ImportError:
             pyspike.NoCythonWarn()
-        st_indy_simann, synf[suc - 1], total_iter = sim_ann_cython(surro_mat, T_start, T_end, alpha)
-        """
-        if suc == num_surros:
-            pass  # print results if needed
+        _, synf[suc], _ = _optimal_spike_train_sorting_from_matrix(surro_mat, full_output=True)
+
+        synf_norm[suc] = synf[suc]*2 / ((num_trains-1)*len(sto_profs[0]))
     return synf_norm
 
 
 def Spike_Order_surro(indies1, firsts, seconds, num_swaps):
-    num_pairs = firsts.shape[0]
     num_coins = indies1.shape[1]
-    
     error_count = 0
     sc = 0
     while sc < num_swaps:
@@ -103,30 +92,3 @@ def Spike_Order_surro(indies1, firsts, seconds, num_swaps):
                 sc = num_swaps
         sc += 1
     return indies1, error_count
-
-def Spike_Order_sim_ann(D):
-    N = D.shape[0]
-    A = np.sum(np.triu(D, 1))
-    p = np.arange(N)
-    T = 2 * np.max(D)
-    T_end = 1e-5 * T
-    alpha = 0.9
-    total_iter = 0
-
-    while T > T_end:
-        iterations = 0
-        succ_iter = 0
-        while iterations < 100 * N and succ_iter < 10 * N:
-            ind1 = np.random.randint(0, N-1)
-            delta_A = -2 * D[p[ind1], p[ind1+1]]
-            if delta_A > 0 or np.exp(delta_A / T) > np.random.rand():
-                p[ind1], p[ind1+1] = p[ind1+1], p[ind1]
-                A += delta_A
-                succ_iter += 1
-            iterations += 1
-
-        total_iter += iterations
-        T *= alpha
-        if succ_iter == 0:
-            break
-    return p, A, total_iter

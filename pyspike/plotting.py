@@ -67,24 +67,6 @@ def Multi_Profile(spike_trains, variable):
             for j in range(L[i]-1):
                 prof_values.insert(i+k, prof_values[i+k])
                 k += 1
-
-        """
-        L = []
-        i = 0
-        while i < (len(spike_time)-1):
-            k = 0
-            if spike_time[i+k-1] == spike_time[i+k]:
-                while spike_time[i+k-1] == spike_time[i+k] and i+k != len(spike_time)-1:
-                    k += 1
-                L.append([i-1,k])
-            i += k + 1
-        if len(prof_values) > 1 and spike_time[-2] == spike_time[-1]:
-            L.append([len(spike_time)-2,1])
-
-        for i, k in L:
-            for j in range(1,k+1):
-                prof_values.insert(i, prof_values[i])
-        """
     return np.array(spike_time), np.array(prof_values)
     
 def Multi_Profile_Matrix(spike_trains, variable):
@@ -254,7 +236,7 @@ def plot_profile(x_prof, y_prof, variable, variable_value=None, showing=0):
     plt.ylabel("%s" %(possible_variable[variable-1]), color='k', fontsize=18)
     plt.show()
 
-def plot_spike_trains(spikes, phi=None, showing=0, order_color=0):
+def plot_spike_trains(spikes, tmin, tmax, phi=None, showing=0, order_color=0):
     """
     Plots spike trains in a raster plot.
 
@@ -267,8 +249,6 @@ def plot_spike_trains(spikes, phi=None, showing=0, order_color=0):
     :param order_color: Determines whether to plot spike trains with color based on their order (0 or 1).
     :type order_color: int, optional
     """
-    tmin = min([spikes[i][0] for i in range(len(spikes))])
-    tmax = max([spikes[i][-1] for i in range(len(spikes))])
     num_trains = len(spikes)
 
     if showing == 1:
@@ -284,8 +264,7 @@ def plot_spike_trains(spikes, phi=None, showing=0, order_color=0):
         positions = [0.0, 0.2, 0.4, 0.5, 0.6, 0.8, 0.9, 1.0]
         cm = LinearSegmentedColormap.from_list('custom_cmap', list(zip(positions, colors)), N=256)
         fig, ax = plt.subplots(figsize=(17, 10), dpi=80)
-        sm = plt.cm.ScalarMappable(cmap=cm)
-        plt.colorbar(sm, ax=ax)
+        plt.colorbar(plt.cm.ScalarMappable(cmap=cm, norm=plt.Normalize(vmin=-1, vmax=1)), ax=ax)
 
         C = Multi_Profile(spikes, 1)[1]
         order = f_all_trains(spikes)[0]
@@ -344,116 +323,6 @@ def plot_spike_trains(spikes, phi=None, showing=0, order_color=0):
                 else:
                     plt.plot((spikes[phi[i]][j], spikes[phi[i]][j]), (num_trains-i+0.5, num_trains-i-.5), '-', color='k', linewidth=1)
                 N += 1
-    plt.show()
-
-def plot_spike_trainsV2(spikes, phi=None, showing=0, order_color=0):
-    """
-    Plots spike trains in a raster plot.
-
-    :param spikes: List of spike trains.
-    :type spikes: List of :class:`pyspike.SpikeTrain`
-    :param phi: Order of spike trains to be plotted, if None, default order is used.
-    :type phi: list or None, optional
-    :param showing: Determines whether to print the spike trains before plotting (0 or 1).
-    :type showing: int, optional
-    :param order_color: Determines whether to plot spike trains with color based on their order (0 or 1).
-    :type order_color: int, optional
-    """
-    tmin = min([spikes[i][0] for i in range(len(spikes))])
-    tmax = max([spikes[i][-1] for i in range(len(spikes))])
-    num_trains = len(spikes)
-
-    if showing == 1:
-        for i in range(num_trains):
-            print("\nSpike Train %3i:" % (i+1))
-            for j in range(len(spikes[i])):
-                print("%i %.8f" % (j+1, spikes[i][j]))
-        print("\n")
-
-    if order_color == 1:
-        D = spk.spike_order_values(spikes)
-        flat_D = [item for sublist in D for item in sublist]
-        min_D, max_D = np.min(flat_D), np.max(flat_D)
-        colors = [(0, 0, 0.5), (0, 0, 1), (0, 1, 1), (0, 1, 0), (1, 1, 0), (1, 0.5, 0), (1, 0, 0), (0.5, 0, 0)]
-        positions = [0.0, 0.2, 0.4, 0.5, 0.6, 0.8, 0.9, 1.0]
-        cm = LinearSegmentedColormap.from_list('custom_cmap', list(zip(positions, colors)), N=256)
-        fig, ax = plt.subplots(figsize=(17, 10), dpi=80)
-        norm = plt.Normalize(vmin=min_D, vmax=max_D)
-
-        C = Multi_Profile(spikes, 1)[1]
-        order = f_all_trains(spikes)[0]
-
-        if phi == None:
-            indexed_liste1 = list(enumerate(order))
-            zipped_lists = list(zip(indexed_liste1, C))
-            sorted_zipped_lists = sorted(zipped_lists, key=lambda x: (x[0][1], x[0][0]))
-            _, sorted_C = zip(*sorted_zipped_lists)
-        else:
-            zipped_lists = list(zip(order, C))
-            sorted_zipped_lists = sorted(zipped_lists, key=lambda x: phi[x[0] - 1])
-            _, sorted_C = zip(*sorted_zipped_lists)
-            sorted_C = list(sorted_C)
-
-    else:
-        plt.figure(figsize=(17, 10), dpi=80)
-    plt.title("Rasterplot", color='k', fontsize=24)
-    plt.xlabel('Time', color='k', fontsize=18)
-    plt.ylabel('Spike Trains', color='k', fontsize=18)
-    plt.axis([tmin-0.05*(tmax-tmin), tmax+0.05*(tmax-tmin), 0, num_trains+1])
-    plt.xticks(fontsize=14)
-
-    if phi==None:
-        plt.yticks(np.arange(num_trains)+1, np.arange(num_trains,0,-1), fontsize=14)
-    else:
-        plt.yticks(np.arange(num_trains)+1, reversed([x+1 for x in phi]), fontsize=14)
-
-    plt.plot((tmin, tmax), (0.5, 0.5), ':', color='k', linewidth=1)
-    plt.plot((tmin, tmax), (num_trains+0.5, num_trains+0.5), ':', color='k', linewidth=1)
-    plt.plot((tmin, tmin), (0.5, num_trains+0.5), ':', color='k', linewidth=1)
-    plt.plot((tmax, tmax), (0.5, num_trains+0.5), ':', color='k', linewidth=1)
-    N = 0
-    
-    if phi == None:
-        for i in range(num_trains):
-            for j in range(len(spikes[i])):
-                if order_color == 1:
-                    color = cm((D[i][j] + 1) / 2)
-                    if sorted_C[N] == 0:
-                        plt.plot((spikes[i][j], spikes[i][j]), (num_trains-i+0.5, num_trains-i-.5), '-', color='k', linewidth=1)
-                    else:
-                        plt.plot((spikes[i][j], spikes[i][j]), (num_trains-i+0.5, num_trains-i-.5), '-', color=color, linewidth=1+2*sorted_C[N])
-                else:
-                    plt.plot((spikes[i][j], spikes[i][j]), (num_trains-i+0.5, num_trains-i-.5), '-', color='k', linewidth=1)
-                N += 1
-    else:
-        for i in range(num_trains):
-            for j in range(len(spikes[phi[i]])):
-                if order_color == 1:
-                    color = cm((D[phi[i]][j] + 1) / 2)
-                    if sorted_C[N] == 0:
-                        plt.plot((spikes[phi[i]][j], spikes[phi[i]][j]), (num_trains-i+0.5, num_trains-i-.5), '-', color='k', linewidth=1)
-                    else:
-                        plt.plot((spikes[phi[i]][j], spikes[phi[i]][j]), (num_trains-i+0.5, num_trains-i-.5), '-', color=color, linewidth=1+2*sorted_C[N])
-                else:
-                    plt.plot((spikes[phi[i]][j], spikes[phi[i]][j]), (num_trains-i+0.5, num_trains-i-.5), '-', color='k', linewidth=1)
-                N += 1
-    colors = [(0, 0, 0.5), (0, 0, 1), (0, 1, 1), (0, 1, 0), (1, 1, 0), (1, 0.5, 0), (1, 0, 0), (0.5, 0, 0)]
-    up = int(((max_D+1)/2)*8)+1
-    down = int(((min_D+1)/2)*8)-1
-    colors = colors[down:up]
-    positions = [0.0, 0.2, 0.4, 0.5, 0.6, 0.8, 0.9, 1.0]
-    positions = positions[down+1:up-1]
-    positions.append(1.0)
-    positions = [0.0] + positions
-    print(down)
-    print(up)
-    print(colors)
-    print(positions)
-    cm = LinearSegmentedColormap.from_list('custom_cmap', list(zip(positions, colors)), N=256)
-    sm = plt.cm.ScalarMappable(cmap=cm, norm=norm)
-    sm.set_array([])
-    cbar = plt.colorbar(sm, ax=ax)
-    cbar.set_ticks([min_D, (min_D + max_D) / 2, max_D])
     plt.show()
     
 def plot_surrogates(spike_trains, num_surros):
@@ -471,10 +340,10 @@ def plot_surrogates(spike_trains, num_surros):
     phi, _ = spk.optimal_spike_train_sorting(spike_trains)
     F_opt = spk.spike_train_order_value(spike_trains, indices=phi)
 
-    num_interval = int(num_surros*2)
+    num_interval = 100
     interval = 1/num_interval
-    count = [0 for i in range(num_interval)]
-    
+    count = [0 for i in range(num_interval+1)]
+
     for i in range(len(values)):
         N = int(values[i]/interval)
         count[N] += 1
@@ -484,7 +353,7 @@ def plot_surrogates(spike_trains, num_surros):
     max_count = max(count)
 
     plt.figure(figsize=(10, 6))
-    plt.xlim(0, 1)
+    plt.xlim(-0.1, 1.1)
     plt.ylim(0, max_count)
     plt.yticks(np.arange(0, max_count + 2, 1))
 
@@ -499,12 +368,12 @@ def plot_surrogates(spike_trains, num_surros):
     plt.ylabel('#', fontsize=18)
 
     z = (F_opt - mean_value)/std_dev
-    if F_opt >= max(values):
+    if F_opt > max(values):
         if num_surros == 9:
             plt.title("z = %.8f ; p = 0.1*" %(z), color='k', fontsize=24)
-        if num_surros == 19:
+        elif num_surros == 19:
             plt.title("z = %.8f ; p = 0.05**" %(z), color='k', fontsize=24)
-        if num_surros == 999:
+        elif num_surros == 999:
             plt.title("z = %.8f ; p = 0.001***" %(z), color='k', fontsize=24)
         else:
             p = 1/(num_surros+1)
