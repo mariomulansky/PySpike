@@ -559,7 +559,10 @@ def spike_train_order_multi(spike_trains, indices=None, normalize=True,
     if m == 0.0:
         return 1.0
     else:
-        return e_total/m_total
+        if normalize:
+            return e_total/m_total
+        else:
+            return e_total
 
 
 
