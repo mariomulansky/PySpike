@@ -38,6 +38,7 @@ from .spike_order import spike_train_order, \
 # define the __version__ following
 # http://stackoverflow.com/questions/17583443
 from pkg_resources import get_distribution, DistributionNotFound
+
 import os.path
 
 try:

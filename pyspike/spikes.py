@@ -4,6 +4,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import pyspike as spk
 from pyspike import SpikeTrain
 
 
@@ -253,7 +254,6 @@ def renorm(values, tmin, tmax, inside=0):
             else:
                 return values
 
-
 def create_synfire(tmin, tmax, num_trains, num_synfire_events, num_inverse_events, overlap, shuffle, jitter, complete, background, order, plotting):
     refractoriness = 0.0001
     num_total_events = num_synfire_events + num_inverse_events
@@ -270,7 +270,7 @@ def create_synfire(tmin, tmax, num_trains, num_synfire_events, num_inverse_event
 
     for trc in range(num_trains):
         spikes[trc] = np.arange(tmin + trc * spike_time_diff, tmax + 1, distance_btw_events)
-
+        
     original_shift = [x[0] for x in spikes]
 
     if shuffle > 0:
@@ -352,18 +352,6 @@ def create_synfire(tmin, tmax, num_trains, num_synfire_events, num_inverse_event
                         spikes6[trc][minp + 1] += refractoriness
         spikes = spikes6
 
-    testcase = 0
-    if testcase == 1:
-        spikes[num_trains // 2] = []
-    elif testcase == 2:
-        spikes[num_trains // 2] += 10
-    elif testcase == 3:
-        spikes[2] = np.sort(np.concatenate((spikes[2], spikes[2] + 1)))
-    elif testcase == 4:
-        for trc in range(num_trains):
-            spikes[trc] = spikes[trc][[0, 1, num_total_events - 2, num_total_events - 1]]
-        spikes[2] = (tmax - tmin) / 2
-
     num_spikes = [len(x) for x in spikes]
 
     unnorm_spikes = spikes
@@ -412,4 +400,7 @@ def create_synfire(tmin, tmax, num_trains, num_synfire_events, num_inverse_event
         plt.xticks(fontsize=fs)
         plt.yticks(fontsize=fs)
         plt.show()
-    return [spikes, original_shift]
+    spike_trains = []
+    for i in spikes:
+        spike_trains.append(spk.SpikeTrain(i, [tmin, tmax]))
+    return [spike_trains, original_shift]
