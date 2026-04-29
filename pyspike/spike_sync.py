@@ -165,7 +165,7 @@ def _spike_sync_values(spike_train1, spike_train2, interval, max_tau, **kwargs):
 # spike_sync
 ############################################################
 def spike_sync(*args, **kwargs):
-    """ Computes the spike synchronization value of the given spike
+    r""" Computes the spike synchronization value of the given spike
     trains. The spike synchronization value is the computed as the total number
     of coincidences divided by the total number of spikes:
 
