@@ -157,7 +157,7 @@ class PieceWiseConstFunc(object):
         return a
 
     def avrg(self, interval=None):
-        """ Computes the average of the piece-wise const function:
+        r""" Computes the average of the piece-wise const function:
         :math:`a = 1/T \int_0^T f(x) dx` where T is the length of the interval.
 
         :param interval: averaging interval given as a pair of floats, a

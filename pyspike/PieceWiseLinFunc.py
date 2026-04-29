@@ -193,7 +193,7 @@ class PieceWiseLinFunc:
         return integral
 
     def avrg(self, interval=None):
-        """ Computes the average of the piece-wise linear function:
+        r""" Computes the average of the piece-wise linear function:
         :math:`a = 1/T \int_0^T f(x) dx` where T is the interval length.
 
         :param interval: averaging interval given as a pair of floats, a
