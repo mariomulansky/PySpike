@@ -1,4 +1,4 @@
-""" test_sync_filter.py
+"""test_sync_filter.py
 
 Tests the spike sync based filtering
 
@@ -8,10 +8,10 @@ Distributed under the BSD License
 
 """
 
-from __future__ import print_function
 import numpy as np
-from numpy.testing import assert_allclose, assert_almost_equal, \
-    assert_array_almost_equal
+from numpy.testing import (
+    assert_allclose,
+)
 
 import pyspike as spk
 from pyspike import SpikeTrain
@@ -24,45 +24,46 @@ def test_single_prof():
 
     # cython implementation
     try:
-        from pyspike.cython.cython_profiles import \
-            coincidence_single_profile_cython as coincidence_impl
+        from pyspike.cython.cython_profiles import (
+            coincidence_single_profile_cython as coincidence_impl,
+        )
     except ImportError:
-        from pyspike.cython.python_backend import \
-            coincidence_single_python as coincidence_impl
+        from pyspike.cython.python_backend import (
+            coincidence_single_python as coincidence_impl,
+        )
 
-    sync_prof = spk.spike_sync_profile(SpikeTrain(st1, 5.0),
-                                       SpikeTrain(st2, 5.0))
+    sync_prof = spk.spike_sync_profile(SpikeTrain(st1, 5.0), SpikeTrain(st2, 5.0))
 
     coincidences = np.array(coincidence_impl(st1, st2, 0, 5.0, 0.0))
     print(coincidences)
     for i, t in enumerate(st1):
-        assert_allclose(coincidences[i], sync_prof.y[sync_prof.x == t],
-                     err_msg="At index %d" % i)
+        assert_allclose(
+            coincidences[i], sync_prof.y[sync_prof.x == t], err_msg="At index %d" % i
+        )
 
     coincidences = np.array(coincidence_impl(st2, st1, 0, 5.0, 0.0))
     for i, t in enumerate(st2):
-        assert_allclose(coincidences[i], sync_prof.y[sync_prof.x == t],
-                     err_msg="At index %d" % i)
+        assert_allclose(
+            coincidences[i], sync_prof.y[sync_prof.x == t], err_msg="At index %d" % i
+        )
 
-    sync_prof = spk.spike_sync_profile(SpikeTrain(st1, 5.0),
-                                       SpikeTrain(st3, 5.0))
+    sync_prof = spk.spike_sync_profile(SpikeTrain(st1, 5.0), SpikeTrain(st3, 5.0))
 
     coincidences = np.array(coincidence_impl(st1, st3, 0, 5.0, 0.0))
     for i, t in enumerate(st1):
-        assert_allclose(coincidences[i], sync_prof.y[sync_prof.x == t],
-                     err_msg="At index %d" % i)
+        assert_allclose(
+            coincidences[i], sync_prof.y[sync_prof.x == t], err_msg="At index %d" % i
+        )
 
     st1 = np.array([1.0, 2.0, 3.0, 4.0])
     st2 = np.array([1.0, 2.0, 4.0])
 
-    sync_prof = spk.spike_sync_profile(SpikeTrain(st1, 5.0),
-                                       SpikeTrain(st2, 5.0))
+    sync_prof = spk.spike_sync_profile(SpikeTrain(st1, 5.0), SpikeTrain(st2, 5.0))
 
     coincidences = np.array(coincidence_impl(st1, st2, 0, 5.0, 0.0))
     for i, t in enumerate(st1):
-        expected = sync_prof.y[sync_prof.x == t]/sync_prof.mp[sync_prof.x == t]
-        assert_allclose(coincidences[i], expected,
-                     err_msg="At index %d" % i)
+        expected = sync_prof.y[sync_prof.x == t] / sync_prof.mp[sync_prof.x == t]
+        assert_allclose(coincidences[i], expected, err_msg="At index %d" % i)
 
 
 def test_filter():

@@ -1,0 +1,87 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel", "numpy>=2.0.2", "Cython>=3.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "melizalab-pyspike"
+version = "0.8.1"
+description = "A Python library for the numerical analysis of spike train similarity - forked for PEP-518"
+readme = "Readme.rst"
+requires-python = ">=3.10"
+license = { text = "BSD-3-Clause" }
+authors = [
+    {name = "Mario Mulansky", email = "mario.mulansky@gmx.net"},
+]
+maintainers = [
+    {name = "C Daniel Meliza", email = "dan@meliza.org"},
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",    
+    "Operating System :: Unix",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: Microsoft :: Windows",
+    "Natural Language :: English"
+]
+dependencies = [
+    "numpy>=2.0.2",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=7.4.4",
+    "pytest-cov>=4.1.0",
+    "ruff>=0.14.3",
+    "scipy>=1.13.1; platform_python_implementation == 'CPython'",
+]
+examples = [
+    "matplotlib>=3.9.4",
+]
+
+[project.urls]
+homepage = "https://github.com/melizalab/PySpike"
+
+[tool.setuptools]
+packages = ["pyspike", "pyspike.cython"]
+
+[tool.pytest.ini_options]
+python_files = ["test_*.py", "*_test.py"]
+addopts = "-v --cov=pyspike --cov-report=term-missing"
+testpaths = ["test"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+extend-exclude = ["build", "attic"]
+
+[tool.ruff.lint]
+extend-select = [
+    "F",  # pyflakes
+    "B",   # flake8-bugbear
+    "I",   # isort
+    "PGH", # pygrep-hooks
+    "RUF", # Ruff-specific
+    "UP",  # pyupgrade
+    "NPY201", # numpy 2.0
+]
+
+[tool.cibuildwheel]
+skip= "cp314t-*"
+test-requires = "pytest pytest-cov"
+test-command = "pytest {project}/test"
+manylinux-x86_64-image = "manylinux2014"
+manylinux-i686-image = "manylinux2014"
+# enable pypy builds - no longer on by default
+enable = "pypy"
+

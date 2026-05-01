@@ -1,4 +1,4 @@
-""" test_save_load.py
+"""test_save_load.py
 
 Tests saving and loading of spike trains
 
@@ -8,18 +8,16 @@ Distributed under the BSD License
 
 """
 
-from __future__ import print_function
-from numpy.testing import assert_array_equal
-
-import tempfile
 import os.path
+import tempfile
+
+from numpy.testing import assert_array_equal
 
 import pyspike as spk
 
 
 def test_save_load():
-    file_name = os.path.join(tempfile.mkdtemp(prefix='pyspike_'),
-                             "save_load.txt")
+    file_name = os.path.join(tempfile.mkdtemp(prefix="pyspike_"), "save_load.txt")
 
     N = 10
     # generate some spike trains
@@ -34,8 +32,7 @@ def test_save_load():
     spike_trains_loaded = spk.load_spike_trains_from_txt(file_name, [0, 100])
 
     for n in range(N):
-        assert_array_equal(spike_trains[n].spikes,
-                           spike_trains_loaded[n].spikes)
+        assert_array_equal(spike_trains[n].spikes, spike_trains_loaded[n].spikes)
 
 
 if __name__ == "__main__":

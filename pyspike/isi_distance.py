@@ -1,23 +1,26 @@
-""" isi_distance.py
-    Module containing several functions to compute the ISI profiles and distances
-    Copyright 2014-2015, Mario Mulansky <mario.mulansky@gmx.net>
-    Distributed under the BSD License
+"""isi_distance.py
+Module containing several functions to compute the ISI profiles and distances
+Copyright 2014-2015, Mario Mulansky <mario.mulansky@gmx.net>
+Distributed under the BSD License
 """
 
-from __future__ import absolute_import
-
 import pyspike
-from pyspike import PieceWiseConstFunc
-from pyspike.generic import _generic_profile_multi, _generic_distance_multi, \
-    _generic_distance_matrix, resolve_keywords
+from pyspike.generic import (
+    _generic_distance_matrix,
+    _generic_distance_multi,
+    _generic_profile_multi,
+    resolve_keywords,
+)
 from pyspike.isi_lengths import default_thresh
-from pyspike.spikes import reconcile_spike_trains, reconcile_spike_trains_bi
+from pyspike.PieceWiseConstFunc import PieceWiseConstFunc
+from pyspike.spikes import reconcile_spike_trains_bi
+
 
 ############################################################
 # isi_profile
 ############################################################
 def isi_profile(*args, **kwargs):
-    """ Computes the isi-distance profile :math:`I(t)` of the given
+    """Computes the isi-distance profile :math:`I(t)` of the given
     spike trains. Returns the profile as a PieceWiseConstFunc object. The
     ISI-values are defined positive :math:`I(t)>=0`.
 
@@ -54,7 +57,7 @@ def isi_profile(*args, **kwargs):
 # isi_profile_bi
 ############################################################
 def isi_profile_bi(spike_train1, spike_train2, **kwargs):
-    """ Specific function to compute a bivariate ISI-profile. This is a
+    """Specific function to compute a bivariate ISI-profile. This is a
     deprecated function and should not be called directly. Use
     :func:`.isi_profile` to compute ISI-profiles.
 
@@ -66,30 +69,33 @@ def isi_profile_bi(spike_train1, spike_train2, **kwargs):
     :rtype: :class:`.PieceWiseConstFunc`
 
     """
-    if kwargs.get('Reconcile', True):
-        spike_train1, spike_train2 = reconcile_spike_trains_bi(spike_train1, spike_train2)
-        kwargs['Reconcile'] = False
+    if kwargs.get("Reconcile", True):
+        spike_train1, spike_train2 = reconcile_spike_trains_bi(
+            spike_train1, spike_train2
+        )
+        kwargs["Reconcile"] = False
 
-    MRTS,RI = resolve_keywords(**kwargs)
+    MRTS, _RI = resolve_keywords(**kwargs)
     if isinstance(MRTS, str):
         MRTS = default_thresh([spike_train1, spike_train2])
-        kwargs['MRTS'] = MRTS
+        kwargs["MRTS"] = MRTS
 
     # load cython implementation
     try:
-        from .cython.cython_profiles import isi_profile_cython \
-            as isi_profile_impl
+        from .cython.cython_profiles import isi_profile_cython as isi_profile_impl
     except ImportError:
         pyspike.NoCythonWarn()
 
         # use python backend
-        from .cython.python_backend import isi_distance_python \
-            as isi_profile_impl
+        from .cython.python_backend import isi_distance_python as isi_profile_impl
 
-    times, values = isi_profile_impl(spike_train1.get_spikes_non_empty(),
-                                     spike_train2.get_spikes_non_empty(),
-                                     spike_train1.t_start, spike_train1.t_end,
-                                     MRTS)
+    times, values = isi_profile_impl(
+        spike_train1.get_spikes_non_empty(),
+        spike_train2.get_spikes_non_empty(),
+        spike_train1.t_start,
+        spike_train1.t_end,
+        MRTS,
+    )
     return PieceWiseConstFunc(times, values)
 
 
@@ -97,7 +103,7 @@ def isi_profile_bi(spike_train1, spike_train2, **kwargs):
 # isi_profile_multi
 ############################################################
 def isi_profile_multi(spike_trains, indices=None, **kwargs):
-    """ Specific function to compute the multivariate ISI-profile for a set of
+    """Specific function to compute the multivariate ISI-profile for a set of
     spike trains. This is a deprecated function and should not be called
     directly. Use :func:`.isi_profile` to compute ISI-profiles.
 
@@ -109,9 +115,10 @@ def isi_profile_multi(spike_trains, indices=None, **kwargs):
     :returns: The averaged isi profile :math:`<I(t)>`
     :rtype: :class:`.PieceWiseConstFunc`
     """
-    average_dist, M = _generic_profile_multi(spike_trains, isi_profile_bi,
-                                             indices, **kwargs)
-    average_dist.mul_scalar(1.0/M)  # normalize
+    average_dist, M = _generic_profile_multi(
+        spike_trains, isi_profile_bi, indices, **kwargs
+    )
+    average_dist.mul_scalar(1.0 / M)  # normalize
     return average_dist
 
 
@@ -119,7 +126,7 @@ def isi_profile_multi(spike_trains, indices=None, **kwargs):
 # isi_distance
 ############################################################
 def isi_distance(*args, **kwargs):
-    """ Computes the ISI-distance :math:`D_I` of the given spike trains. The
+    """Computes the ISI-distance :math:`D_I` of the given spike trains. The
     isi-distance is the integral over the isi distance profile
     :math:`I(t)`:
 
@@ -160,7 +167,7 @@ def isi_distance(*args, **kwargs):
 # _isi_distance_bi
 ############################################################
 def isi_distance_bi(spike_train1, spike_train2, interval=None, **kwargs):
-    """ Specific function to compute the bivariate ISI-distance.
+    """Specific function to compute the bivariate ISI-distance.
     This is a deprecated function and should not be called directly. Use
     :func:`.isi_distance` to compute ISI-distances.
 
@@ -174,26 +181,32 @@ def isi_distance_bi(spike_train1, spike_train2, interval=None, **kwargs):
     :returns: The isi-distance :math:`D_I`.
     :rtype: double
     """
-    if kwargs.get('Reconcile', True):
-        spike_train1, spike_train2 = reconcile_spike_trains_bi(spike_train1, spike_train2)
-        kwargs['Reconcile'] = False
+    if kwargs.get("Reconcile", True):
+        spike_train1, spike_train2 = reconcile_spike_trains_bi(
+            spike_train1, spike_train2
+        )
+        kwargs["Reconcile"] = False
 
-    MRTS, RI = resolve_keywords(**kwargs)
+    MRTS, _RI = resolve_keywords(**kwargs)
     if isinstance(MRTS, str):
         MRTS = default_thresh([spike_train1, spike_train2])
-        kwargs['MRTS'] = MRTS
+        kwargs["MRTS"] = MRTS
 
     if interval is None:
         # distance over the whole interval is requested: use specific function
         # for optimal performance
         try:
-            from .cython.cython_distances import isi_distance_cython \
-                as isi_distance_impl
+            from .cython.cython_distances import (
+                isi_distance_cython as isi_distance_impl,
+            )
 
-            return isi_distance_impl(spike_train1.get_spikes_non_empty(),
-                                     spike_train2.get_spikes_non_empty(),
-                                     spike_train1.t_start, spike_train1.t_end,
-                                     MRTS)
+            return isi_distance_impl(
+                spike_train1.get_spikes_non_empty(),
+                spike_train2.get_spikes_non_empty(),
+                spike_train1.t_start,
+                spike_train1.t_end,
+                MRTS,
+            )
         except ImportError:
             # Cython backend not available: fall back to profile averaging
             return isi_profile_bi(spike_train1, spike_train2, **kwargs).avrg(interval)
@@ -206,7 +219,7 @@ def isi_distance_bi(spike_train1, spike_train2, interval=None, **kwargs):
 # isi_distance_multi
 ############################################################
 def isi_distance_multi(spike_trains, indices=None, interval=None, **kwargs):
-    """ Specific function to compute the multivariate ISI-distance.
+    """Specific function to compute the multivariate ISI-distance.
     This is a deprecfated function and should not be called directly. Use
     :func:`.isi_distance` to compute ISI-distances.
 
@@ -219,15 +232,16 @@ def isi_distance_multi(spike_trains, indices=None, interval=None, **kwargs):
     :returns: The time-averaged multivariate ISI distance :math:`D_I`
     :rtype: double
     """
-    return _generic_distance_multi(spike_trains, isi_distance_bi, indices,
-                                   interval, **kwargs)
+    return _generic_distance_multi(
+        spike_trains, isi_distance_bi, indices, interval, **kwargs
+    )
 
 
 ############################################################
 # isi_distance_matrix
 ############################################################
 def isi_distance_matrix(spike_trains, indices=None, interval=None, **kwargs):
-    """ Computes the time averaged isi-distance of all pairs of spike-trains.
+    """Computes the time averaged isi-distance of all pairs of spike-trains.
 
     :param spike_trains: list of :class:`.SpikeTrain`
     :param indices: list of indices defining which spike trains to use,
@@ -240,6 +254,6 @@ def isi_distance_matrix(spike_trains, indices=None, interval=None, **kwargs):
               :math:`D_{I}^{ij}`
     :rtype: np.array
     """
-    return _generic_distance_matrix(spike_trains, isi_distance_bi,
-                                    indices=indices, interval=interval,
-                                    **kwargs)
+    return _generic_distance_matrix(
+        spike_trains, isi_distance_bi, indices=indices, interval=interval, **kwargs
+    )

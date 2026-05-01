@@ -1,4 +1,4 @@
-""" test_generic_interface.py
+"""test_generic_interface.py
 
 Tests the generic interfaces of the profile and distance functions
 
@@ -8,7 +8,6 @@ Distributed under the BSD License
 
 """
 
-from __future__ import print_function
 from numpy.testing import assert_allclose
 
 import pyspike as spk
@@ -16,9 +15,10 @@ from pyspike import SpikeTrain
 
 
 class dist_from_prof:
-    """ Simple functor that turns profile function into distance function by
+    """Simple functor that turns profile function into distance function by
     calling profile.avrg().
     """
+
     def __init__(self, prof_func):
         self.prof_func = prof_func
 
@@ -32,8 +32,7 @@ class dist_from_prof:
 
 
 def check_func(dist_func):
-    """ generic checker that tests the given distance function.
-    """
+    """generic checker that tests the given distance function."""
     # generate spike trains:
     t1 = SpikeTrain([0.2, 0.4, 0.6, 0.7], 1.0)
     t2 = SpikeTrain([0.3, 0.45, 0.8, 0.9, 0.95], 1.0)

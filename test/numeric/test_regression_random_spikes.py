@@ -1,28 +1,39 @@
-""" regression benchmark
+"""regression benchmark
 
 Copyright 2015, Mario Mulansky <mario.mulansky@gmx.net>
 
 Distributed under the BSD License
 """
-from __future__ import print_function
+
 
 import os
-import numpy as np
-from scipy.io import loadmat
-import pyspike as spk
 
+import numpy as np
+
+HAS_SCIPY = True
+try:
+    from scipy.io import loadmat
+except ImportError:
+    HAS_SCIPY = False
+import pytest
 from numpy.testing import assert_almost_equal
+
+import pyspike as spk
 
 spk.disable_backend_warning = True
 
 max_trr_trials = 100  # speed things up
 
-def test_regression_random():
+pytestmark = pytest.mark.skipif(not HAS_SCIPY, reason="scipy not available")
 
+
+def test_regression_random():
     spike_file = os.path.join("test", "numeric", "regression_random_spikes.mat")
     spikes_name = "spikes"
     result_name = "Distances"
-    result_file = os.path.join("test", "numeric", "regression_random_results_cSPIKY.mat")
+    result_file = os.path.join(
+        "test", "numeric", "regression_random_results_cSPIKY.mat"
+    )
 
     spike_train_sets = loadmat(spike_file)[spikes_name][0]
     results_cSPIKY = loadmat(result_file)[result_name]
@@ -43,25 +54,32 @@ def test_regression_random():
         spike_sync = spk.spike_sync_multi(spike_trains)
         spike_sync_prof = spk.spike_sync_profile_multi(spike_trains).avrg()
 
-        assert_almost_equal(isi, results_cSPIKY[i][0], decimal=14,
-                            err_msg="Index: %d, ISI" % i)
-        assert_almost_equal(isi_prof, results_cSPIKY[i][0], decimal=14,
-                            err_msg="Index: %d, ISI" % i)
+        assert_almost_equal(
+            isi, results_cSPIKY[i][0], decimal=14, err_msg="Index: %d, ISI" % i
+        )
+        assert_almost_equal(
+            isi_prof, results_cSPIKY[i][0], decimal=14, err_msg="Index: %d, ISI" % i
+        )
 
-        assert_almost_equal(spike, results_cSPIKY[i][1], decimal=14,
-                            err_msg="Index: %d, SPIKE" % i)
-        assert_almost_equal(spike_prof, results_cSPIKY[i][1], decimal=14,
-                            err_msg="Index: %d, SPIKE" % i)
+        assert_almost_equal(
+            spike, results_cSPIKY[i][1], decimal=14, err_msg="Index: %d, SPIKE" % i
+        )
+        assert_almost_equal(
+            spike_prof, results_cSPIKY[i][1], decimal=14, err_msg="Index: %d, SPIKE" % i
+        )
 
-        assert_almost_equal(spike_sync, spike_sync_prof, decimal=14,
-                            err_msg="Index: %d, SPIKE-Sync" % i)
+        assert_almost_equal(
+            spike_sync, spike_sync_prof, decimal=14, err_msg="Index: %d, SPIKE-Sync" % i
+        )
 
 
-def check_regression_dataset(spike_file="benchmark.mat",
-                             spikes_name="spikes",
-                             result_file="results_cSPIKY.mat",
-                             result_name="Distances"):
-    """ Debuging function """
+def check_regression_dataset(
+    spike_file="benchmark.mat",
+    spikes_name="spikes",
+    result_file="results_cSPIKY.mat",
+    result_name="Distances",
+):
+    """Debuging function"""
     np.set_printoptions(precision=15)
 
     spike_train_sets = loadmat(spike_file)[spikes_name][0]
@@ -83,14 +101,14 @@ def check_regression_dataset(spike_file="benchmark.mat",
         spike = spk.spike_distance_multi(spike_trains)
         # spike_sync = spk.spike_sync_multi(spike_trains)
 
-        if abs(isi - results_cSPIKY[i][0]) > 1E-14:
+        if abs(isi - results_cSPIKY[i][0]) > 1e-14:
             print("Error in ISI:", i, isi, results_cSPIKY[i][0])
             print("Spike trains:")
             for st in spike_trains:
                 print(st.spikes)
 
         err = abs(spike - results_cSPIKY[i][1])
-        if err > 1E-14:
+        if err > 1e-14:
             err_count += 1
         if err > err_max:
             err_max = err
@@ -106,12 +124,14 @@ def check_regression_dataset(spike_file="benchmark.mat",
 
 
 def check_single_spike_train_set(index):
-    """ Debuging function """
+    """Debuging function"""
     np.set_printoptions(precision=15)
     spike_file = os.path.join("test", "numeric", "regression_random_spikes.mat")
     spikes_name = "spikes"
     result_name = "Distances"
-    result_file = os.path.join("test", "numeric", "regression_random_results_cSPIKY.mat")
+    result_file = os.path.join(
+        "test", "numeric", "regression_random_results_cSPIKY.mat"
+    )
 
     spike_train_sets = loadmat(spike_file)[spikes_name][0]
 
@@ -138,7 +158,6 @@ def check_single_spike_train_set(index):
 
 
 if __name__ == "__main__":
-
     test_regression_random()
     check_regression_dataset()
     check_single_spike_train_set(4)

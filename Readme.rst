@@ -1,10 +1,22 @@
 PySpike
 =======
 
-.. image:: https://badge.fury.io/py/pyspike.png
-    :target: http://badge.fury.io/py/pyspike
-.. image:: https://travis-ci.org/mariomulansky/PySpike.svg?branch=master
-    :target: https://travis-ci.org/mariomulansky/PySpike
+|ProjectStatus|_ |Version|_ |BuildStatus|_ |License|_ |PythonVersions|_
+
+.. |ProjectStatus| image:: https://www.repostatus.org/badges/latest/active.svg
+.. _ProjectStatus: https://www.repostatus.org/#active
+
+.. |Version| image:: https://img.shields.io/pypi/v/melizalab-pyspike.svg
+.. _Version: https://pypi.python.org/pypi/melizalab-pyspike/
+
+.. |BuildStatus| image:: https://github.com/melizalab/PySpike/actions/workflows/python_tests.yml/badge.svg
+.. _BuildStatus: https://github.com/melizalab/PySpike/actions/workflows/python_tests.yml
+
+.. |License| image:: https://img.shields.io/pypi/l/melizalab-pyspike.svg
+.. _License: https://opensource.org/license/bsd-3-clause/
+
+.. |PythonVersions| image:: https://img.shields.io/pypi/pyversions/melizalab-pyspike.svg
+.. _PythonVersions: https://pypi.python.org/pypi/melizalab-pyspike/
 
 PySpike is a Python library for the numerical analysis of spike train similarity. 
 Its core functionality is the implementation of the ISI_\-distance [#]_ and SPIKE_\-distance [#]_, SPIKE-Synchronization_ [#]_, as well as their adaptive generalizations [#]_.
@@ -13,7 +25,7 @@ All computation intensive parts are implemented in C via cython_ to reach a comp
 
 PySpike provides the same fundamental functionality as the SPIKY_ framework for Matlab, which additionally contains spike-train generators, more spike train distance measures and many visualization routines.
 
-All source codes are available on `Github <https://github.com/mariomulansky/PySpike>`_  and are published under the BSD_License_.
+All source codes are available on `Github <https://github.com/mariomulansky/PySpike>`_  and are published under the BSD_License_. `This fork <https://github.com/melizalab/PySpike>`_ is maintained by the Meliza Lab for PEP518-compatible builds and CI-generated `wheels <https://pypi.org/project/melizalab-pyspike/>`_.
 
 Citing PySpike
 ----------------------------

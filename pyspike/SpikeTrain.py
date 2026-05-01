@@ -5,11 +5,11 @@
 import numpy as np
 
 
-class SpikeTrain(object):
-    """ Class representing spike trains for the PySpike Module."""
+class SpikeTrain:
+    """Class representing spike trains for the PySpike Module."""
 
     def __init__(self, spike_times, edges, is_sorted=True):
-        """ Constructs the SpikeTrain.
+        """Constructs the SpikeTrain.
 
         :param spike_times: ordered array of spike times.
         :param edges: The edges of the spike train. Given as a pair of floats
@@ -28,12 +28,12 @@ class SpikeTrain(object):
         try:
             self.t_start = float(edges[0])
             self.t_end = float(edges[1])
-        except:
+        except TypeError:
             self.t_start = 0.0
             self.t_end = float(edges)
 
     def __getitem__(self, index):
-        """ Returns the time of the spike given by index.
+        """Returns the time of the spike given by index.
 
         :param index: Index of the spike.
         :return: spike time.
@@ -41,19 +41,18 @@ class SpikeTrain(object):
         return self.spikes[index]
 
     def __len__(self):
-        """ Returns the number of spikes.
-        
+        """Returns the number of spikes.
+
         :return: Number of spikes.
         """
         return len(self.spikes)
 
     def sort(self):
-        """ Sorts the spike times of this spike train using `np.sort`
-        """
+        """Sorts the spike times of this spike train using `np.sort`"""
         self.spikes = np.sort(self.spikes)
 
     def copy(self):
-        """ Returns a copy of this spike train.
+        """Returns a copy of this spike train.
         Use this function if you want to create a real (deep) copy of this
         spike train. Simple assignment `t2 = t1` does not create a copy of the
         spike train data, but a reference as `numpy.array` is used for storing
@@ -69,7 +68,6 @@ class SpikeTrain(object):
         of empty spike trains.
         """
         if len(self.spikes) < 1:
-            return np.unique(np.insert([self.t_start, self.t_end], 1,
-                                       self.spikes))
+            return np.unique(np.insert([self.t_start, self.t_end], 1, self.spikes))
         else:
             return self.spikes
