@@ -9,8 +9,8 @@ PySpike
 .. |Version| image:: https://img.shields.io/pypi/v/melizalab-pyspike.svg
 .. _Version: https://pypi.python.org/pypi/melizalab-pyspike/
 
-.. |BuildStatus| image:: https://github.com/melizalab/melizalab-pyspike/actions/workflows/python_tests.yml/badge.svg
-.. _BuildStatus: https://github.com/melizalab/melizalab-pyspike/actions/workflows/python_tests.yml
+.. |BuildStatus| image:: https://github.com/melizalab/PySpike/actions/workflows/python_tests.yml/badge.svg
+.. _BuildStatus: https://github.com/melizalab/PySpike/actions/workflows/python_tests.yml
 
 .. |License| image:: https://img.shields.io/pypi/l/melizalab-pyspike.svg
 .. _License: https://opensource.org/license/bsd-3-clause/
