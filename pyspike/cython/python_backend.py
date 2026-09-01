@@ -361,11 +361,11 @@ def get_tau(spikes1, spikes2, i, j, max_tau, MRTS):
     if i<0 or j<0 or spikes1[i] <= spikes2[j]:
         s1F = Interpolate(mP1, mF1, MRTS)
         s2P = Interpolate(mF2, mP2, MRTS)
-        return min(s1F, s2P)
+        return min(min(s1F, s2P), max_tau/2.)
     else:
         s1P = Interpolate(mF1, mP1, MRTS)
         s2F = Interpolate(mP2, mF2, MRTS)
-        return min(s1P, s2F)
+        return min(min(s1P, s2F), max_tau/2.)
 
 
 
